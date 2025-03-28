@@ -1,0 +1,16 @@
+<div class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Seleccionar ubicación</h2>
+        <button class="modal-close" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-map" #mapContainer style="height: 400px;"></div>
+      <div class="modal-body">
+        <label>Dirección:</label> <input placeholder="Escriba su dirección, ciudad y departamento separado por comas" value="{{ selectedAddress }}">
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeModal()">Cerrar</button>
+        <button (click)="confirmLocation()">Confirmar Ubicación</button>
+      </div>
+    </div>
+  </div>

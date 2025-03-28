@@ -1,0 +1,31 @@
+<div class="header">
+    <img src="images/logo.jpg" alt="El Horno De Pablo" class="logo">
+      <h1 class="title">El Horno De Pablo</h1>
+      
+      <div *ngIf="currentUser" [routerLink]="'/perfil'" class="user-profile">
+        <div class="avatar-image">
+          <img src="images/user.png" class="fas fa-user-circle">
+        </div>
+        <span class="username">{{ currentUser.nombreUsuario }}</span>
+      </div>
+
+      <div *ngIf="currentUserAdmin" class="user-profile" (click)="$event.stopPropagation()">
+        <div class="avatar-image">
+          <img src="images/user.png" class="fas fa-user-circle">
+        </div>
+        <span class="username">{{ currentUserAdmin.nombreUsuario }}</span>
+      </div>
+</div>
+
+<div *ngIf="currentUser"  class="nav-bar">
+    <a routerLink="" routerLinkActive="active">Inicio</a>
+    <a *ngIf="currentUser.tipo === true"  routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
+    <a *ngIf="currentUser.tipo !== true"  routerLink="/tipo" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/fiesta" routerLinkActive="active">Fiesta</a>
+</div>
+
+<div *ngIf="currentUserAdmin" class="nav-bar">
+    <a routerLink="/gestion" routerLinkActive="active">Gestión</a>
+    <a routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/fiestas" routerLinkActive="active">Fiestas</a>
+</div>

@@ -1,0 +1,118 @@
+:host {
+    background-color: #f4f6f9;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    align-items: flex-start; /* Asegura que cada tarjeta maneje su propia altura */
+}
+
+.card {
+    width: 300px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card-image:hover {
+    transform: scale(1.1);
+}
+
+.card-content {
+    padding: 20px;
+    position: relative;
+    align-items: stretch;
+}
+
+.card-label {
+    display: block;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 15px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: rgb(236,85,12);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: rgb(204, 72, 10);
+}
+
+.btn-secondary {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+}
+
+.btn-secondary:hover {
+    background-color: #dfe4e6;
+}
+
+.card-text {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 0 15px;
+    color: #7f8c8d;
+}
+
+.card-text.active {
+    max-height: 200px;
+    opacity: 1;
+    padding: 15px;
+}
+
+/* Animations for Text Toggle */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-text.active {
+    animation: slideIn 0.4s ease;
+}
+

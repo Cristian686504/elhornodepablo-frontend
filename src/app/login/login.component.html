@@ -1,0 +1,39 @@
+<div class="login-container">
+    <div class="login-form">
+      <h2>Iniciar Sesión</h2>
+      
+      <form (ngSubmit)="iniciarSesion()">
+        <div class="form-group">
+          <label for="nombreUsuario">Nombre de Usuario</label>
+          <input 
+            type="text" 
+            id="nombreUsuario" 
+            name="nombreUsuario" 
+            [(ngModel)]="usuario.nombreUsuario" 
+            required 
+            [disabled]="loading">
+        </div>
+        
+        <div class="form-group">
+          <label for="contrasenia">Contraseña</label>
+          <input 
+            type="password" 
+            id="contrasenia" 
+            name="contrasenia" 
+            [(ngModel)]="usuario.contrasenia" 
+            required 
+            [disabled]="loading">
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+        
+        <button type="submit" [disabled]="loading">
+          <span *ngIf="loading">Cargando...</span>
+          <span *ngIf="!loading">Iniciar Sesión</span>
+        </button>
+        <a href="/register">No tengo cuenta</a>
+      </form>
+    </div>
+  </div>
