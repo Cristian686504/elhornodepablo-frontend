@@ -34,4 +34,16 @@ checkAdminUser() {
     }
   });
 }
+
+checkTipoValue() {
+  this.clienteService.currentUser.subscribe(user => {
+    if (user) {  // Verifica si el usuario no es null o undefined
+      this.currentUser = user;
+    } else {
+      this.checkAdminUser(); // Si el cliente es null, revisa en administrador
+    }
+  });
+  console.log("valor:", this.currentUser.tipo)
+  return this.currentUser.tipo;
+}
 }

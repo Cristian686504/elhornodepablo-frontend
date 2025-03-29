@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ModalPersonaComercioComponent } from './modal-persona-comercio.component';
+import { ModalPersonaComponent } from './modal-persona.component';
 
 describe('ModalPersonaComercioComponent', () => {
-  let component: ModalPersonaComercioComponent;
-  let fixture: ComponentFixture<ModalPersonaComercioComponent>;
+  let component: ModalPersonaComponent;
+  let fixture: ComponentFixture<ModalPersonaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModalPersonaComercioComponent]
+      imports: [ModalPersonaComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ModalPersonaComercioComponent);
+    fixture = TestBed.createComponent(ModalPersonaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

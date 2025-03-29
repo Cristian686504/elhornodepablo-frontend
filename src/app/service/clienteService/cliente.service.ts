@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 // Definimos una interfaz para la respuesta de autenticación
@@ -39,13 +39,46 @@ export class ClienteService {
   login(nombreUsuario: string, contrasenia: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}login`, { nombreUsuario, contrasenia })
       .pipe(tap(user => {
-        console.log('Respuesta del backend:', user);
         // Almacenar detalles del usuario y token JWT en localStorage
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;
       }));
   }
+
+  elegirTipoDireccionClienteFinal(nombreUsuario: string, tipo: string, direccion: string): any {
+    const requestBody = { nombreUsuario, tipo, direccion };
+    
+    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionClienteFinal`, requestBody)
+      .subscribe(
+        (response) => {
+          console.log('Respuesta exitosa:', response);
+  
+          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
+          if (response && response.tipo !== undefined) {
+            let currentUser = this.getUserFromLocalStorage();
+
+            if (currentUser) {
+              // Usamos el tipo que devuelve el servidor en la respuesta
+              currentUser.tipo = response.tipo; 
+              console.log('Tipo actualizado:', currentUser.tipo);
+              // Guardamos el usuario actualizado en localStorage
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+              // Notificamos el cambio a los suscriptores
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+        },
+        (error) => {
+          console.error('Hubo un error:', error);
+        }
+      );
+  }
+  
+  
+
+
 
   logout() {
     // Eliminar usuario del localStorage al cerrar sesión

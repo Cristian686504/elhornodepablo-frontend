@@ -6,10 +6,20 @@
       </div>
       <div class="modal-map" #mapContainer style="height: 400px;"></div>
       <div class="modal-body">
-        <label>Dirección:</label> <input placeholder="Escriba su dirección, ciudad y departamento separado por comas" value="{{ selectedAddress }}">
+        <label>Dirección:</label>
+        <div class="input-wrapper">
+          <input
+            placeholder="Dirección, ciudad, depto (ej: José Ugarte 3496, Young, Río Negro)"
+            [value]="selectedAddress"
+            (input)="onAddressInput($event)"
+          >
+          <!-- Nuevo indicador de carga -->
+          <div *ngIf="isLoading" class="loading-spinner">
+            <div class="spinner"></div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button (click)="closeModal()">Cerrar</button>
         <button (click)="confirmLocation()">Confirmar Ubicación</button>
       </div>
     </div>

@@ -3,7 +3,7 @@
     <div class="card-content"> 
         <span class="card-label">Cliente particular</span> 
         <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModal()">Seleccionar</button> 
+            <button class="btn btn-primary" (click)="openModalPersona()">Seleccionar</button> 
             <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
         </div> 
         <div class="card-text"> 
@@ -17,7 +17,7 @@
     <div class="card-content"> 
         <span class="card-label">Comercio</span> 
         <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModal()">Seleccionar</button> 
+            <button class="btn btn-primary" >Seleccionar</button> 
             <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
         </div> 
         <div class="card-text"> 
@@ -31,7 +31,7 @@
     <div class="card-content"> 
         <span class="card-label">A beneficio</span> 
         <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModal()">Seleccionar</button> 
+            <button class="btn btn-primary" >Seleccionar</button> 
             <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
         </div> 
         <div class="card-text"> 
@@ -45,14 +45,14 @@
     <div class="card-content"> 
         <span class="card-label">Cliente exterior</span> 
         <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModal()">Seleccionar</button> 
+            <button class="btn btn-primary" >Seleccionar</button> 
             <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
         </div> 
         <div class="card-text"> 
-            Si te encuentras fuera de Paysandú, Uruguay, y deseas acceder a nuestros servicios o productos, selecciona esta opción. 
+            Si eres alguno de lo clientes anteriores y te encuentras fuera de Paysandú, Uruguay, y deseas acceder a nuestros productos, selecciona esta opción. 
         </div> 
     </div> 
 </div>
 
 <!-- Modal -->
-<app-modal-persona-comercio *ngIf="isModalOpen" (modalClosed)="closeModal()" (locationConfirmed)="handleLocationConfirmation($event)"></app-modal-persona-comercio>
+<app-modal-persona *ngIf="isModalPersonaOpen" (modalClosed)="closeModalPersona()" ></app-modal-persona>

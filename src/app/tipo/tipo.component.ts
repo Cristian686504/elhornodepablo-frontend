@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import * as L from 'leaflet';
-import { ModalPersonaComercioComponent } from '../modal-persona-comercio/modal-persona-comercio.component';
+import { ModalPersonaComponent } from '../modal-persona/modal-persona.component';
 
 @Component({
   selector: 'app-tipo',
   standalone: true,
-  imports: [CommonModule, ModalPersonaComercioComponent],
+  imports: [CommonModule, ModalPersonaComponent],
   templateUrl: './tipo.component.html',
   styleUrl: './tipo.component.css'
 })
 export class TipoComponent {
-  isModalOpen = false;
+  isModalPersonaOpen = false;
 
   toggleText(event: Event) {
     const cardContent = (event.target as HTMLElement).closest('.card-content');
@@ -20,18 +20,14 @@ export class TipoComponent {
     cardText?.classList.toggle('active');
   }
 
-  openModal() {
-    this.isModalOpen = true;
+  openModalPersona() {
+    this.isModalPersonaOpen = true;
   }
 
-  closeModal() {
-    this.isModalOpen = false;
+  closeModalPersona() {
+    this.isModalPersonaOpen = false;
   }
 
-  handleLocationConfirmation(location: L.LatLng) {
-    console.log('Location confirmed in parent component:', location);
-    // Add any additional logic you want to perform when a location is confirmed
-  }
 }
 
 export default TipoComponent;
