@@ -18,7 +18,7 @@
 </div>
 
 <div *ngIf="currentUser"  class="nav-bar">
-    <a routerLink="" routerLinkActive="active">Inicio</a>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" >Inicio</a>
     <a *ngIf="currentUser.tipo === 'true' || currentUser.tipo === true"  routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
     <a *ngIf="currentUser.tipo === 'false' || currentUser.tipo === false"  routerLink="/tipo" routerLinkActive="active">Pedidos</a>
     <a routerLink="/fiesta" routerLinkActive="active">Fiesta</a>

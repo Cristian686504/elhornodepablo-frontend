@@ -77,7 +77,96 @@ export class ClienteService {
   }
   
   
+  elegirTipoDireccionComercio(nombreUsuario: string, tipo: string, direccion: string): any {
+    const requestBody = { nombreUsuario, tipo, direccion };
+    
+    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionComercio`, requestBody)
+      .subscribe(
+        (response) => {
+          console.log('Respuesta exitosa:', response);
+  
+          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
+          if (response && response.tipo !== undefined) {
+            let currentUser = this.getUserFromLocalStorage();
 
+            if (currentUser) {
+              // Usamos el tipo que devuelve el servidor en la respuesta
+              currentUser.tipo = response.tipo; 
+              console.log('Tipo actualizado:', currentUser.tipo);
+              // Guardamos el usuario actualizado en localStorage
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+              // Notificamos el cambio a los suscriptores
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+        },
+        (error) => {
+          console.error('Hubo un error:', error);
+        }
+      );
+
+  }
+  
+  elegirTipoDireccionBeneficio(nombreUsuario: string, motivo: string, direccion: string): any {
+    const requestBody = { nombreUsuario, motivo, direccion };
+    
+    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionBeneficio`, requestBody)
+      .subscribe(
+        (response) => {
+          console.log('Respuesta exitosa:', response);
+  
+          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
+          if (response && response.tipo !== undefined) {
+            let currentUser = this.getUserFromLocalStorage();
+
+            if (currentUser) {
+              // Usamos el tipo que devuelve el servidor en la respuesta
+              currentUser.tipo = response.tipo; 
+              console.log('Tipo actualizado:', currentUser.tipo);
+              // Guardamos el usuario actualizado en localStorage
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+              // Notificamos el cambio a los suscriptores
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+        },
+        (error) => {
+          console.error('Hubo un error:', error);
+        }
+      );
+  }
+
+  elegirTipoDireccionExterior(nombreUsuario: string, agencia: string, direccion: string): any{
+    const requestBody = { nombreUsuario, agencia, direccion };
+    
+    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionExterior`, requestBody)
+      .subscribe(
+        (response) => {
+          console.log('Respuesta exitosa:', response);
+  
+          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
+          if (response && response.tipo !== undefined) {
+            let currentUser = this.getUserFromLocalStorage();
+
+            if (currentUser) {
+              // Usamos el tipo que devuelve el servidor en la respuesta
+              currentUser.tipo = response.tipo; 
+              console.log('Tipo actualizado:', currentUser.tipo);
+              // Guardamos el usuario actualizado en localStorage
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
+              // Notificamos el cambio a los suscriptores
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+        },
+        (error) => {
+          console.error('Hubo un error:', error);
+        }
+      );
+  }
 
 
   logout() {
