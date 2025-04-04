@@ -1,0 +1,81 @@
+<div class="info">
+    <div>
+      <label>Nombre de usuario:</label>
+      <span>{{ nombreUsuario }}</span>
+    </div>
+    <div>
+      <label>Email:</label>
+      <span>{{ email }}</span>
+    </div>
+    <div>
+      <label>Dirección actual:</label>
+      <span>{{ direccion }}</span>
+    </div>
+    <div>
+      <label>Teléfono:</label>
+      <span>{{ telefono }}</span>
+    </div>
+    <div>
+      <label>Tipo de cliente:</label>
+      <span>{{ tipoCliente }}</span>
+    </div>
+    <button class="actualizar-perfil-button" (click)="openModalActualizarPerfil()">Actualizar Perfil</button>
+    <button class="cerrar-sesion-button"(click)="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+
+<!-- Sección de pedidos -->
+<div class="pedidos">
+    <h2>Mis Pedidos</h2>
+    <div *ngIf="listaPedidosCliente.length === 0" class="no-pedidos">
+      No tienes pedidos realizados.
+    </div>
+    <div *ngIf="listaPedidosCliente.length > 0" class="tabla-pedidos">
+      <div *ngFor="let pedido of listaPedidosCliente">
+        <div><label>Fecha:</label><span>{{ pedido.fechaEntrega }}</span></div>
+        <div><label>Dirección:</label><span>{{ pedido.direccion }}</span></div>
+        <div><label>Estado:</label><span [class]="pedido.estado">{{ pedido.estado }}</span></div>
+        <button (click)="openModalDetallesPedido(pedido)">Ver detalles</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sección de fiestas -->
+  <div class="fiestas">
+    <h2>Mis Fiestas</h2>
+    <div *ngIf="listaFiestasCliente.length === 0" class="no-fiestas">
+      No tienes fiestas realizadas.
+    </div>
+    <div *ngIf="listaFiestasCliente.length > 0" class="tabla-fiestas">
+      <div *ngFor="let fiesta of listaFiestasCliente">
+        <div><label>Fecha:</label><span>{{ fiesta.fechaFiesta }}</span></div>
+        <div><label>Dirección:</label><span>{{ fiesta.direccion }}</span></div>
+        <button (click)="openModalDetallesFiesta(fiesta)">Ver detalles</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal -->
+<app-modal-actualizar-perfil
+  [nombreUsuario]="nombreUsuario"
+  [email]="email"
+  [direccion]="direccion"
+  [telefono]="telefono"
+  [tipoCliente]="tipoCliente"
+  [isOpen]="isModalActualizarPerfilOpen"
+  (close)="closeModalActualizarPerfil()"
+  (save)="actualizarPerfil($event)">
+</app-modal-actualizar-perfil>
+
+<app-modal-detalle-pedido 
+  *ngIf="isModalDetallesPedidoOpen"
+  [isOpen]="isModalDetallesPedidoOpen"
+  [pedidoId]="pedidoSeleccionadoId"
+  (close)="closeModalDetallesPedido()">
+</app-modal-detalle-pedido>
+
+<app-modal-detalle-fiesta
+*ngIf="isModalDetallesFiestaOpen"
+[isOpen]="isModalDetallesFiestaOpen"
+[fiestaId]="fiestaSeleccionadaId"
+(close)="closeModalDetallesFiesta()">
+</app-modal-detalle-fiesta>

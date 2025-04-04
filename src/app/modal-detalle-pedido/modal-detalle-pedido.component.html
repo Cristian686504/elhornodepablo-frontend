@@ -1,0 +1,65 @@
+<div class="modal" [class.active]="isOpen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Detalles del Pedido</h2>
+        <button class="close-button" (click)="cerrarModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div *ngIf="loading" class="loading">
+          Cargando detalles del pedido...
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+        
+        <div *ngIf="!loading && !error" class="pedido-detalles">
+          <div class="detalle-item">
+            <label>Método de pago:</label> <span>{{ metodoPago }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Precio total:</label> <span>{{ precioTotal }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Fecha de entrega:</label> <span>{{ fechaEntrega }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Dirección de entrega:</label> <span>{{ direccionEntrega }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Periodicidad:</label> <span>{{ periodicidad }}</span>
+          </div>
+          
+          <div class="pizzas">
+            <h3>Pizzas:</h3>
+            <div *ngIf="pizzas.length === 0" class="no-pizzas">
+              No hay detalles de pizzas disponibles.
+            </div>
+            <table *ngIf="pizzas.length > 0" class="pizzas-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Cantidad</th>
+                  <th>Gusto</th>
+                  <th>Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pizza of pizzas">
+                  <td>{{ pizza.tipo }}</td>
+                  <td>{{ pizza.cantidad }}</td>
+                  <td>{{ pizza.gusto }}</td>
+                  <td>{{ pizza.precio }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>

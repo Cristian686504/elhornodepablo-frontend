@@ -1,0 +1,34 @@
+<div *ngIf="isOpen" class="modal">
+    <div class="modal-content">
+      <h2>Actualizar Perfil</h2>
+      
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" [(ngModel)]="emailForm">
+      </div>
+      
+      <div class="form-group">
+        <div class="modal-map" #mapContainer style="height: 300px;"></div>
+        <label for="direccion">Dirección:</label>
+        <div class="input-wrapper">
+          <input type="text" id="direccion"             
+          placeholder="Dirección, ciudad, depto (ej: José Ugarte 3496, Young, Río Negro)"
+          [value]="selectedAddress"
+          (input)="onAddressInput($event)">
+          <div *ngIf="isLoading" class="loading-spinner">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" [(ngModel)]="telefonoForm">
+      </div>
+      
+      <div class="modal-actions">
+        <button (click)="closeModal()">Cancelar</button>
+        <button (click)="saveChanges()">Guardar</button>
+      </div>
+    </div>
+  </div>

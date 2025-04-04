@@ -4,9 +4,9 @@
       
       <div *ngIf="currentUser" [routerLink]="'/perfil'" class="user-profile">
         <div class="avatar-image">
-          <img src="images/user.png" class="fas fa-user-circle">
+          <img src="images/user.png" class="fas fa-user-circle" routerLink="/perfil">
         </div>
-        <span class="username">{{ currentUser.nombreUsuario }}</span>
+        <span class="username" routerLink="/perfil">{{ currentUser.nombreUsuario }}</span>
       </div>
 
       <div *ngIf="currentUserAdmin" class="user-profile" (click)="$event.stopPropagation()">

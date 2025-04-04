@@ -8,6 +8,7 @@ import { GestionComponent } from './gestion/gestion.component';
 import { AuthGuardAdmin, NoAuthGuardAdmin } from './service/guards/auth-admin.guards.service';
 import { TipoComponent } from './tipo/tipo.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
+import { PerfilComponent } from './perfil/perfil.component';
 
 export const routes: Routes = [
 
@@ -18,5 +19,6 @@ export const routes: Routes = [
     { path: 'gestion', component: GestionComponent, canActivate: [AuthGuardAdmin] },
     { path: 'tipo', component: TipoComponent, canActivate: [AuthGuard]},
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
+    { path: 'perfil', component: PerfilComponent, canActivate: [AuthGuard] },
 
 ];

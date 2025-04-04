@@ -1,0 +1,48 @@
+<div class="modal" [class.active]="isOpen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Detalles de la Fiesta</h2>
+        <button class="close-button" (click)="cerrarModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div *ngIf="loading" class="loading">
+          Cargando detalles de la fiesta...
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+        <div *ngIf="!loading && !error" class="fiesta-detalles">
+          <div class="detalle-item">
+            <label>Método de pago:</label> <span>{{ metodoPago }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Direccion:</label> <span>{{ direccion }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Fecha de la fiesta:</label> <span>{{ fechaFiesta }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Hora a la que servir:</label> <span>{{ horaServir }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Chivitos:</label> <span>{{ chivito }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Hamburguesas:</label> <span>{{ hamburguesa }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Cantidad de personas:</label> <span>{{ cantidadPersonas }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Precio:</label> <span>{{ precio }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
