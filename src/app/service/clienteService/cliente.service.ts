@@ -291,10 +291,17 @@ export class ClienteService {
   logout() {
     // Eliminar usuario del localStorage al cerrar sesión
     localStorage.removeItem('currentUser');
-    localStorage.clear();
     this.currentUserSubject.next(null);
-    // Redirigir al login después de cerrar sesión
-    this.router.navigate(['/login']);
+    // Redirigir al login después de cerrar sesión y recargar la página
+    window.location.href = '/login';
+  }
+
+  logoutAdmin() {
+        // Eliminar usuario del localStorage al cerrar sesión
+        localStorage.removeItem('currentUser');
+        this.currentUserSubject.next(null);
+        // Redirigir al login después de cerrar sesión y recargar la página
+        window.location.href = '/admin';
   }
 
   private getUserFromLocalStorage() {

@@ -22,13 +22,14 @@
 
 .user-profile {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     position: absolute;
     right: 30px;
     transition: all 0.3s ease;
     cursor: pointer;
+    gap: 25px;
 }
 
 .avatar-image img {
@@ -131,3 +132,22 @@
     height: 2px;
     background-color: rgb(236,85,12);
 }
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .logout-icon {
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .logout-icon:hover {
+    color: rgb(236,85,12);
+    transform: scale(1.1);
+  }

@@ -10,10 +10,15 @@
       </div>
 
       <div *ngIf="currentUserAdmin" class="user-profile" (click)="$event.stopPropagation()">
-        <div class="avatar-image">
-          <img src="images/user.png" class="fas fa-user-circle">
+        <div class="profile-container">
+          <div class="avatar-image">
+            <img src="images/user.png" class="fas fa-user-circle">
+          </div>
+          <span class="username">{{ currentUserAdmin.nombreUsuario }}</span>
         </div>
-        <span class="username">{{ currentUserAdmin.nombreUsuario }}</span>
+        <div class="logout-icon" (click)="cerrarSesion()">
+          <i class="fas fa-sign-out"></i>
+        </div>
       </div>
 </div>
 

@@ -46,4 +46,8 @@ checkTipoValue() {
   console.log("valor:", this.currentUser.tipo)
   return this.currentUser.tipo;
 }
+
+cerrarSesion(){
+  this.clienteService.logoutAdmin();
+}
 }
