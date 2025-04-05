@@ -43,8 +43,8 @@ export class AdministradorService {
     // Eliminar usuario del localStorage al cerrar sesión
     localStorage.removeItem('adminUser');
     this.currentUserSubject.next(null);
-    // Redirigir al login después de cerrar sesión
-    this.router.navigate(['/admin']);
+    // Redirigir al login después de cerrar sesión y recargar la página
+    window.location.href = '/admin';
   }
 
   private getUserFromLocalStorage() {
