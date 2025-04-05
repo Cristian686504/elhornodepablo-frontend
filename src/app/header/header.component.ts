@@ -15,7 +15,6 @@ export class HeaderComponent implements OnInit {
   currentUser: any = null;
   currentUserAdmin: any = null;
 
-  usuarioCargado = false;
 
   constructor(private clienteService: ClienteService, private administradorService: AdministradorService) {}
 
@@ -24,7 +23,6 @@ export class HeaderComponent implements OnInit {
       if (user) {
         this.currentUser = user;
         this.currentUserAdmin = null; // aseguramos que solo haya uno activo
-        this.usuarioCargado = true;
       } else {
         this.checkAdminUser();
       }
@@ -37,7 +35,6 @@ export class HeaderComponent implements OnInit {
       if (user) {
         this.currentUserAdmin = user;
         this.currentUser = null; // limpiamos por si acaso
-        this.usuarioCargado = true;
       }
     });
   }
