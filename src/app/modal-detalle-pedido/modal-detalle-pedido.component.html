@@ -19,7 +19,7 @@
             <label>Método de pago:</label> <span>{{ metodoPago }}</span>
           </div>
           <div class="detalle-item">
-            <label>Precio total:</label> <span>{{ precioTotal }}</span>
+            <label>Precio total:</label> <span>{{ precioTotal }}$</span>
           </div>
           <div class="detalle-item">
             <label>Fecha de entrega:</label> <span>{{ fechaEntrega }}</span>
@@ -42,7 +42,7 @@
                   <th>Tipo</th>
                   <th>Cantidad</th>
                   <th>Gusto</th>
-                  <th>Precio</th>
+                  <th>Precio C/U</th>
                 </tr>
               </thead>
               <tbody>
@@ -50,16 +50,12 @@
                   <td>{{ pizza.tipo }}</td>
                   <td>{{ pizza.cantidad }}</td>
                   <td>{{ pizza.gusto }}</td>
-                  <td>{{ pizza.precio }}</td>
+                  <td>{{ pizza.precio }}$</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-      </div>
-      
-      <div class="modal-footer">
-        <button (click)="cerrarModal()">Cerrar</button>
       </div>
     </div>
   </div>

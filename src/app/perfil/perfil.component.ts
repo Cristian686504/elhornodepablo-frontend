@@ -132,6 +132,23 @@ export class PerfilComponent {
       });
       }
 
+      cancelarPedido(id: number){
+        this.clienteService.cancelarPedido(this.nombreUsuario, id).subscribe((response) => {
+          console.log('Pedido cancelado:', response);
+          // Actualizar la lista de pedidos después de cancelar
+          this.getPedidosCliente();
+        });
+
+      }
+
+      cancelarFiesta(id: number){
+        this.clienteService.cancelarFiesta(this.nombreUsuario, id).subscribe((response) => {
+          console.log('Fiesta cancelada:', response);
+          // Actualizar la lista de fiestas después de cancelar
+          this.getFiestasCliente();
+        });
+      }
+
       cerrarSesion(){
         this.clienteService.logout();
       }

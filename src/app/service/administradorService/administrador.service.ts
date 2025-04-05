@@ -33,7 +33,7 @@ export class AdministradorService {
     return this.http.post<AuthResponse>(`${this.API_URL}login`, { nombreUsuario, contrasenia })
       .pipe(tap(user => {
         // Almacenar detalles del usuario y token JWT en localStorage
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('adminUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;
       }));
@@ -41,14 +41,14 @@ export class AdministradorService {
 
   logout() {
     // Eliminar usuario del localStorage al cerrar sesión
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('adminUser');
     this.currentUserSubject.next(null);
     // Redirigir al login después de cerrar sesión
     this.router.navigate(['/admin']);
   }
 
   private getUserFromLocalStorage() {
-    const userJson = localStorage.getItem('currentUser');
+    const userJson = localStorage.getItem('adminUser');
     return userJson ? JSON.parse(userJson) : null;
   }
 

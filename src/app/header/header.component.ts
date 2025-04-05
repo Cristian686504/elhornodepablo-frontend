@@ -15,39 +15,35 @@ export class HeaderComponent implements OnInit {
   currentUser: any = null;
   currentUserAdmin: any = null;
 
+  usuarioCargado = false;
+
   constructor(private clienteService: ClienteService, private administradorService: AdministradorService) {}
 
-ngOnInit() {
-  this.clienteService.currentUser.subscribe(user => {
-    if (user) {  // Verifica si el usuario no es null o undefined
-      this.currentUser = user;
-    } else {
-      this.checkAdminUser(); // Si el cliente es null, revisa en administrador
-    }
-  });
-}
+  ngOnInit() {
+    this.clienteService.currentUser.subscribe(user => {
+      if (user) {
+        this.currentUser = user;
+        this.currentUserAdmin = null; // aseguramos que solo haya uno activo
+        this.usuarioCargado = true;
+      } else {
+        this.checkAdminUser();
+      }
+    });
+  }
+  
 
-checkAdminUser() {
-  this.administradorService.currentUser.subscribe(user => {
-    if (user) {
-      this.currentUserAdmin = user;
-    }
-  });
-}
-
-checkTipoValue() {
-  this.clienteService.currentUser.subscribe(user => {
-    if (user) {  // Verifica si el usuario no es null o undefined
-      this.currentUser = user;
-    } else {
-      this.checkAdminUser(); // Si el cliente es null, revisa en administrador
-    }
-  });
-  console.log("valor:", this.currentUser.tipo)
-  return this.currentUser.tipo;
-}
+  checkAdminUser() {
+    this.administradorService.currentUser.subscribe(user => {
+      if (user) {
+        this.currentUserAdmin = user;
+        this.currentUser = null; // limpiamos por si acaso
+        this.usuarioCargado = true;
+      }
+    });
+  }
+  
 
 cerrarSesion(){
-  this.clienteService.logoutAdmin();
+  this.administradorService.logout();
 }
 }

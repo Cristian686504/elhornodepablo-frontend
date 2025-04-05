@@ -29,6 +29,7 @@ interface datosPedidosCliente {
 interface datosFiestasCliente {
   id: number;
   fechaFiesta: string;
+  estado: string;
   direccion: string;
 }
 
@@ -96,7 +97,7 @@ export class ClienteService {
     return this.http.post<AuthResponse>(`${this.API_URL}login`, { nombreUsuario, contrasenia })
       .pipe(tap(user => {
         // Almacenar detalles del usuario y token JWT en localStorage
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('clienteUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
         return user;
       }));
@@ -286,26 +287,41 @@ export class ClienteService {
     );
   }
 
-  
+  cancelarPedido(nombreUsuario: string, id: number): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/clientes/cancelarPedido`, {nombreUsuario, id})
+      .pipe(
+        tap(response => {
+          if (response) {
+            console.log("Pedido cancelado:", response);
+          }
+        })
+      );
+  }
+
+  cancelarFiesta(nombreUsuario: string, id: number): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/clientes/cancelarFiesta`, {nombreUsuario, id})
+      .pipe(
+        tap(response => {
+          if (response) {
+            console.log("Pedido cancelado:", response);
+          }
+        })
+      );
+  }
+
+
 
   logout() {
     // Eliminar usuario del localStorage al cerrar sesión
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('clienteUser'); // o adminUser
     this.currentUserSubject.next(null);
     // Redirigir al login después de cerrar sesión y recargar la página
     window.location.href = '/login';
   }
 
-  logoutAdmin() {
-        // Eliminar usuario del localStorage al cerrar sesión
-        localStorage.removeItem('currentUser');
-        this.currentUserSubject.next(null);
-        // Redirigir al login después de cerrar sesión y recargar la página
-        window.location.href = '/admin';
-  }
 
   private getUserFromLocalStorage() {
-    const userJson = localStorage.getItem('currentUser');
+    const userJson = localStorage.getItem('clienteUser');
     return userJson ? JSON.parse(userJson) : null;
   }
 

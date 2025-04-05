@@ -1,11 +1,5 @@
-/* Contenedor principal */
-.container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
 /* Información del usuario */
+
 .info {
   display: flex;
   flex-direction: column;
@@ -13,13 +7,14 @@
   border-radius: 0.375rem;
   padding: 2rem;
   box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  
 }
 
 .info > div {
-  display: flex;
-  align-items: center;
   margin-bottom: 1rem;
+  
 }
 
 .info label {
@@ -37,7 +32,6 @@
 }
 
 .actualizar-perfil-button {
-  align-self: flex-start;
   margin-top: 1rem;
   background-color: rgb(236,85,12);
   color: #ffffff;
@@ -51,8 +45,8 @@
 }
 
 .cerrar-sesion-button{
-  align-self: flex-start;
   margin-top: 1rem;
+  margin-left: 1rem;
   background-color: rgb(236, 38, 12);
   color: #ffffff;
   border: none;
@@ -142,11 +136,11 @@
   flex: 1;
 }
 
-/* Estados de los pedidos */
-.tabla-pedidos div:has(> label:contains("Estado")) span,
-.tabla-pedidos span.entregado,
-.tabla-pedidos span.PENDIENTE,
-.tabla-pedidos span.procesando {
+
+
+.tabla-pedidos span.ENTREGADO {
+  background-color: rgba(45, 206, 137, 0.1);
+  color: #2dce89;
   padding: 0.25rem 0.75rem;
   border-radius: 50px;
   font-size: 0.75rem;
@@ -154,25 +148,86 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: inline-block;
-}
-
-.tabla-pedidos span.ENTREGADO {
-  background-color: rgba(45, 206, 137, 0.1);
-  color: #2dce89;
+  max-width: fit-content;
 }
 
 .tabla-pedidos span.PENDIENTE {
-  background-color: rgba(251, 229, 64, 0.1);
-  color: #fbdc40;
+  background-color: rgba(251, 229, 64, 0.281);
+  color: #e2c538;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  max-width: fit-content;
 }
 
 .tabla-pedidos span.CANCELADO {
   background-color: rgba(239, 17, 17, 0.1);
   color: #ef1111;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+
+
+.tabla-fiestas span.ENTREGADO {
+  background-color: rgba(45, 206, 137, 0.1);
+  color: #2dce89;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  max-width: fit-content;
+  
+}
+
+.tabla-fiestas span.PENDIENTE {
+  background-color: rgba(251, 229, 64, 0.281);
+  color: #e2c538;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  max-width: fit-content;
+} 
+
+.tabla-fiestas span.CANCELADO {
+  background-color: rgba(239, 17, 17, 0.1);
+  color: #ef1111;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  max-width: fit-content;
 }
 
 /* Botones de acciones */
-.tabla-pedidos button, .tabla-fiestas button {
+
+.acciones{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.ver-detalles-button {
   background-color: transparent;
   color: rgb(236,85,12);
   border: 1px solid rgb(236,85,12);
@@ -186,11 +241,29 @@
   align-self: flex-end;
 }
 
-.tabla-pedidos button:hover, .tabla-fiestas button:hover {
+.ver-detalles-button:hover {
   background-color: rgb(236,85,12);
   color: #ffffff;
 }
 
+.cancelar-button {
+  background-color: transparent;
+  color: rgb(236, 12, 12);
+  border: 1px solid rgb(236, 12, 12);
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 0.5rem;
+  align-self: flex-end;
+}
+
+.cancelar-button:hover {
+  background-color: rgb(236, 12, 12);
+  color: #ffffff;
+}
 
 
 /* Responsive */

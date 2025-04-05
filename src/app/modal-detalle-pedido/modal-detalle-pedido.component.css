@@ -138,24 +138,5 @@
   .pizzas-table tr:hover {
     background-color: #f0f8ff;
   }
-  
-  /* Pie del modal */
-  .modal-footer {
-    margin-top: 1.5rem;
-    text-align: right;
-  }
-  
-  .modal-footer button {
-    background-color: #3498db;
-    color: #fff;
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .modal-footer button:hover {
-    background-color: #2980b9;
-  }
+
   
