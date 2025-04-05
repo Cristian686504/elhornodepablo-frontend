@@ -2,14 +2,14 @@
     <img src="images/logo.jpg" alt="El Horno De Pablo" class="logo">
       <h1 class="title">El Horno De Pablo</h1>
       
-      <div *ngIf="currentUser" [routerLink]="'/perfil'" class="user-profile">
+      <div *ngIf="currentUser" [routerLink]="'/perfil'" class="user-profile-user">
         <div class="avatar-image">
           <img src="images/user.png" class="fas fa-user-circle" routerLink="/perfil">
         </div>
         <span class="username" routerLink="/perfil">{{ currentUser.nombreUsuario }}</span>
       </div>
 
-      <div *ngIf="currentUserAdmin" class="user-profile" (click)="$event.stopPropagation()">
+      <div *ngIf="currentUserAdmin" class="user-profile-admin" (click)="$event.stopPropagation()">
         <div class="profile-container">
           <div class="avatar-image">
             <img src="images/user.png" class="fas fa-user-circle">
