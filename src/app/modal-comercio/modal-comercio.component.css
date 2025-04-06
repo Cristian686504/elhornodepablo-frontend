@@ -96,12 +96,12 @@
 }
 
 .modal-footer button:last-child {
-    background: #007bff;
+    background: rgb(236,85,12);
     color: #fff;
 }
 
 .modal-footer button:last-child:hover {
-    background: #0056b3;
+    background: rgb(204, 72, 10);
 }
 
 .input-wrapper {
@@ -127,4 +127,23 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .error-message {
+    color: #e53935;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message::before {
+    content: "⚠️";
+    margin-right: 5px;
+  }
+  
+  /* Estilo para campos inválidos cuando hay errores */
+  .input-invalid {
+    border-color: #e53935 !important;
   }

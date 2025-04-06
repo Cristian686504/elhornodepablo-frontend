@@ -25,6 +25,9 @@ export class ModalExteriorComponent implements AfterViewInit, OnInit {
     selectedAddress = 'Seleccione una ubicación';
     selectedLocation: L.LatLng | null = null;
     isLoading = false;
+
+    showValidationErrors = false;
+
     // Temporizador para retraso de búsqueda
     private searchTimeout: any;
   
@@ -63,6 +66,11 @@ export class ModalExteriorComponent implements AfterViewInit, OnInit {
   onAddressInput(event: Event) {
     const input = event.target as HTMLInputElement;
     const address = input.value.trim();
+    
+    // Resetear mensajes de validación
+    if (this.showValidationErrors) {
+      this.showValidationErrors = false;
+    }
     
     // Limpiar temporizador anterior
     clearTimeout(this.searchTimeout);
@@ -268,16 +276,30 @@ export class ModalExteriorComponent implements AfterViewInit, OnInit {
       this.modalClosed.emit();
     }
   
-    confirmLocation() {
-      if (this.selectedAddress) {
+    validateAndConfirm() {
+      // Mostrar mensajes de validación
+      this.showValidationErrors = true;
+      
+      // Verificar si todos los campos son válidos
+      if (this.isValidLocation && this.agencia) {
         this.clienteService.currentUser.subscribe(user => {       
           this.usuario = user.nombreUsuario;
         });
+        
         if (this.usuario) {
+          // Todos los campos son válidos, proceder
           this.clienteService.elegirTipoDireccionExterior(this.usuario, this.agencia, this.selectedAddress);
           this.router.navigate(['/pedidos']);
+        } else {
+          console.error('Error: Usuario no encontrado');
+          // Opcionalmente, mostrar un mensaje de error específico para el usuario
         }
-      }
+      } 
+    }
+
+    get isValidLocation(): boolean {
+      return !!this.selectedLocation && this.selectedAddress !== "" && this.selectedAddress !== 'Seleccione una ubicación' && 
+             this.selectedAddress !== 'Dirección no disponible';
     }
 
 }

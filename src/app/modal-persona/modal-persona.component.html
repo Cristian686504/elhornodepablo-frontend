@@ -18,9 +18,12 @@
             <div class="spinner"></div>
           </div>
         </div>
+        <div *ngIf="showValidationErrors && !isValidLocation" class="error-message">
+          Por favor seleccione una ubicación válida
+        </div>
       </div>
       <div class="modal-footer">
-        <button (click)="confirmLocation()">Confirmar Ubicación</button>
+        <button (click)="validateAndConfirm()">Confirmar Ubicación</button>
       </div>
     </div>
   </div>

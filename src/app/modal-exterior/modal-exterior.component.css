@@ -59,7 +59,8 @@
 .modal-body label {
     font-weight: bold;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 7px;
+    margin-top: 15px;
 }
 
 .modal-body input {
@@ -96,12 +97,12 @@
 }
 
 .modal-footer button:last-child {
-    background: #007bff;
+    background: rgb(236,85,12);
     color: #fff;
 }
 
 .modal-footer button:last-child:hover {
-    background: #0056b3;
+    background: rgb(204, 72, 10);
 }
 
 .input-wrapper {
@@ -127,4 +128,80 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .agencia-select {
+    appearance: none;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    color: #333;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 400;
+    width: 100%;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+  
+  /* Hover state */
+  .agencia-select:hover {
+    border-color: #bdbdbd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Focus state */
+  .agencia-select:focus {
+    outline: none;
+    border-color: rgb(236,85,12);
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+  }
+  
+  /* Custom dropdown arrow */
+  .agencia-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233f51b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+  
+  /* Option styling */
+  .agencia-select option {
+    background-color: white;
+    color: #333;
+    padding: 12px;
+  }
+  
+  /* Disabled/placeholder option */
+  .agencia-select option:first-child {
+    color: #757575;
+  }
+  
+  /* Label styling */
+  .select-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .error-message {
+    color: #e53935;
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message::before {
+    content: "⚠️";
+    margin-right: 5px;
+  }
+  
+  /* Estilo para campos inválidos cuando hay errores */
+  .input-invalid {
+    border-color: #e53935 !important;
   }

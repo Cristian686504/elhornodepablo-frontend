@@ -18,14 +18,21 @@
             <div class="spinner"></div>
           </div>
         </div>
-        <select class="agencia-select" [(ngModel)]="agencia">
-            <option value="" disabled selected>Selecciona una agencia</option>
-            <option value="DAC">DAC</option>
-            <option value="UES">UES</option>
+        <div *ngIf="showValidationErrors && !isValidLocation" class="error-message">
+          Por favor seleccione una ubicación válida
+        </div>
+          <label class="select-label">Agencia:</label>
+          <select class="agencia-select" [(ngModel)]="agencia">
+              <option value="" disabled selected>Seleccione una agencia</option>
+              <option value="DAC">DAC</option>
+              <option value="UES">UES</option>
           </select>
+          <div *ngIf="showValidationErrors && !agencia" class="error-message">
+            Por favor seleccione una agencia
+          </div>
       </div>
       <div class="modal-footer">
-        <button (click)="confirmLocation()">Confirmar Ubicación</button>
+        <button (click)="validateAndConfirm()">Confirmar</button>
       </div>
     </div>
   </div>

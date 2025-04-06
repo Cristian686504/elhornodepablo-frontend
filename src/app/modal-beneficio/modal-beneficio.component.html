@@ -18,11 +18,17 @@
             <div class="spinner"></div>
           </div>
         </div>
+        <div *ngIf="showValidationErrors && !isValidLocation" class="error-message">
+          Por favor seleccione una ubicación válida
+        </div>
         <label>Queremos saber los motivos del beneficio.</label>
         <textarea class="motivo-textarea" placeholder="Aquí puedes escribir tus motivos..." [(ngModel)]="motivo"></textarea>
+        <div *ngIf="showValidationErrors && !motivo" class="error-message">
+          Por favor escriba un motivo
+        </div>
       </div>
       <div class="modal-footer">
-        <button (click)="confirmLocation()">Confirmar</button>
+        <button (click)="validateAndConfirm()">Confirmar</button>
       </div>
     </div>
   </div>

@@ -24,6 +24,9 @@ export class ModalBeneficioComponent implements AfterViewInit, OnInit{
     selectedAddress = 'Seleccione una ubicación';
     selectedLocation: L.LatLng | null = null;
     isLoading = false;
+
+    showValidationErrors = false;
+
     // Temporizador para retraso de búsqueda
     private searchTimeout: any;
   
@@ -62,6 +65,11 @@ export class ModalBeneficioComponent implements AfterViewInit, OnInit{
   onAddressInput(event: Event) {
     const input = event.target as HTMLInputElement;
     const address = input.value.trim();
+
+        // Resetear mensajes de validación
+        if (this.showValidationErrors) {
+          this.showValidationErrors = false;
+        }
     
     // Limpiar temporizador anterior
     clearTimeout(this.searchTimeout);
@@ -267,8 +275,11 @@ export class ModalBeneficioComponent implements AfterViewInit, OnInit{
       this.modalClosed.emit();
     }
   
-    confirmLocation() {
-      if (this.selectedAddress) {
+    validateAndConfirm() {
+      // Mostrar mensajes de validación
+      this.showValidationErrors = true;
+
+      if (this.isValidLocation && this.motivo) {
         this.clienteService.currentUser.subscribe(user => {       
           this.usuario = user.nombreUsuario;
         });
@@ -277,6 +288,11 @@ export class ModalBeneficioComponent implements AfterViewInit, OnInit{
           this.router.navigate(['/pedidos']);
         }
       }
+    }
+
+    get isValidLocation(): boolean {
+      return !!this.selectedLocation && this.selectedAddress !== "" && this.selectedAddress !== 'Seleccione una ubicación' && 
+             this.selectedAddress !== 'Dirección no disponible';
     }
 
 }
