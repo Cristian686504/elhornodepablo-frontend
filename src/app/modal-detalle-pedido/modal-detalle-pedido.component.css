@@ -70,7 +70,10 @@
   
   /* Cuerpo del modal */
   .modal-body {
+    max-height: 40vh;
     margin-top: 1rem;
+    overflow-y: auto;
+    padding-right: 15px;
   }
   
   .loading,
@@ -123,6 +126,13 @@
     margin-top: 0.5rem;
   }
   
+  .pizzas-table thead{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil en la parte inferior */
+  }
+
   .pizzas-table th,
   .pizzas-table td {
     padding: 0.75rem;
