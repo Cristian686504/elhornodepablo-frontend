@@ -101,6 +101,7 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     height: 400px;
+    margin-bottom: 8px;
 }
 
 .input-wrapper {

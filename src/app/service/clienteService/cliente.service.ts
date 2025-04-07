@@ -226,28 +226,26 @@ export class ClienteService {
   }
 
   getDatosCliente(nombreUsuario: string): Observable<datosCliente> {
-    const requestBody = { nombreUsuario};
-    
-    return this.http.post<datosCliente>(`http://localhost:8080/api/clientes/getDatosCliente`, requestBody)
-
+    return this.http.get<datosCliente>(`http://localhost:8080/api/clientes/getDatosCliente/${nombreUsuario}`
+    );
   }
 
   getPedidosCliente(nombreUsuario: string): Observable<datosPedidosCliente> {
-    const requestBody = { nombreUsuario};
     
-    return this.http.post<datosPedidosCliente>(`http://localhost:8080/api/clientes/getPedidosCliente`, requestBody)
-
+    return this.http.get<datosPedidosCliente>(`http://localhost:8080/api/clientes/getPedidosCliente/${nombreUsuario}`
+    );
+    
   }
 
   getFiestasCliente(nombreUsuario: string): Observable<datosFiestasCliente> {
-    const requestBody = { nombreUsuario};
-    
-    return this.http.post<datosFiestasCliente>(`http://localhost:8080/api/clientes/getFiestasCliente`, requestBody)
+
+    return this.http.get<datosFiestasCliente>(`http://localhost:8080/api/clientes/getFiestasCliente/${nombreUsuario}`
+    );
 
   }
 
   actualizarPerfilCliente(datosActualizarPerfil: any): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/api/clientes/actualizarPerfilCliente`, datosActualizarPerfil)
+    return this.http.put<any>(`http://localhost:8080/api/clientes/actualizarPerfilCliente`, datosActualizarPerfil)
       .pipe(
         tap(response => {
           if (response) {
@@ -266,29 +264,24 @@ export class ClienteService {
   }
 
   detallesPedido(nombreUsuario: string, id: number): Observable<detallesPedido[]> {
-    // Crear el objeto de solicitud con el ID del pedido si está disponible
     console.log("pedidoID: ", id);
-    const requestBody = { nombreUsuario, id};
     
-    return this.http.post<detallesPedido[]>(
-      `http://localhost:8080/api/clientes/detallesPedido`, 
-      requestBody
+    return this.http.get<detallesPedido[]>(
+      `http://localhost:8080/api/clientes/detallesPedido/${id}/${nombreUsuario}`
     );
   }
   
   detallesFiesta(nombreUsuario: string, id: number): Observable<detallesFiesta> {
     // Crear el objeto de solicitud con el ID del pedido si está disponible
     console.log("fiestaIDCS: ", id);
-    const requestBody = { nombreUsuario, id};
     
-    return this.http.post<detallesFiesta>(
-      `http://localhost:8080/api/clientes/detallesFiesta`, 
-      requestBody
+    return this.http.get<detallesFiesta>(
+      `http://localhost:8080/api/clientes/detallesFiesta/${id}/${nombreUsuario}`
     );
   }
 
   cancelarPedido(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/api/clientes/cancelarPedido`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/clientes/cancelarPedido`, {nombreUsuario, id})
       .pipe(
         tap(response => {
           if (response) {
@@ -299,7 +292,7 @@ export class ClienteService {
   }
 
   cancelarFiesta(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/api/clientes/cancelarFiesta`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/clientes/cancelarFiesta`, {nombreUsuario, id})
       .pipe(
         tap(response => {
           if (response) {

@@ -50,7 +50,7 @@
           <span [class]="pedido.estado">{{ pedido.estado }}</span>
         </div>
         <div class="acciones">        
-          <button class="ver-detalles-button" (click)="openModalDetallesPedido(pedido)">Ver detalles</button>
+          <button class="ver-detalles-button" (click)="openModalDetallesPedido(pedido)">Ver Detalles</button>
           
           <button *ngIf="pedido.estado === 'PENDIENTE'" class="cancelar-button" (click)="cancelarPedido(pedido.id)">Cancelar Pedido</button>
         </div>
@@ -80,7 +80,7 @@
           <span [class]="fiesta.estado">{{ fiesta.estado }}</span>
         </div>
         <div class="acciones">    
-          <button class="ver-detalles-button" (click)="openModalDetallesFiesta(fiesta)">Ver detalles</button>
+          <button class="ver-detalles-button" (click)="openModalDetallesFiesta(fiesta)">Ver Detalles</button>
           <button *ngIf="fiesta.estado === 'PENDIENTE'" class="cancelar-button" (click)="cancelarFiesta(fiesta.id)">Cancelar Fiesta</button>
         </div>
       </div>
