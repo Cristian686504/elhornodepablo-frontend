@@ -287,7 +287,7 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
           this.usuario = user.nombreUsuario;
         });
         if (this.usuario) {
-          this.clienteService.elegirTipoDireccionComercio(this.usuario, this.tipo, this.selectedAddress);
+          this.clienteService.elegirTipoDireccion(this.usuario, this.tipo, this.selectedAddress);
           this.router.navigate(['/pedidos']);
         }
       }

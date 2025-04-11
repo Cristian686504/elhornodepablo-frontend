@@ -2,13 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ModalPersonaComponent } from '../modal-persona/modal-persona.component';
 import { ModalComercioComponent } from "../modal-comercio/modal-comercio.component";
-import { ModalBeneficioComponent } from "../modal-beneficio/modal-beneficio.component";
-import ModalExteriorComponent from '../modal-exterior/modal-exterior.component';
 
 @Component({
   selector: 'app-tipo',
   standalone: true,
-  imports: [CommonModule, ModalPersonaComponent, ModalComercioComponent, ModalBeneficioComponent, ModalExteriorComponent],
+  imports: [CommonModule, ModalPersonaComponent, ModalComercioComponent],
   templateUrl: './tipo.component.html',
   styleUrl: './tipo.component.css'
 })
@@ -33,14 +31,6 @@ export class TipoComponent {
     this.isModalComercioOpen = true;
   }
 
-  openModalBeneficio(){
-    this.isModalBeneficioOpen = true;
-  }
-
-  openModalExterior() {
-    this.isModalExteriorOpen = true;
-  }
-
   closeModalPersona() {
     this.isModalPersonaOpen = false;
   }
@@ -49,13 +39,6 @@ export class TipoComponent {
     this.isModalComercioOpen = false;
   }
 
-  closeModalBeneficio() {
-    this.isModalBeneficioOpen = false;
-  }
-
-  closeModalExterior() {
-    this.isModalExteriorOpen = false;
-  }
 }
 
 export default TipoComponent;

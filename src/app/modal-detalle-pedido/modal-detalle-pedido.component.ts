@@ -16,14 +16,18 @@ export class ModalDetallePedidoComponent implements OnChanges{
   @Output() close = new EventEmitter<void>();
   
   nombreUsuario: string = '';
-  metodoPago: string = '';
-  precioTotal: string = '';
+  agencia: string = '';
+  direccion: string = '';
+  entrega: boolean = false;
   fechaEntrega: string = '';
-  direccionEntrega: string = '';
+  fechaPedido: string = '';
+  metodoPago: string = '';
   periodicidad: string = '';
+  precioTotal: string = '';
   pizzas: any[] = [];
   loading: boolean = false;
   error: string | null = null;
+
 
   constructor(private clienteService: ClienteService) {
 
@@ -58,14 +62,17 @@ export class ModalDetallePedidoComponent implements OnChanges{
 
     this.clienteService.detallesPedido(this.nombreUsuario, this.pedidoId).subscribe({
       next: (detallesPedido) => {
-        if (detallesPedido && detallesPedido.length > 0) {
-          const detalle = detallesPedido[0];
-          this.metodoPago = detalle.metodoPago;
-          this.precioTotal = detalle.precioTotal;
-          this.fechaEntrega = detalle.fechaEntrega;
-          this.direccionEntrega = detalle.direccionEntrega;
-          this.periodicidad = detalle.periodicidad;
-          this.pizzas = detalle.pizzas || [];
+        if (detallesPedido) {
+  
+          this.agencia = detallesPedido.agencia;
+          this.direccion = detallesPedido.direccion;
+          this.entrega = detallesPedido.entrega;
+          this.fechaEntrega = detallesPedido.fechaEntrega;
+          this.fechaPedido = detallesPedido.fechaPedido;
+          this.metodoPago = detallesPedido.metodoPago;
+          this.periodicidad = detallesPedido.periodicidad;
+          this.precioTotal = detallesPedido.precioTotal;
+          this.pizzas = detallesPedido.pizzas || [];
         } else {
           this.error = "No se encontraron detalles para este pedido";
         }

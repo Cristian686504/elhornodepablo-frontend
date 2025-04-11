@@ -26,36 +26,7 @@
     </div> 
 </div> 
  
-<div class="card"> 
-    <img src="images/beneficio.png" alt="Beneficio" class="card-image"> 
-    <div class="card-content"> 
-        <span class="card-label">A beneficio</span> 
-        <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModalBeneficio()">Seleccionar</button> 
-            <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
-        </div> 
-        <div class="card-text"> 
-            Si representas una organización sin fines de lucro, un evento solidario, una fundación o cualquier iniciativa de ayuda comunitaria, selecciona esta opción.
-        </div> 
-    </div> 
-</div> 
- 
-<div class="card"> 
-    <img src="images/ubicacion.png" alt="Exterior" class="card-image"> 
-    <div class="card-content"> 
-        <span class="card-label">Cliente exterior</span> 
-        <div class="card-buttons"> 
-            <button class="btn btn-primary" (click)="openModalExterior()">Seleccionar</button> 
-            <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button> 
-        </div> 
-        <div class="card-text"> 
-            Si eres alguno de lo clientes anteriores y te encuentras fuera de Paysandú, Uruguay, y deseas acceder a nuestros productos, selecciona esta opción. 
-        </div> 
-    </div> 
-</div>
 
 <!-- Modal -->
 <app-modal-persona *ngIf="isModalPersonaOpen" (modalClosed)="closeModalPersona()" ></app-modal-persona>
 <app-modal-comercio *ngIf="isModalComercioOpen" (modalClosed)="closeModalComercio()" ></app-modal-comercio>
-<app-modal-beneficio *ngIf="isModalBeneficioOpen" (modalClosed)="closeModalBeneficio()" ></app-modal-beneficio>
-<app-modal-exterior *ngIf="isModalExteriorOpen" (modalClosed)="closeModalExterior()" ></app-modal-exterior>

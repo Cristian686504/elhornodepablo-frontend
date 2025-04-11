@@ -12,20 +12,30 @@
         
         <div *ngIf="error" class="error-message">
           {{ error }}
-        </div>
+        </div>            
         
         <div *ngIf="!loading && !error" class="pedido-detalles">
           <div class="detalle-item">
+            <label>Fecha de pedido:</label> <span>{{ fechaPedido }}</span>
+          </div>
+          <div class="detalle-item">
             <label>Método de pago:</label> <span>{{ metodoPago }}</span>
           </div>
+
           <div class="detalle-item">
             <label>Precio total:</label> <span>{{ precioTotal }}$</span>
           </div>
           <div class="detalle-item">
-            <label>Fecha de entrega:</label> <span>{{ fechaEntrega }}</span>
+            <label>Dirección de entrega:</label> <span>{{ direccion }}</span>
           </div>
           <div class="detalle-item">
-            <label>Dirección de entrega:</label> <span>{{ direccionEntrega }}</span>
+            <label>Agencia:</label> <span>{{ agencia }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Entrega:</label> <span>{{ entrega }}</span>
+          </div>
+          <div class="detalle-item">
+            <label>Fecha de entrega:</label> <span>{{ fechaEntrega }}</span>
           </div>
           <div class="detalle-item">
             <label>Periodicidad:</label> <span>{{ periodicidad }}</span>
@@ -50,7 +60,7 @@
                   <td>{{ pizza.tipo }}</td>
                   <td>{{ pizza.cantidad }}</td>
                   <td>{{ pizza.gusto }}</td>
-                  <td>{{ pizza.precio }}$</td>
+                  <td>{{ pizza.precioPizza }}$</td>
                 </tr>
               </tbody>
             </table>

@@ -40,19 +40,23 @@ interface PizzaDetalle {
   precio: number;
 }
 
-interface arrayDetallesPedido {
-  detallesPedido: detallesPedido[];
-}
+
+
+
 
 interface detallesPedido {
-  metodoPago: string;
-  direccionEntrega: string;
-  periodicidad: string;
+  agencia: string;
+  direccion: string;
+  entrega: boolean;
   fechaEntrega: string;
+  fechaPedido: string;
+  metodoPago: string;
+  periodicidad: string;
   pizzas: PizzaDetalle[];
   precioTotal: string;
 
 }
+
 
 interface detallesFiesta {
   cantidadPersonas: string;
@@ -103,10 +107,10 @@ export class ClienteService {
       }));
   }
 
-  elegirTipoDireccionClienteFinal(nombreUsuario: string, tipo: string, direccion: string): any {
+  elegirTipoDireccion(nombreUsuario: string, tipo: string, direccion: string): any {
     const requestBody = { nombreUsuario, tipo, direccion };
     
-    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionClienteFinal`, requestBody)
+    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccion`, requestBody)
       .subscribe(
         (response) => {
           console.log('Respuesta exitosa:', response);
@@ -134,96 +138,6 @@ export class ClienteService {
   }
   
   
-  elegirTipoDireccionComercio(nombreUsuario: string, tipo: string, direccion: string): any {
-    const requestBody = { nombreUsuario, tipo, direccion };
-    
-    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionComercio`, requestBody)
-      .subscribe(
-        (response) => {
-          console.log('Respuesta exitosa:', response);
-  
-          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
-          if (response && response.tipo !== undefined) {
-            let currentUser = this.getUserFromLocalStorage();
-
-            if (currentUser) {
-              // Usamos el tipo que devuelve el servidor en la respuesta
-              currentUser.tipo = response.tipo; 
-              console.log('Tipo actualizado:', currentUser.tipo);
-              // Guardamos el usuario actualizado en localStorage
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-              // Notificamos el cambio a los suscriptores
-              this.currentUserSubject.next(currentUser);
-            }
-          }
-        },
-        (error) => {
-          console.error('Hubo un error:', error);
-        }
-      );
-
-  }
-  
-  elegirTipoDireccionBeneficio(nombreUsuario: string, motivo: string, direccion: string): any {
-    const requestBody = { nombreUsuario, motivo, direccion };
-    
-    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionBeneficio`, requestBody)
-      .subscribe(
-        (response) => {
-          console.log('Respuesta exitosa:', response);
-  
-          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
-          if (response && response.tipo !== undefined) {
-            let currentUser = this.getUserFromLocalStorage();
-
-            if (currentUser) {
-              // Usamos el tipo que devuelve el servidor en la respuesta
-              currentUser.tipo = response.tipo; 
-              console.log('Tipo actualizado:', currentUser.tipo);
-              // Guardamos el usuario actualizado en localStorage
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-              // Notificamos el cambio a los suscriptores
-              this.currentUserSubject.next(currentUser);
-            }
-          }
-        },
-        (error) => {
-          console.error('Hubo un error:', error);
-        }
-      );
-  }
-
-  elegirTipoDireccionExterior(nombreUsuario: string, agencia: string, direccion: string): any{
-    const requestBody = { nombreUsuario, agencia, direccion };
-    
-    this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccionExterior`, requestBody)
-      .subscribe(
-        (response) => {
-          console.log('Respuesta exitosa:', response);
-  
-          // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
-          if (response && response.tipo !== undefined) {
-            let currentUser = this.getUserFromLocalStorage();
-
-            if (currentUser) {
-              // Usamos el tipo que devuelve el servidor en la respuesta
-              currentUser.tipo = response.tipo; 
-              console.log('Tipo actualizado:', currentUser.tipo);
-              // Guardamos el usuario actualizado en localStorage
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-              // Notificamos el cambio a los suscriptores
-              this.currentUserSubject.next(currentUser);
-            }
-          }
-        },
-        (error) => {
-          console.error('Hubo un error:', error);
-        }
-      );
-  }
 
   getDatosCliente(nombreUsuario: string): Observable<datosCliente> {
     return this.http.get<datosCliente>(`http://localhost:8080/api/clientes/getDatosCliente/${nombreUsuario}`
@@ -232,14 +146,14 @@ export class ClienteService {
 
   getPedidosCliente(nombreUsuario: string): Observable<datosPedidosCliente> {
     
-    return this.http.get<datosPedidosCliente>(`http://localhost:8080/api/clientes/getPedidosCliente/${nombreUsuario}`
+    return this.http.get<datosPedidosCliente>(`http://localhost:8080/api/pedidos/getPedidosCliente/${nombreUsuario}`
     );
     
   }
 
   getFiestasCliente(nombreUsuario: string): Observable<datosFiestasCliente> {
 
-    return this.http.get<datosFiestasCliente>(`http://localhost:8080/api/clientes/getFiestasCliente/${nombreUsuario}`
+    return this.http.get<datosFiestasCliente>(`http://localhost:8080/api/fiestas/getFiestasCliente/${nombreUsuario}`
     );
 
   }
@@ -262,12 +176,13 @@ export class ClienteService {
         })
       );
   }
+  
 
-  detallesPedido(nombreUsuario: string, id: number): Observable<detallesPedido[]> {
+  detallesPedido(nombreUsuario: string, id: number): Observable<detallesPedido> {
     console.log("pedidoID: ", id);
     
-    return this.http.get<detallesPedido[]>(
-      `http://localhost:8080/api/clientes/detallesPedido/${id}/${nombreUsuario}`
+    return this.http.get<detallesPedido>(
+      `http://localhost:8080/api/pedidos/detallesPedido/${id}/${nombreUsuario}`
     );
   }
   
@@ -276,12 +191,12 @@ export class ClienteService {
     console.log("fiestaIDCS: ", id);
     
     return this.http.get<detallesFiesta>(
-      `http://localhost:8080/api/clientes/detallesFiesta/${id}/${nombreUsuario}`
+      `http://localhost:8080/api/fiestas/detallesFiesta/${id}/${nombreUsuario}`
     );
   }
 
   cancelarPedido(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.put<any>(`http://localhost:8080/api/clientes/cancelarPedido`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/pedidos/cancelarPedido`, {nombreUsuario, id})
       .pipe(
         tap(response => {
           if (response) {
@@ -292,7 +207,7 @@ export class ClienteService {
   }
 
   cancelarFiesta(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.put<any>(`http://localhost:8080/api/clientes/cancelarFiesta`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/fiestas/cancelarFiesta`, {nombreUsuario, id})
       .pipe(
         tap(response => {
           if (response) {

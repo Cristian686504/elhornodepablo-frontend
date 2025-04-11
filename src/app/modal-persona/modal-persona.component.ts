@@ -285,7 +285,7 @@ async incrementalGeocode(address: string) {
         this.usuario = user.nombreUsuario;
       });
       if (this.usuario) {
-        this.clienteService.elegirTipoDireccionClienteFinal(this.usuario, this.tipo, this.selectedAddress);
+        this.clienteService.elegirTipoDireccion(this.usuario, this.tipo, this.selectedAddress);
         this.router.navigate(['/pedidos']);
       }
     }
