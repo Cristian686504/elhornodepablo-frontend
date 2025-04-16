@@ -10,6 +10,7 @@ interface AuthResponse {
   // Otros campos que pueda devolver tu API
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,6 +38,11 @@ export class AdministradorService {
         this.currentUserSubject.next(user);
         return user;
       }));
+  }
+
+  getIngredientesUsados(anio: string, ingrediente: string): Observable<Record<string, number>> {
+    return this.http.get<Record<string, number>>(`http://localhost:8080/api/ingredientes/getIngredientesUsados/${anio}/${ingrediente}`
+    );
   }
 
   logout() {

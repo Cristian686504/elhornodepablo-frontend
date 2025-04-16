@@ -75,7 +75,7 @@ export class PerfilComponent {
 
       openModalDetallesFiesta(fiesta: any){
         this.fiestaSeleccionadaId = fiesta.id;
-        console.log('Fiesta ID opoen modal:', this.fiestaSeleccionadaId); // Debugging line
+        console.log('Fiesta ID opoen modal:', this.fiestaSeleccionadaId);
         this.isModalDetallesFiestaOpen = true;
       }
 
