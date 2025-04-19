@@ -31,10 +31,7 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
 
     // Temporizador para retraso de búsqueda
     private searchTimeout: any;
-  
-    // Declare debouncedGeocodeAddress as a method property
-    debouncedGeocodeAddress: (address: string) => void;
-  
+
     // Límites de Uruguay (coordenadas del bounding box)
     private uruguayBounds = L.latLngBounds(
       L.latLng(-35.00, -58.34),  // Suroeste, cerca de la frontera con Argentina
@@ -42,26 +39,19 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     );
   
     constructor(private clienteService: ClienteService, private router: Router) {
-      // Initialize debouncedGeocodeAddress in the constructor
-      this.debouncedGeocodeAddress = this.debounce(this.geocodeAddress.bind(this), 500);
+
     }
   
     ngOnInit() {
-      // No need for additional initialization now
+
     }
   
     ngAfterViewInit() {
       this.initMap();
     }
   
-    // Debounce utility function
-    debounce(func: (address: string) => void, wait: number) {
-      let timeout: any;
-      return (address: string) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(address), wait);
-      };
-    }
+
+
   
   // Método para manejar cambios en el input
   onAddressInput(event: Event) {
@@ -132,49 +122,9 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     }
   }
   
-    // Geocoding method
-    async geocodeAddress(address: string) {
-      try {
-        // Append ", Uruguay" to improve geocoding accuracy
-        const fullAddress = `${address}, Uruguay`;
-        
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1&countrycodes=UY`
-        );
-        
-        if (!response.ok) {
-          throw new Error('No se pudo obtener la ubicación');
-        }
-        
-        const data = await response.json();
-        
-        if (data.length > 0) {
-          const location = L.latLng(
-            parseFloat(data[0].lat), 
-            parseFloat(data[0].lon)
-          );
-          
-          // Verificar si la ubicación está dentro de Uruguay
-          if (this.uruguayBounds.contains(location)) {
-            // Mover el marcador
-            this.marker?.setLatLng(location);
-            
-            // Centrar el mapa en la nueva ubicación
-            this.map?.setView(location, 15);
-            
-            // Actualizar la ubicación seleccionada
-            this.selectedLocation = location;
-            this.selectedAddress = data[0].display_name;
-          } else {
-            console.warn('La ubicación está fuera de Uruguay');
-          }
-        }
-      } catch (error) {
-        console.error('Error al geocodificar la dirección:', error);
-      }
-    }
+ 
   
-    // Rest of the previous code remains the same (initMap, updateAddress, closeModal, confirmLocation methods)
+
     initMap() {
       if (this.mapContainer) {
         // Centrar en Uruguay (Montevideo)

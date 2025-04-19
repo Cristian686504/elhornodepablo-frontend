@@ -12,16 +12,25 @@
   
 }
 
-.info > div {
+.div-atributos{
+  align-items: left;
+  border:#000000 2px solid;
+  border-radius: 12px;
+  padding: 16px;
+  padding-bottom: 0px;
+}
+
+.div-atributos > div {
   margin-bottom: 1rem;
   
 }
+
+
 
 .info label {
   font-weight: 600;
   color: #000000;
   font-size: 0.875rem;
-  min-width: 120px;
 }
 
 .info span {

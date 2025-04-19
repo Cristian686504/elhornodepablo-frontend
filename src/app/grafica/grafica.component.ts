@@ -38,6 +38,8 @@ export class GraficaComponent implements OnInit {
 
   };
 
+  constructor(private administradorService: AdministradorService) { }
+
   // Obtiene la unidad para el ingrediente actual
   private obtenerUnidad(): string {
     return this.unidadesPorIngrediente[this.ingrediente] || '';
@@ -49,7 +51,7 @@ export class GraficaComponent implements OnInit {
     return unidad ? `Cantidad (${unidad})` : 'Cantidad';
   }
 
-  public lineChartData: ChartConfiguration<'line'>['data'] = {
+  public lineChartData: ChartConfiguration<'line'>['data'] = { // Tipo de gráfica de linea
     labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
     datasets: [
       {
@@ -65,18 +67,18 @@ export class GraficaComponent implements OnInit {
   };
 
   public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true,
+    responsive: true, // Se adapta a cualquier pantalla
     plugins: {
       legend: {
-        display: true,
+        display: false, // Oculta la leyenda
         position: 'top',
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: (context) => { // Se genera el label dinamicamente
             let label = context.dataset.label || '';
             if (label) {
-              label += ': ';
+              label += ': '; // Si hay un label, le añade ":"
             }
             if (context.parsed.y !== null) {
               label += context.parsed.y;
@@ -109,7 +111,7 @@ export class GraficaComponent implements OnInit {
     }
   };
 
-  constructor(private administradorService: AdministradorService) { }
+
 
   ngOnInit(): void {
     this.getIngredientesUsados();
