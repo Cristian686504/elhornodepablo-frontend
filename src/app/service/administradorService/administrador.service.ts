@@ -7,8 +7,16 @@ import { Router } from '@angular/router';
 interface AuthResponse {
   token: string;
   nombreUsuario: string;
-  // Otros campos que pueda devolver tu API
+ 
 }
+
+interface getAdministradores{
+  id: number;
+  nombreUsuario: string;
+  contrasenia: string;
+  cedula: string;
+  nombreCompleto: string;
+  }
 
 @Injectable({
   providedIn: 'root'
@@ -56,4 +64,45 @@ export class AdministradorService {
     const user = this.currentUserValue;
     return !!user && !!user.token;
   }
+
+  getAdministradores(): Observable<{ administradores: getAdministradores[] }> {
+    return this.http.get<{ administradores: getAdministradores[] }>(`${this.API_URL}getAdministradores`);
+  }
+
+  registrar(usuario: any): Observable<string> {
+    return this.http.post<string>(`http://localhost:8080/api/clientes/register`, usuario, 
+      { responseType: 'text' as 'json' }); 
+  }
+
+  eliminarAdministrador(id: number): Observable<string> {
+    return this.http.delete<string>(`${this.API_URL}eliminar/${id}`, {
+      responseType: 'text' as 'json'
+    });
+  }
+  
+  crearAdministrador(adminData: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL}crear`, adminData, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  actualizarAdministrador(id: number, datosAdministrador: getAdministradores): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}${id}`, datosAdministrador, { responseType: 'text' as 'json' }).pipe(
+      tap(response => {
+        if (response) {
+          const currentUser = this.getUserFromLocalStorage();
+          if (currentUser && currentUser.nombreUsuario === datosAdministrador.nombreUsuario) {
+            currentUser.nombreUsuario = datosAdministrador.nombreUsuario;
+            localStorage.setItem('adminUser', JSON.stringify(currentUser));
+            this.currentUserSubject.next(currentUser);
+          }
+        }
+      })
+    );
+  }
+
+  
+  
+  
+  
 }

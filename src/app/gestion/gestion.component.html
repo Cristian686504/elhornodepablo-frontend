@@ -1,1 +1,193 @@
-<p>gestion works!</p>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse border-end">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item" *ngFor="let seccion of secciones">
+            <a class="nav-link"
+              [class.active]="seccionActiva === seccion.id"
+              (click)="seleccionarSeccion(seccion.id)">
+              {{ seccion.nombre }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <!-- USUARIOS -->
+      <section *ngIf="seccionActiva === 'usuarios'" class="mt-4">
+        <h2>Usuarios Clientes</h2>
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Buscar..." />
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre de Usuario</th>
+                <th>Nombre Completo</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Tipo de Cliente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of getUsuariosPaginados()" 
+                  (click)="seleccionarFila(usuario, 'cliente')" 
+                  [class.table-primary]="usuarioSeleccionado === usuario">
+                <td>{{ usuario.nombreUsuario }}</td>
+                <td>{{ usuario.nombreCompleto }}</td>
+                <td>{{ usuario.direccion }}</td>
+                <td>{{ usuario.telefono }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.tipoCliente }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mb-3 d-flex gap-2">
+          <button class="btn btn-primary" (click)="abrirModal('cliente')">Crear Usuario Cliente</button>
+          <button class="btn btn-warning" (click)="abrirModal('cliente', usuarioSeleccionado)">Modificar Usuario Cliente</button>
+          <button class="btn btn-danger" (click)="eliminarCliente(usuarioSeleccionado)">Eliminar Usuario Cliente</button>
+        </div>
+
+        <div class="mb-5 d-flex gap-2">
+          <button class="btn btn-outline-secondary" (click)="anteriorPaginaUsuarios()">Anterior</button>
+          <button class="btn btn-outline-secondary" (click)="siguientePaginaUsuarios()">Siguiente</button>
+        </div>
+
+        <h2>Usuarios Administradores</h2>
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Buscar..." />
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Nombre de usuario</th>
+                <th>Cédula</th>
+                <th>Nombre completo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let administrador of getAdministradoresPaginados()" 
+                  (click)="seleccionarFila(administrador, 'admin')" 
+                  [class.table-primary]="administradorSeleccionado === administrador">
+                <td>{{ administrador.nombreUsuario }}</td>
+                <td>{{ administrador.cedula }}</td>
+                <td>{{ administrador.nombreCompleto }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mb-3 d-flex gap-2">
+          <button class="btn btn-primary" (click)="abrirModal('admin')">Crear Usuario Administrador</button>
+          <button class="btn btn-warning" (click)="abrirModal('admin', administradorSeleccionado)">Modificar Usuario Administrador</button>
+          <button class="btn btn-danger" (click)="eliminarAdmin(administradorSeleccionado)">Eliminar</button>
+        </div>
+
+        <div class="mb-5 d-flex gap-2">
+          <button class="btn btn-outline-secondary" (click)="anteriorPaginaAdministradores()">Anterior</button>
+          <button class="btn btn-outline-secondary" (click)="siguientePaginaAdministradores()">Siguiente</button>
+        </div>
+      </section>
+
+      <!-- MODALS -->
+      <!-- Modal Cliente -->
+      <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'cliente'">
+        <div class="custom-modal">
+          <div class="custom-modal-header">
+            <h5 class="custom-modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Usuario Cliente</h5>
+            <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+          </div>
+          <form (ngSubmit)="guardarUsuarioCliente()">
+            <div class="custom-modal-body">
+              <!-- Nombre de Usuario -->
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de Usuario" [(ngModel)]="usuarioForm.nombreUsuario" name="nombre_usuario" required />
+              
+              <!-- Nombre Completo (agregado) -->
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre Completo" [(ngModel)]="usuarioForm.nombreCompleto" name="nombre_completo" required />
+              
+              <!-- Dirección -->
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Dirección" [(ngModel)]="usuarioForm.direccion" name="direccion" />
+              
+              <!-- Teléfono -->
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Teléfono" [(ngModel)]="usuarioForm.telefono" name="telefono" />
+              
+              <!-- Email -->
+              <input type="email" class="form-control col-12 col-md-6" placeholder="Email" [(ngModel)]="usuarioForm.email" name="email" />
+
+               <!-- Contraaseña -->
+              <input type="password" class="form-control col-12 col-md-6" placeholder="Contraseña" [(ngModel)]="usuarioForm.contrasenia" name="contrasena" />
+              
+              <!-- Tipo de Cliente -->
+              <select class="form-control col-12 col-md-6" [(ngModel)]="usuarioForm.tipoCliente" name="tipo_cliente" required>
+                <option value="COMERCIO">COMERCIO</option>
+                <option value="PERSONA">PERSONA</option>
+              </select>
+            </div>
+
+
+            <div class="custom-modal-footer">
+              <button type="submit" class="btn btn-success">{{modoEdicion ? 'Guardar Cambios' : 'Crear Usuario'}}</button>
+              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Modal Admin -->
+      <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'admin'">
+        <div class="custom-modal">
+          <div class="custom-modal-header">
+            <h5 class="custom-modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Usuario Administrador</h5>
+            <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+          </div>
+          <form (ngSubmit)="guardarUsuarioAdministrador()">
+            <div class="custom-modal-body">
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de Usuario" [(ngModel)]="adminForm.nombreUsuario" name="admin_nombre" required />
+              <input type="text" class="form-control col-12 col-md-6" placeholder="Cédula" [(ngModel)]="adminForm.cedula" name="admin_cedula" />
+              <input type="text" class="form-control col-12" placeholder="Nombre Completo" [(ngModel)]="adminForm.nombreCompleto" name="admin_nombre_completo" />
+            </div>
+            <div class="custom-modal-footer">
+              <button type="submit" class="btn btn-success">{{modoEdicion ? 'Guardar Cambios' : 'Crear Administrador'}}</button>
+              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+
+      <!-- Secciones vacías -->
+      <section *ngIf="seccionActiva === 'pedidos'" class="mt-4">
+        <h2>Pedidos</h2>
+        <p>Aquí irá la tabla de pedidos...</p>
+      </section>
+
+      <section *ngIf="seccionActiva === 'fiestas'" class="mt-4">
+        <h2>Fiestas</h2>
+        <p>Aquí irá la tabla de fiestas...</p>
+      </section>
+
+      <section *ngIf="seccionActiva === 'pizzas'" class="mt-4">
+        <h2>Pizzas</h2>
+        <p>Aquí irá la tabla de pizzas...</p>
+      </section>
+
+      <section *ngIf="seccionActiva === 'ingredientes'" class="mt-4">
+        <h2>Ingredientes</h2>
+        <p>Aquí irá la tabla de ingredientes...</p>
+      </section>
+    </main>
+  </div>
+</div>
