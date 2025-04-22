@@ -1,0 +1,71 @@
+<div class="card-body">
+      <!-- Contenido original -->
+      <div class="container mt-4">
+        <div class="row">
+          <!-- Columna izquierda para los selectores -->
+          <div class="col-md-2">
+            <!-- Año -->
+            <div class="mb-4">
+              <label for="añoSelect" class="form-label">Año</label>
+              <select id="añoSelect" class="form-select"
+                [(ngModel)]="anio"
+                (change)="getIngredientesUsados()">
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+              </select>
+            </div>
+  
+            <!-- Ingrediente -->
+            <div class="mb-4">
+              <label for="ingredienteSelect" class="form-label">Ingrediente</label>
+              <select id="ingredienteSelect" class="form-select"
+                [(ngModel)]="ingrediente"
+                (change)="getIngredientesUsados()">
+ 
+
+                <option value="Harina">Harina</option>
+                <option value="Azúcar">Azúcar</option>
+                <option value="Sal">Sal</option>
+                <option value="Levadura">Levadura</option>
+                <option value="Agua">Agua</option>
+                <option value="Muzzarella">Muzzarella</option>
+                <option value="Panceta">Panceta</option>
+                <option value="Aceituna">Aceituna</option>
+                <option value="Jamón">Jamón</option>
+                <option value="Capresse">Capresse</option>
+                <option value="Pesto">Pesto</option>
+                <option value="Roquefort">Roquefort</option>
+                <option value="Hawaiana">Hawaiana</option>
+                <option value="Longaniza">Longaniza</option>
+                <option value="Bondiola y rucula">Bondiola y rucula</option>
+                <option value="Anchoas">Anchoas</option>
+              </select>
+            </div>
+          </div>
+  
+          <!-- Columna derecha para la gráfica -->
+          <div class="col-md-9 ms-4">
+            <div class="card">
+              <div class="card-header bg-naranja text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4>{{ ingrediente || 'Ingrediente' }}</h4>
+                  <h4>{{ anio || 'Año' }}</h4>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas baseChart
+                  [data]="lineChartData"
+                  [options]="lineChartOptions"
+                  [type]="'line'">
+                </canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  

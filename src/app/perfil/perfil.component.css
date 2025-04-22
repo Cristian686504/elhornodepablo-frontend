@@ -12,16 +12,25 @@
   
 }
 
-.info > div {
+.div-atributos{
+  align-items: left;
+  border:#000000 2px solid;
+  border-radius: 12px;
+  padding: 16px;
+  padding-bottom: 0px;
+}
+
+.div-atributos > div {
   margin-bottom: 1rem;
   
 }
+
+
 
 .info label {
   font-weight: 600;
   color: #000000;
   font-size: 0.875rem;
-  min-width: 120px;
 }
 
 .info span {
@@ -138,7 +147,7 @@
 
 
 
-.tabla-pedidos span.ENTREGADO {
+.tabla-pedidos span.ACEPTADO {
   background-color: rgba(45, 206, 137, 0.1);
   color: #2dce89;
   padding: 0.25rem 0.75rem;
@@ -179,7 +188,7 @@
 
 
 
-.tabla-fiestas span.ENTREGADO {
+.tabla-fiestas span.ACEPTADO {
   background-color: rgba(45, 206, 137, 0.1);
   color: #2dce89;
   padding: 0.25rem 0.75rem;

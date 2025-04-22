@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class RegisterComponent {
 
-  usuario = { nombreUsuario: '', contrasenia: '', email: '', telefono: '' };
+  usuario = { nombreUsuario: '', nombreCompleto: '', contrasenia: '', email: '', telefono: '' };
   loading = false;
   error = '';
 
@@ -21,7 +21,7 @@ export class RegisterComponent {
   constructor(private clienteService: ClienteService, private router: Router ) {}
 
   registrarse() {
-    if (!this.usuario.nombreUsuario || !this.usuario.contrasenia || !this.usuario.email || !this.usuario.telefono) {
+    if (!this.usuario.nombreUsuario || !this.usuario.nombreCompleto || !this.usuario.contrasenia || !this.usuario.email || !this.usuario.telefono) {
       this.error = 'Por favor ingrese toda la información requerida';
       return;
     }

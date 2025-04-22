@@ -9,6 +9,7 @@ import { AuthGuardAdmin, NoAuthGuardAdmin } from './service/guards/auth-admin.gu
 import { TipoComponent } from './tipo/tipo.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { GraficaComponent } from './grafica/grafica.component';
 
 export const routes: Routes = [
 
@@ -20,5 +21,6 @@ export const routes: Routes = [
     { path: 'tipo', component: TipoComponent, canActivate: [AuthGuard]},
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
     { path: 'perfil', component: PerfilComponent, canActivate: [AuthGuard] },
+    { path: 'grafica', component: GraficaComponent, canActivate: [AuthGuardAdmin] },
 
 ];
