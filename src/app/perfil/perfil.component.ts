@@ -164,11 +164,12 @@ export class PerfilComponent {
               console.log('Pedido cancelado:', response);
               // Actualizar la lista de pedidos después de cancelar
               this.getPedidosCliente();
-              Swal.fire(
-                'Cancelado',
-                'El pedido ha sido cancelado.',
-                'success'
-              );
+              Swal.fire({
+                title: '¡Pedido cancelado exitosamente!',
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#008f39',
+              });
             });
           }
         });

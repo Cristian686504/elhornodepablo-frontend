@@ -4,6 +4,7 @@ import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ClienteService } from '../service/clienteService/cliente.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-modal-comercio',
@@ -177,7 +178,6 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     }
   
     async updateAddress(location: L.LatLng) {
-      // Previous updateAddress method remains the same
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}&accept-language=es`
@@ -230,9 +230,9 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     validateAndConfirm() {
       // Mostrar mensajes de validación
       this.showValidationErrors = true;
-
-      // Verificar si todos los campos son válidos
-      if (this.isValidLocation) {
+  
+        // Verificar si todos los campos son válidos
+        if (this.isValidLocation) {
         this.clienteService.currentUser.subscribe(user => {       
           this.usuario = user.nombreUsuario;
         });

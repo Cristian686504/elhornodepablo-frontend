@@ -8,7 +8,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
 }
 
 .modal-content {
@@ -147,3 +146,5 @@
   .input-invalid {
     border-color: #e53935 !important;
   }
+
+  
