@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ModalActualizarPerfilComponent } from "../modal-actualizar-perfil/modal-actualizar-perfil.component";
 import { ModalDetallePedidoComponent } from "../modal-detalle-pedido/modal-detalle-pedido.component";
 import { ModalDetalleFiestaComponent } from '../modal-detalle-fiesta/modal-detalle-fiesta.component';
+import Swal from 'sweetalert2';
 
 interface datosActualizarPerfil{
   nombreUsuario: string;
@@ -112,37 +113,67 @@ export class PerfilComponent {
       }
 
       actualizarPerfil(dataActualizada: datosActualizarPerfil) {
-        // Actualizar los datos del cliente
         this.clienteService.actualizarPerfilCliente(dataActualizada).subscribe({
           next: () => {
             // Actualizar los datos locales
             this.email = dataActualizada.email;
             this.direccion = dataActualizada.direccion;
             this.telefono = dataActualizada.telefono;
-            
+      
             // Cerrar el modal
             this.closeModalActualizarPerfil();
-            
-            // Opcional: Mostrar mensaje de éxito
-            console.log('Perfil actualizado correctamente');
+      
+            // Mostrar mensaje de éxito con SweetAlert
+            Swal.fire({
+              icon: 'success',
+              title: 'Perfil actualizado',
+              text: 'Tu perfil se ha actualizado correctamente.',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#008f39'
+            });
           },
           error: (error: unknown) => {
             console.error('Error al actualizar el perfil', error);
+            
+            // Mostrar mensaje de error con SweetAlert
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al actualizar tu perfil. Inténtalo nuevamente más tarde.',
+              confirmButtonText: 'Cerrar',
+              confirmButtonColor: '#d33'
+            });
           }
-      });
+        });
       }
       
 
-      cancelarPedido(id: number){
-        if (confirm('¿Está seguro que desea cancelar este pedido?')) {
-        this.clienteService.cancelarPedido(this.nombreUsuario, id).subscribe((response) => {
-          console.log('Pedido cancelado:', response);
-          // Actualizar la lista de pedidos después de cancelar
-          this.getPedidosCliente();
+      cancelarPedido(id: number) {
+        Swal.fire({
+          title: '¿Está seguro?',
+          text: '¿Desea cancelar este pedido?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#008f39',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, cancelarlo',
+          cancelButtonText: 'No, mantenerlo'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.clienteService.cancelarPedido(this.nombreUsuario, id).subscribe((response) => {
+              console.log('Pedido cancelado:', response);
+              // Actualizar la lista de pedidos después de cancelar
+              this.getPedidosCliente();
+              Swal.fire(
+                'Cancelado',
+                'El pedido ha sido cancelado.',
+                'success'
+              );
+            });
+          }
         });
-
       }
-    }
+
       cancelarFiesta(id: number){
         if (confirm('¿Está seguro que desea cancelar esta fiesta?')) {
         this.clienteService.cancelarFiesta(this.nombreUsuario, id).subscribe((response) => {
