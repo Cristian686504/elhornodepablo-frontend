@@ -198,7 +198,7 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
         
         if (addressData.house_number) {
           address += ` ${addressData.house_number}`;
-        }
+        
         
         if (addressData.city || addressData.town || addressData.village) {
           address += `, ${addressData.city || addressData.town || addressData.village}`;
@@ -211,7 +211,9 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
         if (addressData.state) {
           address += `, ${addressData.state}`;
         }
-        
+      } else {
+        address = '';
+      }
         this.selectedAddress = address || 'Dirección no disponible';
       } catch (error) {
         console.error('Error al obtener la dirección:', error);

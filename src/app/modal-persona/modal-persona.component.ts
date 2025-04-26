@@ -194,7 +194,7 @@ async incrementalGeocode(address: string) {
       
       if (addressData.house_number) {
         address += ` ${addressData.house_number}`;
-      }
+      
       
       if (addressData.city || addressData.town || addressData.village) {
         address += `, ${addressData.city || addressData.town || addressData.village}`;
@@ -207,7 +207,9 @@ async incrementalGeocode(address: string) {
       if (addressData.state) {
         address += `, ${addressData.state}`;
       }
-      
+    }else{
+      address = '';
+    }
       this.selectedAddress = address || 'Dirección no disponible';
     } catch (error) {
       console.error('Error al obtener la dirección:', error);
