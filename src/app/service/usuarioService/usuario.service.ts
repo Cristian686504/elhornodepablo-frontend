@@ -9,7 +9,7 @@ interface AuthResponse {
 }
 
 interface getClientes {
-  id: number,
+  id: number;
   nombreUsuario: string;
   contrasenia : string;
   nombreCompleto: string;
@@ -95,5 +95,20 @@ export class UsuarioService {
       })
     );
   }
+
+   actualizarCliente(id: number, datosCliente: getClientes): Observable<any> {
+      return this.http.put<any>(`${this.API_URL}modificarCliente/${id}`, datosCliente, { responseType: 'text' as 'json' }).pipe(
+        tap(response => {
+          if (response) {
+            const currentUser = this.getUserFromLocalStorage();
+            if (currentUser && currentUser.nombreUsuario === datosCliente.nombreUsuario) {
+              currentUser.nombreUsuario = datosCliente.nombreUsuario;
+              localStorage.setItem('adminUser', JSON.stringify(currentUser));
+              this.currentUserSubject.next(currentUser);
+            }
+          }
+        })
+      );
+    }
   
 }
