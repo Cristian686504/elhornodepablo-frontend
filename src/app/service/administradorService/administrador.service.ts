@@ -19,6 +19,28 @@ interface getAdministradores{
   nombreCompleto: string;
   }
 
+  interface Pizza {
+    id: number;
+    nombre: string;
+    precio: number;
+    tipo: string;
+    ingredientes: getPizzaIngrediente[];
+  }
+
+  interface getPizzaIngrediente{
+    id: number;
+    cantidad: number;
+    ingrediente: getIngredientes;
+  }
+    
+
+  interface getIngredientes{
+    id: number;
+    cantidad: number;
+    nombre: string;
+    unidad_medida: string;
+  }
+
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +51,10 @@ export class AdministradorService {
 
   // Actualiza la URL para que apunte a nuestra nueva API de autenticación
   private API_URL = 'http://localhost:8080/api/administradores/';
+
+  private API_URL_INGREDIENTES = 'http://localhost:8080/api/ingredientes/';
+
+  private API_URL_PIZZAS = 'http://localhost:8080/api/pizza/';
 
   constructor(private http: HttpClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<any>(this.getUserFromLocalStorage());
@@ -109,6 +135,60 @@ export class AdministradorService {
   }
 
   
+  /*Ingredientes*/ 
+  getIngredientes(): Observable<{ ingrediente: getIngredientes[] }> {
+    return this.http.get<{  ingrediente: getIngredientes[] }>(`${this.API_URL_INGREDIENTES}getIngredientes`);
+  }
+
+  crearIngrediente(ingredienteData: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL_INGREDIENTES}crear`, ingredienteData, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  actualizarIngrediente(id: number, ingredienteData: any): Observable<string> {
+    return this.http.put<string>(`${this.API_URL_INGREDIENTES}actualizar/${id}`, ingredienteData, {
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(response => {
+   
+        console.log('Ingrediente actualizado:', response);
+      })
+    );
+  }
+  
+
+  eliminarIngrediente(id: number): Observable<string> {
+    return this.http.delete<string>(`${this.API_URL_INGREDIENTES}eliminar/${id}`, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  getPizzas(): Observable<{ pizza: Pizza[] }> {
+    return this.http.get<{ pizza: Pizza[] }>(`${this.API_URL_PIZZAS}getPizzas`);
+  }
+  
+  crearPizza(pizzaData: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL_PIZZAS}crear`, pizzaData, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  actualizarPizza(id: number, pizzaData: any): Observable<string> {
+    return this.http.put<string>(`${this.API_URL_PIZZAS}modificar/${id}`, pizzaData, {
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(response => {
+        console.log('Pizza actualizada:', response);
+      })
+    );
+  }
+
+  eliminarPizza(id: number): Observable<string> {
+    return this.http.delete<string>(`${this.API_URL_PIZZAS}eliminar/${id}`, {
+      responseType: 'text' as 'json'
+    });
+  }
   
   
   
