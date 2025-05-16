@@ -24,6 +24,7 @@ interface getAdministradores{
     nombre: string;
     precio: number;
     tipo: string;
+    imagen: string;
     ingredientes: getPizzaIngrediente[];
   }
 
@@ -36,10 +37,42 @@ interface getAdministradores{
 
   interface getIngredientes{
     id: number;
-    cantidad: number;
-    nombre: string;
-    unidad_medida: string;
+    direccion: string;
+    email: string;
+    telefono: string;
+    tipo_cliente: string;
   }
+
+  interface cliente{
+    id: number;
+    nombreUsuario: string;
+    contrasenia: string;
+    nombreCompleto: string;
+  }
+
+  interface Fiestas{
+  id: number;
+  hamburguesa: boolean;
+  chivito: boolean;
+  cantidadPersonas: number;
+  fechaFiesta: Date;
+  horaServir: Date;
+  precio: number;
+  pago: string;
+  estado: string;
+  direccion: string;
+  cliente: cliente;
+  pizzas: fiestapizza[];
+  }
+
+  interface fiestapizza{
+    id: number;
+    cantidad: number;
+    pizza: Pizza;
+  }
+
+  
+
 
 
 @Injectable({
@@ -55,6 +88,9 @@ export class AdministradorService {
   private API_URL_INGREDIENTES = 'http://localhost:8080/api/ingredientes/';
 
   private API_URL_PIZZAS = 'http://localhost:8080/api/pizza/';
+
+  private API_URL_FIESTA = 'http://localhost:8080/api/fiestas/';
+
 
   constructor(private http: HttpClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<any>(this.getUserFromLocalStorage());
@@ -190,6 +226,10 @@ export class AdministradorService {
     });
   }
   
+
+  getFiestas(): Observable<{ fiesta: Fiestas[] }> {
+    return this.http.get<{ fiesta: Fiestas[] }>(`${this.API_URL_FIESTA}getFiestas`);
+  }
   
   
 }
