@@ -29,6 +29,7 @@ secciones = [
   listaUsuarios: any[] = [];
   listaIngredientes: any[] = [];
   listaPizzas: any[] = [];
+  listaFiestas: any[] = [];
   seccionActiva: string = 'usuarios';
 
   ngOnInit() {
@@ -37,6 +38,7 @@ secciones = [
     this.getClientes();
     this.getIngredientes();
     this.getPizzas();
+    this.getFiestas();
   }
 
   seleccionarSeccion(seccion: string) {
@@ -60,7 +62,6 @@ secciones = [
     getIngredientes() {
       this.administradorService.getIngredientes().subscribe(res => {
         console.log('Ingredientes recibidos:', res);
-        // Accede a la propiedad 'ingrediente' que es un array
         if (Array.isArray(res.ingrediente)) {
           this.listaIngredientes = res.ingrediente;
         } else {
@@ -82,12 +83,23 @@ secciones = [
       });
     }
     
+    getFiestas() {
+      this.administradorService.getFiestas().subscribe(res => {
+        console.log('Fiestas recibidas:', res);
+        if (Array.isArray(res.fiesta)) {
+          this.listaFiestas = res.fiesta;
+        } else {
+          this.listaFiestas = [];
+          console.warn('La propiedad Fiestas no es un array:', res.fiesta);
+        }
+      });
+    }
     
   
 
   modalActivo = false;
   modoEdicion = false;
-  tipoModal: 'cliente' | 'admin'  | 'ingrediente' | 'pizza' | null = null;
+  tipoModal: 'cliente' | 'admin'  | 'ingrediente' | 'pizza' | 'fiesta' |null = null;
 
   usuarioForm = {
     id: '',
@@ -121,10 +133,30 @@ pizzasForm = {
   descripcion: '',
   precio: '',
   tipo: '',
+  imagen: '',
   ingredientes: [] as { ingredienteId: number, ingrediente: { id: number, nombre: string, cantidad: number, unidad_medida: string }, cantidad: number }[]
 };
 
-abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
+fiestasForm = {
+  id: '',
+  hamburguesa: false,
+  chivito: false,
+  cantidadPersonas: '',
+  fechaFiesta: '',  
+  horaServir: '',   
+  precio: '',
+  pago: '',
+  estado: '',
+  direccion: '',
+  cliente: { id: '', nombreUsuario: '', contrasenia: '',   nombreCompleto: '', direccion: '',email: '',telefono: '', tipoCliente: '', },
+  pizzas: [] as Array<{ id: string;cantidad: string;pizza: {id: string; nombre: string; tipo: string; precio: string; descripcion: string; 
+    ingredientes: Array<{id: string; cantidad: string; ingrediente: { id: string; nombre: string; cantidad: string; unidad_medida: string; }; }>;
+    };
+  }>,
+};
+
+
+abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos?: any) {
   this.modalActivo = true;
   this.tipoModal = tipo;
   this.modoEdicion = !!datos;
@@ -167,8 +199,35 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
       descripcion: '',
       precio: '',
       tipo: '',
+      imagen: '',
       ingredientes: []
     };
+  }else if (tipo === 'fiesta') {
+    this.fiestasForm = datos
+      ? { ...datos }
+      : {
+          id: '',
+          hamburguesa: false,
+          chivito: false,
+          cantidadPersonas: '',
+          fechaFiesta: '',
+          horaServir: '',
+          precio: '',
+          pago: '',
+          estado: '',
+          direccion: '',
+          cliente: {
+            id: '',
+            nombreUsuario: '',
+            contrasenia: '',
+            nombreCompleto: '',
+            direccion: '',
+            email: '',
+            telefono: '',
+            tipoCliente: '',
+          },
+          pizzas: []
+        };
   }
 }
 
@@ -322,12 +381,18 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
   }
 
   guardarPizza() {
+
+    if (this.pizzasForm.imagen) {
+    this.pizzasForm.imagen = this.pizzasForm.imagen.split(',')[1]; 
+    }
+    
     const pizza = {
       id: +this.pizzasForm.id,
       nombre: this.pizzasForm.nombre,
       tipo: this.pizzasForm.tipo,
       precio: this.pizzasForm.precio,
       descripcion: this.pizzasForm.descripcion,
+      imagen: this.pizzasForm.imagen,
       ingredientes: this.pizzasForm.ingredientes.map(i => ({
         cantidad: i.cantidad,  
         ingrediente: {
@@ -335,7 +400,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
         }
       }))
     };
-
+  console.log("Imagen codificada:", this.pizzasForm.imagen);
     console.log("JSON que se va a enviar:", JSON.stringify(pizza));
     console.log("Pizza a guardar:", pizza);
   
@@ -376,17 +441,21 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
   administradorSeleccionado: any = null;
   ingredienteSeleccionado: any = null;
   pizzaSeleccionada: any = null;
+  fiestaSeleccionada: any = null;
 
-  seleccionarFila(item: any, tipo: 'cliente' | 'admin' | 'ingrediente'| 'pizza') {
+  seleccionarFila(item: any, tipo: 'cliente' | 'admin' | 'ingrediente'| 'pizza' | 'fiesta') {
     if (tipo === 'cliente') {
       this.usuarioSeleccionado = item;
     } else if (tipo === 'admin') {
       this.administradorSeleccionado = item;
     }else if (tipo === 'ingrediente'){
       this.ingredienteSeleccionado = item;
-    }    else if (tipo === 'pizza') {
+    } else if (tipo === 'pizza') {
       this.pizzaSeleccionada = item;
+    } else if (tipo === 'fiesta') {
+      this.fiestaSeleccionada = item;
     }
+  
     
   }
 
@@ -402,6 +471,9 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
   
   paginaPizzas: number = 1;
   pizzasPorPagina: number = 10;
+
+  paginaFiestas: number = 1; 
+  fiestasPorPagina: number = 10;
 
 
   // Métodos para paginación
@@ -439,6 +511,8 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
     }
   }
 
+
+  // Métodos para paginar ingrdientes
   getIngredientesPaginados() {
     console.log("Lista completa de ingredientes:", this.listaIngredientes);
     const startIndex = (this.paginaIngredientes - 1) * this.ingredientesPorPagina;
@@ -459,7 +533,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
     }
   }
   
-
+  // Métodos para paginar pizzas
   getPizzasPaginadas() {
     const startIndex = (this.paginaPizzas - 1) * this.pizzasPorPagina;
     return this.listaPizzas.slice(startIndex, startIndex + this.pizzasPorPagina);
@@ -477,9 +551,24 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
     }
   }
 
-  
-  
-  
+  // Métodos para paginar fiestas
+  getFiestasPaginados() {
+    const startIndex = (this.paginaFiestas - 1) * this.fiestasPorPagina;
+    return this.listaFiestas.slice(startIndex, startIndex + this.fiestasPorPagina);
+  }
+
+  siguientePaginaFiestas() {
+    if (this.paginaFiestas * this.fiestasPorPagina < this.listaFiestas.length) {
+      this.paginaFiestas++;
+    }
+  }
+
+  anteriorPaginaFiestas() {
+    if (this.paginaFiestas > 1) {
+      this.paginaFiestas--;
+    }
+  }
+
 
   eliminarAdmin(admin: any) {
     if (!admin) return;
@@ -573,7 +662,41 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza', datos?: any) {
     return ingrediente ? ingrediente.nombre : 'Ingrediente no encontrado';
   }
   
-  
-  
+
+
+agregarPizzaAFiesta() {
+  if (!Array.isArray(this.fiestasForm.pizzas)) {
+    this.fiestasForm.pizzas = [];
+  }
+
+  this.fiestasForm.pizzas.push({
+    id: Date.now().toString(), 
+    cantidad: "1", 
+    pizza: {
+      id: "",       
+      nombre: "",  
+      tipo: "",
+      precio: "",
+      descripcion: "",
+      ingredientes: []
+    }
+  });
+}
+
+// Método para quitar pizza de la lista
+quitarPizza(index: number) {
+  this.fiestasForm.pizzas.splice(index, 1);
+}
+
+procesarImagen(event: any) {
+  const archivo = event.target.files[0];
+  if (archivo) {
+    const lector = new FileReader();
+    lector.readAsDataURL(archivo);
+    lector.onload = () => {
+      this.pizzasForm.imagen = lector.result as string; // Guardamos la imagen en formato Base64
+    };
+  }
+}
   
 }

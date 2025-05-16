@@ -1,0 +1,69 @@
+<section class="seccion-fiesta">
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Fiestas Programadas</h2>
+    
+    <!-- Filtro de Estado -->
+    <div class="mb-4 text-center">
+      <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarFiestas()">
+        <option value="">Todos</option>
+        <option value="ACEPTADA">Aceptadas</option>
+        <option value="CANCELADA">Canceladas</option>
+        <option value="PENDIENTE">Pendientes</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div *ngFor="let fiesta of getFiestasPaginados()" class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm border-primary border-2">
+          <div class="card-header bg-fiesta text-white fw-bold">
+            🎉 Fiesta #{{ fiesta.id }}
+          </div>
+          <div class="card-body">
+            <p><strong>Cliente:</strong> {{ fiesta.cliente?.nombreCompleto }}</p>
+            <p><strong>Dirección:</strong> {{ fiesta.direccion }}</p>
+            <p><strong>Fecha:</strong> {{ fiesta.fechaFiesta }}</p>
+            <p><strong>Hora a servir:</strong> {{ fiesta.horaServir }}</p>
+            <p><strong>Cantidad de personas:</strong> {{ fiesta.cantidadPersonas }}</p>
+            <p><strong>Pago:</strong> ${{ fiesta.pago }}</p>
+            <p><strong>Estado:</strong> 
+              <span class="badge" 
+                    [ngClass]="{
+                      'bg-success': fiesta.estado === 'ACEPTADA',
+                      'bg-danger': fiesta.estado === 'CANCELADA',
+                      'bg-warning text-dark': fiesta.estado === 'PENDIENTE'
+                    }">
+                {{ fiesta.estado }}
+              </span>
+            </p>
+            <p><strong>Hamburguesas:</strong> {{ fiesta.hamburguesa ? 'Sí' : 'No' }}</p>
+            <p><strong>Chivitos:</strong> {{ fiesta.chivito ? 'Sí' : 'No' }}</p>
+
+            <p *ngIf="fiesta.pizzas.length"><strong>Pizzas:</strong></p>
+            <ul class="list-group mb-3" *ngIf="fiesta.pizzas.length">
+              <li class="list-group-item" *ngFor="let pizza of fiesta.pizzas">
+                🍕 {{ pizza.pizza?.nombre }} ({{ pizza.pizza?.tipo }}) - Cantidad: {{ pizza.cantidad }}
+              </li>
+            </ul>
+
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-outline-success w-45" (click)="aceptarFiesta(fiesta.id)">✅ Aceptar</button>
+              <button class="btn btn-outline-danger w-45" (click)="cancelarFiesta(fiesta.id)">❌ Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center mt-4">
+      <button class="btn btn-secondary me-2" (click)="anteriorPaginaFiestas()" [disabled]="paginaFiestas === 1">
+        ◀ Anterior
+      </button>
+      <span class="align-self-center">Página {{ paginaFiestas }}</span>
+      <button class="btn btn-secondary ms-2" (click)="siguientePaginaFiestas()" 
+              [disabled]="paginaFiestas * fiestasPorPagina >= listaFiestas.length">
+        Siguiente ▶
+      </button>
+    </div>
+  </div>
+</section>

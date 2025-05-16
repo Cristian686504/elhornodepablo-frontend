@@ -10,6 +10,8 @@ import { TipoComponent } from './tipo/tipo.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { GraficaComponent } from './grafica/grafica.component';
+import { PedidosAdminComponent } from './pedidos-admin/pedidos-admin.component';
+import { FiestasAdminComponent } from './fiestas-admin/fiestas-admin.component';
 
 export const routes: Routes = [
 
@@ -22,5 +24,7 @@ export const routes: Routes = [
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
     { path: 'perfil', component: PerfilComponent, canActivate: [AuthGuard] },
     { path: 'grafica', component: GraficaComponent, canActivate: [AuthGuardAdmin] },
+    { path: 'pedidos-admin', component: PedidosAdminComponent, canActivate: [AuthGuardAdmin] },
+    { path: 'fiestas-admin', component: FiestasAdminComponent, canActivate: [AuthGuardAdmin] },
 
 ];

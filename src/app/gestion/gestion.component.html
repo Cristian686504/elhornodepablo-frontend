@@ -175,11 +175,167 @@
         <p>Aquí irá la tabla de pedidos...</p>
       </section>
 
-         <!-- FIESTAS -->
-      <section *ngIf="seccionActiva === 'fiestas'" class="mt-4">
-        <h2>Fiestas</h2>
-        <p>Aquí irá la tabla de fiestas...</p>
-      </section>
+        <!-- FIESTAS -->
+<section *ngIf="seccionActiva === 'fiestas'" class="mt-4">
+  <h2>Fiestas</h2>
+  
+  <!-- Búsqueda -->
+  <div class="mb-3">
+    <input type="text" class="form-control" placeholder="Buscar..." />
+  </div>
+
+  <!-- Tabla de Fiestas -->
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Fecha Fiesta</th>
+          <th>Hora Servir</th>
+          <th>Cant. Personas</th>
+          <th>Precio</th>
+          <th>Pago</th>
+          <th>Estado</th>
+          <th>Dirección</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fiesta of getFiestasPaginados()"
+            (click)="seleccionarFila(fiesta, 'fiesta')"
+            [class.table-primary]="fiestaSeleccionada === fiesta">
+          <td>{{ fiesta.id }}</td>
+          <td>{{ fiesta.fechaFiesta }}</td>
+          <td>{{ fiesta.horaServir }}</td>
+          <td>{{ fiesta.cantidadPersonas }}</td>
+          <td>{{ fiesta.precio }}</td>
+          <td>{{ fiesta.pago }}</td>
+          <td>{{ fiesta.estado }}</td>
+          <td>{{ fiesta.direccion }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Botones de acciones -->
+  <div class="mb-3 d-flex gap-2">
+    <button class="btn btn-primary" (click)="abrirModal('fiesta')">Crear Fiesta</button>
+    <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">Modificar Fiesta</button>
+    <button class="btn btn-danger" (click)="eliminarAdmin(fiestaSeleccionada)">Eliminar</button>
+  </div>
+
+  <!-- Paginación -->
+  <div class="mb-5 d-flex gap-2">
+    <button class="btn btn-outline-secondary" (click)="anteriorPaginaFiestas()">Anterior</button>
+    <button class="btn btn-outline-secondary" (click)="siguientePaginaFiestas()">Siguiente</button>
+  </div>
+
+ <!-- Modal para crear/modificar fiesta -->
+<div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'fiesta'">
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Fiesta</h5>
+      <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+    </div>
+
+    <form (ngSubmit)="guardarUsuarioAdministrador()">
+      <div class="custom-modal-body">
+        <!-- Campo oculto para el id -->
+        <input type="hidden" [(ngModel)]="fiestasForm.id" name="id" />
+
+        <div class="mb-3">
+          <label for="fechaFiesta" class="form-label">Fecha de la Fiesta</label>
+          <input type="date" class="form-control" [(ngModel)]="fiestasForm.fechaFiesta" name="fechaFiesta" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="horaServir" class="form-label">Hora de Servicio</label>
+          <input type="time" class="form-control" [(ngModel)]="fiestasForm.horaServir" name="horaServir" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="cantidadPersonas" class="form-label">Cantidad de Personas</label>
+          <input type="number" class="form-control" [(ngModel)]="fiestasForm.cantidadPersonas" name="cantidadPersonas" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="precio" class="form-label">Precio</label>
+          <input type="number" class="form-control" [(ngModel)]="fiestasForm.precio" name="precio" required />
+        </div>
+
+   
+        <div class="mb-3">
+          <label for="pago" class="form-label">Pago</label>
+          <select class="form-control" [(ngModel)]="fiestasForm.pago" name="pago" required>
+            <option value="EFECTIVO">EFECTIVO</option>
+            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+          </select>
+        </div>
+
+  
+        <div class="mb-3">
+          <label for="estado" class="form-label">Estado</label>
+          <select class="form-control" [(ngModel)]="fiestasForm.estado" name="estado" required>
+            <option value="ENTREGADO">ENTREGADO</option>
+            <option value="PENDIENTE">PENDIENTE</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="direccion" class="form-label">Dirección</label>
+          <input type="text" class="form-control" [(ngModel)]="fiestasForm.direccion" name="direccion" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="Extras" class="form-label">Extras</label>
+          <div class="d-flex flex-column">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.hamburguesa" name="hamburguesa" id="hamburguesa" />
+              <label class="form-check-label" for="hamburguesa">Hamburguesa</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.chivito" name="chivito" id="chivito" />
+              <label class="form-check-label" for="chivito">Chivito</label>
+            </div>
+          </div>
+        </div>
+        
+
+
+        <div class="mb-3">
+          <h6>Pizzas en la Fiesta</h6>
+          
+          <div *ngFor="let item of fiestasForm.pizzas; let i = index" class="d-flex gap-2 align-items-center mb-2">
+            <div *ngIf="!modoEdicion">
+              <select class="form-control" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}" required>
+                <option value="" disabled>Seleccione una pizza</option>
+                <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
+                  {{ pizza.nombre }} ({{ pizza.tipo }})
+                </option>
+              </select>
+            </div>
+
+            <div *ngIf="modoEdicion">
+              <input type="text" class="form-control" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
+            </div>
+            <input type="number" class="form-control" [(ngModel)]="fiestasForm.pizzas[i].cantidad" name="cantidad{{i}}" placeholder="Cantidad" required />
+            <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+          </div>
+        
+          <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
+        </div>
+      </div>
+
+      <div class="custom-modal-footer">
+        <button type="submit" class="btn btn-success">
+          {{ modoEdicion ? 'Guardar Cambios' : 'Crear Fiesta' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+  </section>
 
 
        <!-- PIZZAS -->
@@ -191,8 +347,8 @@
         </div>
       
         <div class="table-responsive">
-          <table class="table table-hover align-middle text-center">
-            <thead class="table-dark">
+          <table class="table table-hover table-bordered">
+            <thead class="table-light">
               <tr>
                 <th>Nombre</th>
                 <th>Precio</th>
@@ -262,6 +418,17 @@
       <form (ngSubmit)="guardarPizza()">
         <div class="custom-modal-body">
           <input type="hidden" [(ngModel)]="pizzasForm.id" name="id" />
+
+          <!-- Campo para subir imagen -->
+      <div class="mt-3">
+        <h6>Imagen de la pizza</h6>
+       <input type="file" class="form-control" (change)="procesarImagen($event)" accept="image/*" />
+      </div>
+
+      <!-- Vista previa de la imagen -->
+      <div *ngIf="pizzasForm.imagen">
+        <img [src]="pizzasForm.imagen" alt="Vista previa de la pizza" class="img-thumbnail mt-2" style="max-width: 200px;" />
+      </div>
           
           <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de la Pizza" [(ngModel)]="pizzasForm.nombre" name="nombre" required />
           
@@ -283,11 +450,10 @@
               <!-- Si estamos editando, mostramos un input con el nombre del ingrediente -->
               <div *ngIf="modoEdicion">
                 <input type="text" class="form-control" 
-                       [value]="pizzasForm.ingredientes[i]?.ingrediente?.nombre" 
+                       [value]="pizzasForm.ingredientes[i].ingrediente.nombre" 
                        readonly />
               </div>
-              
-  
+
               <!-- Si estamos creando, mostramos un select para elegir el ingrediente -->
               <div *ngIf="!modoEdicion">
                 <select class="form-control" [(ngModel)]="pizzasForm.ingredientes[i].ingredienteId" name="ingrediente{{i}}" required>
