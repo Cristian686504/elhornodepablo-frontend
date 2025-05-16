@@ -1,0 +1,188 @@
+.pedido-items {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
+
+.pedido-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.botones-realizar {
+  margin-top: 8px;
+}
+
+.pizza-info {
+  display: flex;
+  gap: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.pizza-precio {
+  font-weight: 500;
+  color: #4caf50;
+}
+
+.pedido-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #d32f2f;
+}
+
+.pedido-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.pedido-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #d32f2f;
+}
+
+.pedido-step {
+  margin: 20px 0;
+  min-height: 300px;
+}
+
+.pedido-step mat-form-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.total {
+  margin: 30px 0;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.total h3 {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 1.5rem;
+}
+
+.radio-metodo-entrega {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.radio-metodo-entrega mat-radio-button {
+  margin: 10px 0;
+}
+
+.detalles-metodo {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.detalles-metodo h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #d32f2f;
+}
+
+::ng-deep .mat-horizontal-stepper-header-container {
+  margin-bottom: 20px;
+}
+
+::ng-deep .mat-step-header {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin: 0 8px;
+}
+
+::ng-deep .mat-step-header .mat-step-icon {
+  background-color: #d32f2f;
+  color: white;
+}
+
+::ng-deep .mat-step-header .mat-step-label {
+  color: #333;
+}
+
+::ng-deep .mat-step-header .mat-step-label.mat-step-label-active {
+  color: #d32f2f;
+}
+
+::ng-deep .mat-horizontal-content-container {
+  padding: 24px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: white;
+  border-radius: 4px;
+  padding: 0.75em 0.75em 0 0.75em;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-infix {
+  padding: 0.5em 0;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex:hover {
+  background-color: #fafafa;
+}
+
+mat-slide-toggle {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.radio-metodo-pago {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.radio-metodo-pago mat-radio-button {
+  margin: 5px 0;
+}
+
+.toggle-periodico,
+.toggle-beneficio {
+  margin: 20px 0;
+}
+
+.total-descuento {
+  margin: 5px 0 0 0;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.boton-enviar {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.boton-enviar:hover {
+  background-color: #45a049;
+}
+
+.mat-calendar {
+  border: 2px solid red;
+}
