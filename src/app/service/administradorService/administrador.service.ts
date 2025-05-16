@@ -10,8 +10,7 @@ interface AuthResponse {
  
 }
 
-<<<<<<< HEAD
-=======
+
 interface getAdministradores{
   id: number;
   nombreUsuario: string;
@@ -19,7 +18,7 @@ interface getAdministradores{
   cedula: string;
   nombreCompleto: string;
   }
->>>>>>> 993e692 (crud usuarios cliente y administrador)
+
 
 @Injectable({
   providedIn: 'root'
