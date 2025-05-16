@@ -25,7 +25,10 @@
     "@popperjs/core": "^2.11.8",
     "@types/leaflet": "^1.9.17",
     "bootstrap": "^5.3.5",
+<<<<<<< HEAD
     "chart.js": "^3.9.1",
+=======
+>>>>>>> 993e692 (crud usuarios cliente y administrador)
     "leaflet": "^1.9.4",
     "moment": "^2.30.1",
     "ng2-charts": "^4.0.1",
