@@ -1,0 +1,70 @@
+<div class="pizza-menu-container">
+  <h3>Menú de pizzas</h3>
+  
+  <div *ngIf="loading" class="loading-estado">
+    <p>Cargando menú de pizzas...</p>
+  </div>
+  
+  <div *ngIf="error" class="error-estado">
+    <p>Error al cargar el menú. Por favor intenta nuevamente.</p>
+    <button mat-raised-button color="primary" (click)="cargarPizzas()">Reintentar</button>
+  </div>
+  
+  <div *ngIf="!loading && !error" class="pizza-grid">
+    <mat-card *ngFor="let pizza of pizzas" class="pizza-card">
+      <img mat-card-image [src]="pizza.imagen || ''" 
+           [alt]="pizza.nombre" class="pizza-imagen">
+      
+      <mat-card-header>
+        <mat-card-title>{{ pizza.nombre }}</mat-card-title>
+        <mat-card-subtitle>${{ pizza.precio.toFixed(2) }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <p>{{ pizza.descripcion }}</p>
+      </mat-card-content>
+      
+      <mat-card-actions class="pizza-acciones">
+        <div class="cantidad-selector">
+          <button mat-icon-button color="primary" (click)="reducirCantidad(pizza)"
+                  [disabled]="pizza.cantidad <= 0">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="cantidad">{{ pizza.cantidad }}</span>
+          <button mat-icon-button color="primary" (click)="aumentarCantidad(pizza)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  
+  <div *ngIf="!loading && !error" class="pedido-resumen">
+    <h3>Tu pedido</h3>
+    <div *ngIf="getPizzasSeleccionadas().length === 0" class="empty-cart">
+      <p>No has seleccionado ninguna pizza todavía.</p>
+    </div>
+    <div *ngIf="getPizzasSeleccionadas().length > 0" class="pedido-items">
+      <div *ngFor="let pizza of getPizzasSeleccionadas()" class="pedido-item">
+        <span>{{ pizza.nombre }} x {{ pizza.cantidad }}</span>
+        <span>${{ (pizza.precio * pizza.cantidad).toFixed(2) }}</span>
+      </div>
+      <div class="pedido-total">
+        <strong>Total:</strong>
+        <strong>${{ calcularTotal().toFixed(2) }}</strong>
+      </div>
+    </div>
+    
+    <div class="botones-accion">
+      <div class="botones-accion">
+      <button
+        type="button"
+        mat-raised-button
+        color="primary"
+        [disabled]="getPizzasSeleccionadas().length === 0"
+        (click)="onPizzaStepNext()">
+        Siguiente
+      </button>
+    </div>
+  </div>
+</div>

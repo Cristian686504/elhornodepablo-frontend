@@ -40,10 +40,6 @@ interface PizzaDetalle {
   precio: number;
 }
 
-
-
-
-
 interface detallesPedido {
   agencia: string;
   direccion: string;
@@ -213,6 +209,16 @@ export class ClienteService {
           if (response) {
             console.log("Pedido cancelado:", response);
           }
+        })
+      );
+  }
+
+  crearPedido(pedidoData: any): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/pedidos/crearPedido`, pedidoData)
+      .pipe(
+        tap(response => {
+          console.log("Pedido creado:", response);
+          return response;
         })
       );
   }

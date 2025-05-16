@@ -10,7 +10,6 @@
             <span class="card-label">Cliente particular</span>
             <div class="card-buttons">
                 <button class="btn btn-primary" (click)="openModalPersona()">Seleccionar</button>
-                <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button>
             </div>
             <div class="card-text">
                 Si eres un cliente sin necesidades o características específicas, simplemente una persona normal que busca una opción estándar, selecciona esta opción.
@@ -24,7 +23,6 @@
             <span class="card-label">Comercio</span>
             <div class="card-buttons">
                 <button class="btn btn-primary" (click)="openModalComercio()">Seleccionar</button>
-                <button class="btn btn-secondary toggle-text" (click)="toggleText($event)">Descripción</button>
             </div>
             <div class="card-text">
                 Si tienes un negocio como un minimarket, un local gastronómico, un almacén o cualquier otro tipo de comercio, selecciona esta opción.
@@ -33,6 +31,6 @@
     </div>
 </div>
 
-<!-- Modal -->
-<app-modal-persona *ngIf="isModalPersonaOpen" (modalClosed)="closeModalPersona()"></app-modal-persona>
-<app-modal-comercio *ngIf="isModalComercioOpen" (modalClosed)="closeModalComercio()"></app-modal-comercio>
+ <app-modal-persona *ngIf="isModalPersonaOpen" (modalClosed)="closeModalPersona()"></app-modal-persona>
+ <app-modal-comercio *ngIf="isModalComercioOpen" (modalClosed)="closeModalComercio()"></app-modal-comercio>
+
