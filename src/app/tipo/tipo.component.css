@@ -1,11 +1,74 @@
 :host {
     background-color: #f4f6f9;
     display: flex;
+    flex-direction: column; /* Cambiado a column para apilar elementos verticalmente */
+    align-items: center; /* Centra los elementos horizontalmente */
+    padding: 40px;
+    width: 100%;
+}
+
+.advertencia {
+    width: 90%;
+    max-width: 640px; 
+    background: linear-gradient(135deg, #ff9966, #ff5e62);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(255, 94, 98, 0.3);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    margin-bottom: 30px; 
+}
+
+
+.cards-container {
+    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    padding: 40px;
-    align-items: flex-start; /* Asegura que cada tarjeta maneje su propia altura */
+    width: 100%;
+    align-items: flex-start; /* Asegura que las tarjetas no se alineen por su altura */
+}
+
+.advertencia:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(255, 94, 98, 0.4);
+}
+
+.advertencia::before {
+    content: "⚠️";
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.1;
+    top: -30px;
+    right: -20px;
+    transform: rotate(15deg);
+}
+
+.advertencia h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    animation: pulse 2s infinite;
+}
+
+.advertencia h2::before {
+    content: "⚠️";
+    font-size: 1.5rem;
+    margin-right: 0.6rem;
+}
+
+.advertencia p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 500;
+    padding-left: 0.5rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
 }
 
 .card {
@@ -18,6 +81,7 @@
     transform-origin: center;
     display: flex;
     flex-direction: column;
+    height: auto; /* Permite que cada tarjeta determine su propia altura */
 }
 
 .card:hover {
@@ -217,4 +281,3 @@
         opacity: 1;
     }
 }
-

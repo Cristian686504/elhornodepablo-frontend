@@ -25,6 +25,7 @@ export class ModalActualizarPerfilComponent {
   emailForm: string = '';
   selectedAddress = this.direccion;
   telefonoForm: string = '';
+  error = '';
 
   map: L.Map | null = null;
   marker: L.Marker | null = null;
@@ -248,7 +249,7 @@ export class ModalActualizarPerfilComponent {
         
         if (addressData.house_number) {
           address += ` ${addressData.house_number}`;
-        }
+        
         
         if (addressData.city || addressData.town || addressData.village) {
           address += `, ${addressData.city || addressData.town || addressData.village}`;
@@ -261,6 +262,9 @@ export class ModalActualizarPerfilComponent {
         if (addressData.state) {
           address += `, ${addressData.state}`;
         }
+      }else{
+        address = '';
+      }
         
         this.selectedAddress = address || 'Dirección no disponible';
       } catch (error) {
@@ -298,6 +302,10 @@ export class ModalActualizarPerfilComponent {
   }
   
   saveChanges() {
+    if(this.selectedAddress === '' || this.selectedAddress === 'Dirección no disponible' || this.emailForm === '' || this.telefonoForm === '') {
+        this.error = 'Teléfono, email y dirección son obligatorios.';
+        return;
+    } else{
     const updatedData = {
       nombreUsuario: this.nombreUsuario,
       email: this.emailForm,
@@ -307,5 +315,6 @@ export class ModalActualizarPerfilComponent {
     
     this.save.emit(updatedData);
     this.closeModal();
+  }
   }
 }

@@ -11,18 +11,26 @@ import { CommonModule } from '@angular/common';
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
+
+
+
 export class RegisterComponent {
 
   usuario = { nombreUsuario: '', nombreCompleto: '', contrasenia: '', email: '', telefono: '' };
   loading = false;
   error = '';
-
+  private emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   constructor(private clienteService: ClienteService, private router: Router ) {}
 
   registrarse() {
     if (!this.usuario.nombreUsuario || !this.usuario.nombreCompleto || !this.usuario.contrasenia || !this.usuario.email || !this.usuario.telefono) {
       this.error = 'Por favor ingrese toda la información requerida';
+      return;
+    }
+
+    if (!this.emailRegex.test(this.usuario.email)) {
+      this.error = 'El correo electrónico no es válido';
       return;
     }
 

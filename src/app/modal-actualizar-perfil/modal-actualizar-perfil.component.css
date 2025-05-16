@@ -128,3 +128,10 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.error-message {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}

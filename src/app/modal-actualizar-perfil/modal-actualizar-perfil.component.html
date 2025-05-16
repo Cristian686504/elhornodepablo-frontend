@@ -25,7 +25,9 @@
         <label for="telefono">Teléfono:</label>
         <input type="tel" id="telefono" [(ngModel)]="telefonoForm">
       </div>
-      
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
       <div class="modal-actions">
         <button (click)="closeModal()">Cancelar</button>
         <button (click)="saveChanges()">Guardar</button>

@@ -177,7 +177,7 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     }
   
     async updateAddress(location: L.LatLng) {
-      // Previous updateAddress method remains the same
+      
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}&accept-language=es`
@@ -198,7 +198,7 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
         
         if (addressData.house_number) {
           address += ` ${addressData.house_number}`;
-        }
+        
         
         if (addressData.city || addressData.town || addressData.village) {
           address += `, ${addressData.city || addressData.town || addressData.village}`;
@@ -211,7 +211,9 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
         if (addressData.state) {
           address += `, ${addressData.state}`;
         }
-        
+      } else {
+        address = '';
+      }
         this.selectedAddress = address || 'Dirección no disponible';
       } catch (error) {
         console.error('Error al obtener la dirección:', error);
@@ -230,9 +232,9 @@ export class ModalComercioComponent implements AfterViewInit, OnInit{
     validateAndConfirm() {
       // Mostrar mensajes de validación
       this.showValidationErrors = true;
-
-      // Verificar si todos los campos son válidos
-      if (this.isValidLocation) {
+  
+        // Verificar si todos los campos son válidos
+        if (this.isValidLocation) {
         this.clienteService.currentUser.subscribe(user => {       
           this.usuario = user.nombreUsuario;
         });
