@@ -11,7 +11,7 @@ interface AuthResponse {
   // Otros campos que pueda devolver tu API
 }
 
- interface datosCliente {
+interface datosCliente {
   email: string;
   direccion: string;
   telefono: string;
@@ -89,7 +89,7 @@ export class ClienteService {
 
 
   registrar(usuario: any): Observable<string> {
-    return this.http.post<string>(`http://localhost:8080/api/clientes/register`, usuario, 
+    return this.http.post<string>(`http://localhost:8080/api/clientes/register`, usuario,
       { responseType: 'text' as 'json' }); // Para manejar respuestas de tipo texto
   }
 
@@ -105,23 +105,23 @@ export class ClienteService {
 
   elegirTipoDireccion(nombreUsuario: string, tipo: string, direccion: string): any {
     const requestBody = { nombreUsuario, tipo, direccion };
-    
+
     this.http.post<any>(`http://localhost:8080/api/clientes/elegirTipoDireccion`, requestBody)
       .subscribe(
         (response) => {
           console.log('Respuesta exitosa:', response);
-  
+
           // Actualizar solo si la respuesta es exitosa y contiene datos relevantes
           if (response && response.tipo !== undefined) {
             let currentUser = this.getUserFromLocalStorage();
 
             if (currentUser) {
               // Usamos el tipo que devuelve el servidor en la respuesta
-              currentUser.tipo = response.tipo; 
+              currentUser.tipo = response.tipo;
               console.log('Tipo actualizado:', currentUser.tipo);
               // Guardamos el usuario actualizado en localStorage
-              localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
+              localStorage.setItem('clienteUser', JSON.stringify(currentUser));
+
               // Notificamos el cambio a los suscriptores
               this.currentUserSubject.next(currentUser);
             }
@@ -132,8 +132,8 @@ export class ClienteService {
         }
       );
   }
-  
-  
+
+
 
   getDatosCliente(nombreUsuario: string): Observable<datosCliente> {
     return this.http.get<datosCliente>(`http://localhost:8080/api/clientes/getDatosCliente/${nombreUsuario}`
@@ -141,10 +141,10 @@ export class ClienteService {
   }
 
   getPedidosCliente(nombreUsuario: string): Observable<datosPedidosCliente> {
-    
+
     return this.http.get<datosPedidosCliente>(`http://localhost:8080/api/pedidos/getPedidosCliente/${nombreUsuario}`
     );
-    
+
   }
 
   getFiestasCliente(nombreUsuario: string): Observable<datosFiestasCliente> {
@@ -172,27 +172,27 @@ export class ClienteService {
         })
       );
   }
-  
+
 
   detallesPedido(nombreUsuario: string, id: number): Observable<detallesPedido> {
     console.log("pedidoID: ", id);
-    
+
     return this.http.get<detallesPedido>(
       `http://localhost:8080/api/pedidos/detallesPedido/${id}/${nombreUsuario}`
     );
   }
-  
+
   detallesFiesta(nombreUsuario: string, id: number): Observable<detallesFiesta> {
     // Crear el objeto de solicitud con el ID del pedido si está disponible
     console.log("fiestaIDCS: ", id);
-    
+
     return this.http.get<detallesFiesta>(
       `http://localhost:8080/api/fiestas/detallesFiesta/${id}/${nombreUsuario}`
     );
   }
 
   cancelarPedido(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.put<any>(`http://localhost:8080/api/pedidos/cancelarPedido`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/pedidos/cancelarPedido`, { nombreUsuario, id })
       .pipe(
         tap(response => {
           if (response) {
@@ -203,7 +203,7 @@ export class ClienteService {
   }
 
   cancelarFiesta(nombreUsuario: string, id: number): Observable<any> {
-    return this.http.put<any>(`http://localhost:8080/api/fiestas/cancelarFiesta`, {nombreUsuario, id})
+    return this.http.put<any>(`http://localhost:8080/api/fiestas/cancelarFiesta`, { nombreUsuario, id })
       .pipe(
         tap(response => {
           if (response) {
