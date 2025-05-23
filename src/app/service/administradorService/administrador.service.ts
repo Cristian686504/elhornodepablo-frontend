@@ -230,6 +230,12 @@ export class AdministradorService {
   getFiestas(): Observable<{ fiesta: Fiestas[] }> {
     return this.http.get<{ fiesta: Fiestas[] }>(`${this.API_URL_FIESTA}getFiestas`);
   }
+
+  crearFiesta(fiestaData: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL_FIESTA}crear`, fiestaData, {
+      responseType: 'text' as 'json'
+    });
+  }
   
   
 }

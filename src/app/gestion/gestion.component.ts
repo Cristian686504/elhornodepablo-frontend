@@ -192,17 +192,22 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
       unidad_medida: ''
     };
   } else if (tipo === 'pizza') {
-    console.log('Ingredientes recibidos:', datos?.ingredientes);
-    this.pizzasForm = datos ? { ...datos } : {
-      id: '',
-      nombre: '',
-      descripcion: '',
-      precio: '',
-      tipo: '',
-      imagen: '',
-      ingredientes: []
-    };
-  }else if (tipo === 'fiesta') {
+  console.log('Ingredientes recibidos:', datos?.ingredientes);
+
+  this.pizzasForm = datos ? { ...datos } : {
+    id: '',
+    nombre: '',
+    descripcion: '',
+    precio: '',
+    tipo: '',
+    imagen: '',
+    ingredientes: []
+  };
+
+  if (this.modoEdicion && this.pizzasForm.imagen && !this.pizzasForm.imagen.startsWith('data:image')) {
+    this.pizzasForm.imagen = 'data:image/png;base64,' + this.pizzasForm.imagen;
+  }
+}else if (tipo === 'fiesta') {
     this.fiestasForm = datos
       ? { ...datos }
       : {
@@ -385,7 +390,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
     if (this.pizzasForm.imagen) {
     this.pizzasForm.imagen = this.pizzasForm.imagen.split(',')[1]; 
     }
-    
+
     const pizza = {
       id: +this.pizzasForm.id,
       nombre: this.pizzasForm.nombre,
@@ -396,11 +401,11 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
       ingredientes: this.pizzasForm.ingredientes.map(i => ({
         cantidad: i.cantidad,  
         ingrediente: {
-          id: i.ingredienteId 
+          id: i.ingredienteId || (i.ingrediente && i.ingrediente.id)
         }
       }))
     };
-  console.log("Imagen codificada:", this.pizzasForm.imagen);
+    console.log("Imagen codificada:", this.pizzasForm.imagen);
     console.log("JSON que se va a enviar:", JSON.stringify(pizza));
     console.log("Pizza a guardar:", pizza);
   
@@ -621,22 +626,24 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
     }
   }
 
-  eliminarPizza(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta pizza?')) {
-      this.administradorService.eliminarPizza(id).subscribe({
-        next: (res) => {
-          console.log('Pizza eliminada:', res);
-          this.getPizzas();
-          alert('Pizza eliminada con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al eliminar la pizza:', err);
-          alert('Error al eliminar la pizza.');
-        }
-      });
-    }
+eliminarPizza(pizza: any) {
+  if (!pizza) return;
+
+  if (confirm(`¿Estás seguro de que deseas eliminar la pizza "${pizza.nombre}"?`)) {
+    this.administradorService.eliminarPizza(pizza.id).subscribe({
+      next: () => {
+        console.log('Pizza eliminada');
+        this.getPizzas();
+        alert('Pizza eliminada con éxito.');
+      },
+      error: (err) => {
+        console.error('Error al eliminar la pizza:', err);
+        alert('Ocurrió un error al eliminar la pizza.');
+      }
+    });
   }
-  
+}
+
   
 
   mostrarModal: boolean = false; 
@@ -695,6 +702,8 @@ procesarImagen(event: any) {
     lector.readAsDataURL(archivo);
     lector.onload = () => {
       this.pizzasForm.imagen = lector.result as string; // Guardamos la imagen en formato Base64
+      console.log('Imagen procesada:', this.pizzasForm.imagen);
+      
     };
   }
 }
