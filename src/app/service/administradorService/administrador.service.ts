@@ -7,50 +7,50 @@ import { Router } from '@angular/router';
 interface AuthResponse {
   token: string;
   nombreUsuario: string;
- 
+
 }
 
 
-interface getAdministradores{
+interface getAdministradores {
   id: number;
   nombreUsuario: string;
   contrasenia: string;
   cedula: string;
   nombreCompleto: string;
-  }
+}
 
-  interface Pizza {
-    id: number;
-    nombre: string;
-    precio: number;
-    tipo: string;
-    imagen: string;
-    ingredientes: getPizzaIngrediente[];
-  }
+interface Pizza {
+  id: number;
+  nombre: string;
+  precio: number;
+  tipo: string;
+  imagen: string;
+  ingredientes: getPizzaIngrediente[];
+}
 
-  interface getPizzaIngrediente{
-    id: number;
-    cantidad: number;
-    ingrediente: getIngredientes;
-  }
-    
+interface getPizzaIngrediente {
+  id: number;
+  cantidad: number;
+  ingrediente: getIngredientes;
+}
 
-  interface getIngredientes{
-    id: number;
-    direccion: string;
-    email: string;
-    telefono: string;
-    tipo_cliente: string;
-  }
 
-  interface cliente{
-    id: number;
-    nombreUsuario: string;
-    contrasenia: string;
-    nombreCompleto: string;
-  }
+interface getIngredientes {
+  id: number;
+  direccion: string;
+  email: string;
+  telefono: string;
+  tipo_cliente: string;
+}
 
-  interface Fiestas{
+interface cliente {
+  id: number;
+  nombreUsuario: string;
+  contrasenia: string;
+  nombreCompleto: string;
+}
+
+interface Fiestas {
   id: number;
   hamburguesa: boolean;
   chivito: boolean;
@@ -63,15 +63,15 @@ interface getAdministradores{
   direccion: string;
   cliente: cliente;
   pizzas: fiestapizza[];
-  }
+}
 
-  interface fiestapizza{
-    id: number;
-    cantidad: number;
-    pizza: Pizza;
-  }
+interface fiestapizza {
+  id: number;
+  cantidad: number;
+  pizza: Pizza;
+}
 
-  
+
 
 
 
@@ -139,8 +139,8 @@ export class AdministradorService {
   }
 
   registrar(usuario: any): Observable<string> {
-    return this.http.post<string>(`http://localhost:8080/api/clientes/register`, usuario, 
-      { responseType: 'text' as 'json' }); 
+    return this.http.post<string>(`http://localhost:8080/api/clientes/register`, usuario,
+      { responseType: 'text' as 'json' });
   }
 
   eliminarAdministrador(id: number): Observable<string> {
@@ -148,7 +148,7 @@ export class AdministradorService {
       responseType: 'text' as 'json'
     });
   }
-  
+
   crearAdministrador(adminData: any): Observable<string> {
     return this.http.post<string>(`${this.API_URL}crear`, adminData, {
       responseType: 'text' as 'json'
@@ -170,10 +170,10 @@ export class AdministradorService {
     );
   }
 
-  
-  /*Ingredientes*/ 
+
+  /*Ingredientes*/
   getIngredientes(): Observable<{ ingrediente: getIngredientes[] }> {
-    return this.http.get<{  ingrediente: getIngredientes[] }>(`${this.API_URL_INGREDIENTES}getIngredientes`);
+    return this.http.get<{ ingrediente: getIngredientes[] }>(`${this.API_URL_INGREDIENTES}getIngredientes`);
   }
 
   crearIngrediente(ingredienteData: any): Observable<string> {
@@ -187,12 +187,12 @@ export class AdministradorService {
       responseType: 'text' as 'json'
     }).pipe(
       tap(response => {
-   
+
         console.log('Ingrediente actualizado:', response);
       })
     );
   }
-  
+
 
   eliminarIngrediente(id: number): Observable<string> {
     return this.http.delete<string>(`${this.API_URL_INGREDIENTES}eliminar/${id}`, {
@@ -203,7 +203,7 @@ export class AdministradorService {
   getPizzas(): Observable<{ pizza: Pizza[] }> {
     return this.http.get<{ pizza: Pizza[] }>(`${this.API_URL_PIZZAS}getPizzas`);
   }
-  
+
   crearPizza(pizzaData: any): Observable<string> {
     return this.http.post<string>(`${this.API_URL_PIZZAS}crear`, pizzaData, {
       responseType: 'text' as 'json'
@@ -225,7 +225,7 @@ export class AdministradorService {
       responseType: 'text' as 'json'
     });
   }
-  
+
 
   getFiestas(): Observable<{ fiesta: Fiestas[] }> {
     return this.http.get<{ fiesta: Fiestas[] }>(`${this.API_URL_FIESTA}getFiestas`);
@@ -236,6 +236,15 @@ export class AdministradorService {
       responseType: 'text' as 'json'
     });
   }
-  
-  
+
+  getAnioGrafica(): Observable<{ anios: string[] }> {
+    return this.http.get<{ anios: string[] }>(`${this.API_URL_INGREDIENTES}getAnioGrafica`);
+  }
+
+
+
+  getIngresos(anio: string): Observable<Record<string, number>> {
+    return this.http.get<Record<string, number>>(`http://localhost:8080/api/ingredientes/getIngreso/${anio}`
+    );
+  }
 }

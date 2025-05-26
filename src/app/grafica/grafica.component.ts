@@ -5,6 +5,12 @@ import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { AdministradorService } from '../service/administradorService/administrador.service';
 
+interface Ingrediente {
+  id: number;
+  nombre: string;
+  unidad: string;
+}
+
 @Component({
   selector: 'app-grafica',
   standalone: true,
@@ -13,45 +19,52 @@ import { AdministradorService } from '../service/administradorService/administra
   styleUrl: './grafica.component.css'
 })
 export class GraficaComponent implements OnInit {
-  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  @ViewChild('chartIngredientes') chartIngrediente?: BaseChartDirective;
+  @ViewChild('chartIngresos') chartIngreso?: BaseChartDirective;
+
   anio: string = '2025';
-  ingrediente: string = 'Harina';
-
-  // Mapa de ingredientes a sus unidades de medida
-  private unidadesPorIngrediente: Record<string, string> = {
-    'Harina': 'g',
-    'Azúcar': 'g',
-    'Sal': 'g',
-    'Levadura': 'g',
-    'Agua': 'ml',
-    'Muzzarella': 'g',
-    'Panceta': 'g',
-    'Aceituna': '',  
-    'Jamón': 'g',
-    'Capresse': 'g',
-    'Pesto': 'g',
-    'Roquefort': 'g',
-    'Hawaiana': 'g',
-    'Longaniza': 'g',
-    'Bondiola y rucula': 'g',
-    'Anchoas': '',
-
-  };
+  anioIngresos: string = '2025';
+  ingrediente: string = ''; // valor del nombre del ingrediente seleccionado
+  ingredientes: Ingrediente[] = []; // lista dinámica
+  unidadIngrediente: string = ''; // unidad actual
+  anios: string[] = [];
 
   constructor(private administradorService: AdministradorService) { }
 
-  // Obtiene la unidad para el ingrediente actual
-  private obtenerUnidad(): string {
-    return this.unidadesPorIngrediente[this.ingrediente] || '';
+  ngOnInit(): void {
+    this.cargarIngredientes();
+    this.getAnioGrafica();
+    this.getIngresos();
   }
+
+  cargarIngredientes(): void {
+    this.administradorService.getIngredientes().subscribe({
+      next: (lista) => {
+        this.ingredientes = lista.ingrediente.map((i: any) => ({
+          id: i.id,
+          nombre: i.nombre,
+          unidad: i.unidad_medida
+        }));
+        if (this.ingredientes.length > 0) {
+          console.log('Lista de ingredientes:', this.ingredientes);
+          this.ingrediente = this.ingredientes[0].nombre;
+          this.unidadIngrediente = this.ingredientes[0].unidad;
+          this.getIngredientesUsados();
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar ingredientes:', err);
+      }
+    });
+  }
+
 
   // Obtiene el texto completo para el eje Y
   private obtenerTextoEjeY(): string {
-    const unidad = this.obtenerUnidad();
-    return unidad ? `Cantidad (${unidad})` : 'Cantidad';
+    return this.unidadIngrediente ? `Cantidad (${this.unidadIngrediente})` : 'Cantidad';
   }
 
-  public lineChartData: ChartConfiguration<'line'>['data'] = { // Tipo de gráfica de linea
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
     datasets: [
       {
@@ -59,32 +72,31 @@ export class GraficaComponent implements OnInit {
         label: '',
         fill: false,
         tension: 0.1,
-        borderColor: 'rgb(53,53,52);',
+        borderColor: 'rgb(53,53,52)',
         backgroundColor: 'rgba(236, 87, 12, 0.23)',
-        pointBackgroundColor : 'rgb(236,85,12)',
+        pointBackgroundColor: 'rgb(236,85,12)',
       },
     ]
   };
 
   public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true, // Se adapta a cualquier pantalla
+    responsive: true,
     plugins: {
       legend: {
-        display: false, // Oculta la leyenda
+        display: false,
         position: 'top',
       },
       tooltip: {
         callbacks: {
-          label: (context) => { // Se genera el label dinamicamente
+          label: (context) => {
             let label = context.dataset.label || '';
             if (label) {
-              label += ': '; // Si hay un label, le añade ":"
+              label += ': ';
             }
             if (context.parsed.y !== null) {
               label += context.parsed.y;
-              const unidad = this.obtenerUnidad();
-              if (unidad) {
-                label += ` ${unidad}`;
+              if (this.unidadIngrediente) {
+                label += ` ${this.unidadIngrediente}`;
               }
             }
             return label;
@@ -96,15 +108,73 @@ export class GraficaComponent implements OnInit {
       y: {
         title: {
           display: true,
-          text: this.obtenerTextoEjeY(),
+          text: '', // lo actualizas dinámicamente
           font: {
             size: 14
           }
         },
         ticks: {
           callback: (value) => {
-            const unidad = this.obtenerUnidad();
-            return unidad ? `${value} ${unidad}` : value;
+            return this.unidadIngrediente ? `${value} ${this.unidadIngrediente}` : value;
+          }
+        }
+      }
+    }
+  };
+
+  public incomeChartData: ChartConfiguration<'line'>['data'] = {
+    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    datasets: [
+      {
+        data: [],
+        label: 'Ingresos',
+        fill: false,
+        tension: 0.1,
+        borderColor: 'rgb(53,53,52)',
+        backgroundColor: 'rgba(236, 87, 12, 0.23)',
+        pointBackgroundColor: 'rgb(236,85,12)',
+      },
+    ]
+  };
+
+  public incomeChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    animation: {
+      duration: 800,
+      easing: 'easeOutQuart'
+    },
+    plugins: {
+      legend: {
+        display: false,
+        position: 'top',
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += `$${context.parsed.y.toLocaleString()}`;
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: 'Ingresos ($)',
+          font: {
+            size: 14
+          }
+        },
+        ticks: {
+          callback: (value) => {
+            return `$${value}`;
           }
         }
       }
@@ -112,12 +182,11 @@ export class GraficaComponent implements OnInit {
   };
 
 
+  getIngredientesUsados(): void {
+    this.unidadIngrediente = this.ingredientes.find(i => i.nombre === this.ingrediente)?.unidad || '';
+    console.log('Unidad del ingrediente:', this.unidadIngrediente);
+    console.log('Ingrediente seleccionado:', this.ingrediente);
 
-  ngOnInit(): void {
-    this.getIngredientesUsados();
-  }
-
-  getIngredientesUsados() {
     this.administradorService.getIngredientesUsados(this.anio, this.ingrediente)
       .subscribe({
         next: (datos) => {
@@ -126,41 +195,94 @@ export class GraficaComponent implements OnInit {
             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
           ];
-          
+
           for (const mes of mesesOrdenados) {
             cantidades.push(datos[mes] ?? 0);
           }
-          
+
           this.lineChartData.datasets[0].data = cantidades;
           this.lineChartData.datasets[0].label = this.ingrediente;
-          
-          // Actualizar opciones del gráfico con las unidades adecuadas
+
           this.actualizarUnidadesGrafico();
-          
-          // Actualizar el gráfico
-          if (this.chart) {
-            this.chart.update();
+
+          if (this.chartIngrediente) {
+            this.chartIngrediente?.chart?.update();
+
           }
         },
         error: (err) => {
           console.error('Error al obtener ingredientes usados:', err);
         }
       });
+    this.actualizarUnidadesGrafico();
   }
 
-  // Método para actualizar las unidades del gráfico cuando cambia el ingrediente
+  getIngresos(): void {
+    this.administradorService.getIngresos(this.anioIngresos).subscribe({
+      next: (datos) => {
+        const ingresosMensuales: number[] = [];
+        const mesesOrdenados = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+
+        for (const mes of mesesOrdenados) {
+          ingresosMensuales.push(datos[mes] ?? 0);
+        }
+
+          this.incomeChartData.datasets[0].data = ingresosMensuales;
+
+          this.actualizarGraficoIngresos();
+
+          if (this.chartIngreso) {
+            this.chartIngreso?.chart?.update();
+
+          }
+        },
+        error: (err) => {
+          console.error('Error al obtener ingredientes usados:', err);
+        }
+      });
+    this.actualizarGraficoIngresos();
+  }
+
   actualizarUnidadesGrafico() {
     if (this.lineChartOptions.scales && this.lineChartOptions.scales['y'] && this.lineChartOptions.scales['y'].title) {
-      // Modificar el texto del título
       this.lineChartOptions.scales['y'].title.text = this.obtenerTextoEjeY();
-      
-      // Crear nuevas opciones completas y asignarlas
-      this.lineChartOptions = {...this.lineChartOptions};
-      
-      // Actualizar el gráfico
-      if (this.chart) {
-        this.chart.chart?.update(); 
+      this.lineChartOptions = { ...this.lineChartOptions };
+
+      if (this.chartIngrediente) {
+        this.chartIngrediente.chart?.update();
       }
     }
   }
+
+  actualizarGraficoIngresos() {
+    if (this.incomeChartOptions.scales && this.incomeChartOptions.scales['y'] && this.incomeChartOptions.scales['y'].title) {
+      this.incomeChartOptions.scales['y'].title.text = 'Ingresos ($)';
+      this.incomeChartOptions = { ...this.incomeChartOptions };
+
+      if (this.chartIngreso) {
+        this.chartIngreso.chart?.update();
+      }
+    }
+  }
+  
+  getAnioGrafica(): void {
+    this.administradorService.getAnioGrafica().subscribe({
+      next: (lista) => {
+        console.log('Respuesta del backend:', lista);
+        this.anios = lista.anios; // ✅ usamos directamente "anios", no .map()
+
+        if (this.anios.length > 0) {
+          this.anio = this.anios[0]; // valor inicial
+          this.getIngredientesUsados(); // carga inicial de datos
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener años:', err);
+      }
+    });
+  }
+
 }
