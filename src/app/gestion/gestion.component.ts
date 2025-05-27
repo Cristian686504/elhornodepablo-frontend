@@ -439,6 +439,61 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
       });
     }
   }
+
+
+  guardarFiesta() {
+
+  const fiesta = {
+    id: +this.fiestasForm.id,
+    cantidadPersonas: this.fiestasForm.cantidadPersonas,
+    fechaFiesta: this.fiestasForm.fechaFiesta,
+    horaServir: this.fiestasForm.fechaFiesta + 'T' + this.fiestasForm.horaServir, // unir fecha y hora
+    precio: this.fiestasForm.precio,
+    pago: this.fiestasForm.pago,
+    estado: this.fiestasForm.estado,
+    direccion: this.fiestasForm.direccion,
+    chivito: !!this.fiestasForm.chivito,
+    hamburguesa: !!this.fiestasForm.hamburguesa,
+    cliente: {
+      id: +this.fiestasForm.cliente.id
+    },
+    pizzas: this.fiestasForm.pizzas.map(p => ({
+      cantidad: p.cantidad,
+      pizza: { id: +p.pizza.id }
+    }))
+  };
+
+  console.log("JSON que se va a enviar:", JSON.stringify(fiesta, null, 2));
+
+  if (this.modoEdicion) {
+    this.administradorService.actualizarFiesta(fiesta.id, fiesta).subscribe({
+      next: () => {
+        console.log('Fiesta actualizada');
+        this.getFiestas();
+        this.cerrarModal();
+        alert('Fiesta modificada con éxito.');
+      },
+      error: (err) => {
+        console.error('Error al actualizar fiesta:', err);
+        alert('Error al modificar la fiesta. Verificá los datos.');
+      }
+    });
+  } else {
+    this.administradorService.crearFiesta(fiesta).subscribe({
+      next: () => {
+        console.log('Fiesta creada');
+        this.getFiestas();
+        this.cerrarModal();
+        alert('Fiesta creada con éxito.');
+      },
+      error: (err) => {
+        console.error('Error al crear fiesta:', err);
+        alert('Error al crear la fiesta. Verificá los datos.');
+      }
+    });
+  }
+}
+
   
   
 
@@ -639,6 +694,24 @@ eliminarPizza(pizza: any) {
       error: (err) => {
         console.error('Error al eliminar la pizza:', err);
         alert('Ocurrió un error al eliminar la pizza.');
+      }
+    });
+  }
+}
+
+eliminarFiesta(fiesta: any) {
+  if (!fiesta) return;
+
+  if (confirm(`¿Estás seguro de que deseas eliminar la fiesta"${fiesta.id}"?`)) {
+    this.administradorService.eliminarFiesta(fiesta.id).subscribe({
+      next: () => {
+        console.log('Fiesta eliminada');
+        this.getFiestas();
+        alert('Fiesta eliminada con éxito.');
+      },
+      error: (err) => {
+        console.error('Error al eliminar la fiesta:', err);
+        alert('Ocurrió un error al eliminar la fiestaa.');
       }
     });
   }

@@ -35,13 +35,13 @@ interface getPizzaIngrediente {
 }
 
 
-interface getIngredientes {
-  id: number;
-  direccion: string;
-  email: string;
-  telefono: string;
-  tipo_cliente: string;
-}
+  interface getIngredientes{
+    id: number;
+    nombre: string;
+    cantidad : number;
+    unidad_medida: string;
+    gusto: boolean;
+  }
 
 interface cliente {
   id: number;
@@ -242,9 +242,43 @@ export class AdministradorService {
   }
 
 
-
   getIngresos(anio: string): Observable<Record<string, number>> {
     return this.http.get<Record<string, number>>(`http://localhost:8080/api/ingredientes/getIngreso/${anio}`
     );
   }
+
+  actualizarFiesta(id: number, fiestaData: any): Observable<string> {
+    return this.http.put<string>(`${this.API_URL_FIESTA}modificar/${id}`, fiestaData, {
+      responseType: 'text' as 'json'
+    }).pipe(
+      tap(response => {
+        console.log('Fiesta actualizada:', response);
+      })
+    );
+  }
+
+  eliminarFiesta(id: number): Observable<string> {
+    return this.http.delete<string>(`${this.API_URL_FIESTA}eliminar/${id}`, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  cancelarFiesta(id: number, nombreUsuario: string): Observable<void> {
+  const body = {
+    id: id,
+    nombreUsuario: nombreUsuario
+  };
+
+  return this.http.put<void>(`${this.API_URL_FIESTA}cancelarFiesta`, body);
+}
+
+aceptarFiesta(id: number, nombreUsuario: string): Observable<void> {
+  const body = {
+    id: id,
+    nombreUsuario: nombreUsuario
+  };
+
+  return this.http.put<void>(`${this.API_URL_FIESTA}aceptarFiesta`, body);
+}
+
 }

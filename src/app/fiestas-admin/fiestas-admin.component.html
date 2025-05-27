@@ -6,8 +6,8 @@
     <div class="mb-4 text-center">
       <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarFiestas()">
         <option value="">Todos</option>
-        <option value="ACEPTADA">Aceptadas</option>
-        <option value="CANCELADA">Canceladas</option>
+        <option value="ACEPTADO">Aceptadas</option>
+        <option value="CANCELADO">Canceladas</option>
         <option value="PENDIENTE">Pendientes</option>
       </select>
     </div>
@@ -28,8 +28,8 @@
             <p><strong>Estado:</strong> 
               <span class="badge" 
                     [ngClass]="{
-                      'bg-success': fiesta.estado === 'ACEPTADA',
-                      'bg-danger': fiesta.estado === 'CANCELADA',
+                      'bg-success': fiesta.estado === 'ACEPTADO',
+                      'bg-danger': fiesta.estado === 'CANCELADO',
                       'bg-warning text-dark': fiesta.estado === 'PENDIENTE'
                     }">
                 {{ fiesta.estado }}
@@ -46,8 +46,9 @@
             </ul>
 
             <div class="d-flex justify-content-between">
-              <button class="btn btn-outline-success w-45" (click)="aceptarFiesta(fiesta.id)">✅ Aceptar</button>
-              <button class="btn btn-outline-danger w-45" (click)="cancelarFiesta(fiesta.id)">❌ Cancelar</button>
+              <button class="btn btn-outline-success w-45" (click)="aceptarFiesta(fiesta)">✅ Aceptar</button>
+              <button class="btn btn-outline-danger w-45" (click)="cancelarFiesta(fiesta)">❌ Cancelar</button>
+
             </div>
           </div>
         </div>

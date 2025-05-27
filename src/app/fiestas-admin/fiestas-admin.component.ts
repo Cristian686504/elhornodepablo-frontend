@@ -128,7 +128,7 @@ fiestasForm = {
 
 
   paginaFiestas: number = 1; 
-  fiestasPorPagina: number = 10;
+  fiestasPorPagina: number = 3;
 
   getFiestasPaginados() {
     const startIndex = (this.paginaFiestas - 1) * this.fiestasPorPagina;
@@ -148,15 +148,58 @@ fiestasForm = {
   }
 
 
-aceptarFiesta(id: number) {
-  console.log(`Aceptar fiesta con ID ${id}`);
- 
+aceptarFiesta(fiesta: any) {
+  console.log('DEBUG: Fiesta recibida al aceptar:', fiesta);
+
+  const id = fiesta.id;
+  const nombreUsuario = fiesta.cliente?.nombreUsuario;
+
+  console.log('DEBUG: ID:', id);
+  console.log('DEBUG: nombreUsuario:', nombreUsuario);
+
+  if (!nombreUsuario) {
+    console.error('No se pudo obtener el nombre de usuario del cliente.');
+    return;
+  }
+
+  this.administradorService.aceptarFiesta(id, nombreUsuario).subscribe({
+    next: () => {
+      console.log(`Fiesta con ID ${id} aceptada exitosamente.`);
+      this.getFiestas(); // refrescar lista
+    },
+    error: (err) => {
+      console.error('Error al aceptar la fiesta:', err);
+    }
+  });
 }
 
-cancelarFiesta(id: number) {
-  console.log(`Cancelar fiesta con ID ${id}`);
 
+cancelarFiesta(fiesta: any) {
+  console.log('DEBUG: Fiesta recibida al cancelar:', fiesta);
+
+  const id = fiesta.id;
+  const nombreUsuario = fiesta.cliente?.nombreUsuario;
+
+  console.log('DEBUG: ID:', id);
+  console.log('DEBUG: nombreUsuario:', nombreUsuario);
+
+  if (!nombreUsuario) {
+    console.error('No se pudo obtener el nombre de usuario del cliente.');
+    return;
+  }
+
+  this.administradorService.cancelarFiesta(id, nombreUsuario).subscribe({
+    next: () => {
+      console.log(`Fiesta con ID ${id} cancelada exitosamente.`);
+      this.getFiestas(); // recargar la lista
+    },
+    error: (err) => {
+      console.error('Error al cancelar la fiesta:', err);
+    }
+  });
 }
+
+
 
 
 }
