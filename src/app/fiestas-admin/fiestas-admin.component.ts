@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AdministradorService } from '../service/administradorService/administrador.service';
 import { UsuarioService } from '../service/usuarioService/usuario.service';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-fiestas-admin',
@@ -149,13 +151,8 @@ fiestasForm = {
 
 
 aceptarFiesta(fiesta: any) {
-  console.log('DEBUG: Fiesta recibida al aceptar:', fiesta);
-
   const id = fiesta.id;
   const nombreUsuario = fiesta.cliente?.nombreUsuario;
-
-  console.log('DEBUG: ID:', id);
-  console.log('DEBUG: nombreUsuario:', nombreUsuario);
 
   if (!nombreUsuario) {
     console.error('No se pudo obtener el nombre de usuario del cliente.');
@@ -164,14 +161,28 @@ aceptarFiesta(fiesta: any) {
 
   this.administradorService.aceptarFiesta(id, nombreUsuario).subscribe({
     next: () => {
-      console.log(`Fiesta con ID ${id} aceptada exitosamente.`);
-      this.getFiestas(); // refrescar lista
+      this.getFiestas();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Aceptada',
+        text: 'La fiesta ha sido aceptada y los ingredientes descontados.',
+        timer: 2000,
+        showConfirmButton: false
+      });
     },
     error: (err) => {
       console.error('Error al aceptar la fiesta:', err);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo aceptar la fiesta.',
+      });
     }
   });
 }
+
 
 
 cancelarFiesta(fiesta: any) {
@@ -179,9 +190,6 @@ cancelarFiesta(fiesta: any) {
 
   const id = fiesta.id;
   const nombreUsuario = fiesta.cliente?.nombreUsuario;
-
-  console.log('DEBUG: ID:', id);
-  console.log('DEBUG: nombreUsuario:', nombreUsuario);
 
   if (!nombreUsuario) {
     console.error('No se pudo obtener el nombre de usuario del cliente.');
@@ -192,12 +200,26 @@ cancelarFiesta(fiesta: any) {
     next: () => {
       console.log(`Fiesta con ID ${id} cancelada exitosamente.`);
       this.getFiestas(); // recargar la lista
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Cancelada',
+        text: 'La fiesta ha sido cancelada exitosamente',
+        timer: 2000,
+        showConfirmButton: false
+      });
     },
     error: (err) => {
       console.error('Error al cancelar la fiesta:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al cancelar la fiesta',
+      });
     }
   });
 }
+
 
 
 

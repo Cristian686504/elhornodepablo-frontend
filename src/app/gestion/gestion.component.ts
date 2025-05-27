@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AdministradorService } from '../service/administradorService/administrador.service';
 import { UsuarioService } from '../service/usuarioService/usuario.service';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-gestion',
@@ -245,128 +246,193 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
   }
 
   guardarUsuarioCliente() {
-    if (this.modoEdicion) {
-      const id = +this.usuarioForm.id;     
-      const datosCliente = {
-        id,
-        nombreUsuario: this.usuarioForm.nombreUsuario,
-        contrasenia:     this.usuarioForm.contrasenia,
-        nombreCompleto:  this.usuarioForm.nombreCompleto,
-        direccion:       this.usuarioForm.direccion,
-        email:           this.usuarioForm.email,
-        telefono:        this.usuarioForm.telefono,
-        tipoCliente:     this.usuarioForm.tipoCliente
-      };
-  
-      this.usuarioService.actualizarCliente(id, datosCliente).subscribe({
-        next: () => {
-          console.log('Cliente actualizado:', datosCliente);
-          this.getClientes();    
-          this.cerrarModal();    
-          alert('Cliente modificado con éxito.');
-        },
-        error: err => {
-          console.error('Error al modificar cliente:', err);
-          alert('Error al modificar el cliente. Verificá los datos.');
-        }
-      });
-    } else {
-      console.log('Crear cliente:', this.usuarioForm);
-    
-      this.usuarioService.CrearUsuario(this.usuarioForm).subscribe({
-        next: (res) => {
-          console.log('Usuario creado:', res);
-          this.getClientes(); 
-          this.cerrarModal();
-        },
-        error: (err) => {
-          console.error('Error al crear el usuario:', err);
-          alert('Error al crear el usuario. Verificá los datos.');
-        }
-      });
-    }
-    this.cerrarModal(); 
+  if (this.modoEdicion) {
+    const id = +this.usuarioForm.id;
+    const datosCliente = {
+      id,
+      nombreUsuario:  this.usuarioForm.nombreUsuario,
+      contrasenia:    this.usuarioForm.contrasenia,
+      nombreCompleto: this.usuarioForm.nombreCompleto,
+      direccion:      this.usuarioForm.direccion,
+      email:          this.usuarioForm.email,
+      telefono:       this.usuarioForm.telefono,
+      tipoCliente:    this.usuarioForm.tipoCliente
+    };
+
+    this.usuarioService.actualizarCliente(id, datosCliente).subscribe({
+      next: () => {
+        console.log('Cliente actualizado:', datosCliente);
+        this.getClientes();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Cliente modificado',
+          text: 'El cliente ha sido actualizado exitosamente.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: err => {
+        console.error('Error al modificar cliente:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar el cliente. Verificá los datos.',
+        });
+      }
+    });
+  } else {
+    console.log('Crear cliente:', this.usuarioForm);
+
+    this.usuarioService.CrearUsuario(this.usuarioForm).subscribe({
+      next: (res) => {
+        console.log('Usuario creado:', res);
+        this.getClientes();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Usuario creado',
+          text: 'El usuario ha sido creado exitosamente.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear el usuario:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear el usuario. Verificá los datos.',
+        });
+      }
+    });
   }
+}
+
 
   guardarUsuarioAdministrador() {
-    if (this.modoEdicion) {
-      const adminActual = this.adminForm;
-      const datos = {
-        id: +adminActual.id,
-        nombreUsuario: adminActual.nombreUsuario,
-        cedula: adminActual.cedula,
-        nombreCompleto: adminActual.nombreCompleto,
-        contrasenia: adminActual.contrasenia,
-      };
-  
-      this.administradorService.actualizarAdministrador(datos.id, datos).subscribe({
-        next: (res) => {
-          console.log('Administrador actualizado:', res);
-          this.getAdministradores();
-          this.cerrarModal();
-        },
-        error: (err) => {
-          console.error('Error al actualizar administrador:', err);
-          alert('Error al modificar el administrador. Verificá los datos.');
-        }
-      });
-      
-    } else {
-      console.log('Crear admin:', this.adminForm);
-  
-      this.administradorService.crearAdministrador(this.adminForm).subscribe({
-        next: (res) => {
-          console.log('Administrador creado:', res);
-          this.getAdministradores();
-          this.cerrarModal();
-        },
-        error: (err) => {
-          console.error('Error al crear administrador:', err);
-          alert('Error al crear el administrador. Verificá los datos.');
-        }
-      });
-    }
+  if (this.modoEdicion) {
+    const adminActual = this.adminForm;
+    const datos = {
+      id: +adminActual.id,
+      nombreUsuario: adminActual.nombreUsuario,
+      cedula: adminActual.cedula,
+      nombreCompleto: adminActual.nombreCompleto,
+      contrasenia: adminActual.contrasenia,
+    };
+
+    this.administradorService.actualizarAdministrador(datos.id, datos).subscribe({
+      next: (res) => {
+        console.log('Administrador actualizado:', res);
+        this.getAdministradores();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualizado',
+          text: 'Administrador modificado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar administrador:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar el administrador. Verificá los datos.'
+        });
+      }
+    });
+
+  } else {
+    console.log('Crear admin:', this.adminForm);
+
+    this.administradorService.crearAdministrador(this.adminForm).subscribe({
+      next: (res) => {
+        console.log('Administrador creado:', res);
+        this.getAdministradores();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Creado',
+          text: 'Administrador creado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear administrador:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear el administrador. Verificá los datos.'
+        });
+      }
+    });
   }
+}
+
   
 
   guardarIngrediente() {
-    const ingrediente = {
-      id: +this.ingredientesForm.id,
-      nombre: this.ingredientesForm.nombre,
-      cantidad: this.ingredientesForm.cantidad,
-      unidad_medida: this.ingredientesForm.unidad_medida
-    };
-  
-    console.log("Ingrediente a guardar:", ingrediente);
-  
-    if (this.modoEdicion) {
-      this.administradorService.actualizarIngrediente(ingrediente.id, ingrediente).subscribe({
-        next: () => {
-          console.log('Ingrediente actualizado');
-          this.getIngredientes();
-          this.cerrarModal();
-          alert('Ingrediente actualizado con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al actualizar ingrediente:', err);
-          alert('Error al modificar el ingrediente.');
-        }
-      });
-    } else {
-      this.administradorService.crearIngrediente(ingrediente).subscribe({
-        next: () => {
-          console.log('Ingrediente creado');
-          this.getIngredientes();
-          this.cerrarModal();
-          alert('Ingrediente creado con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al crear ingrediente:', err);
-          alert('Error al crear el ingrediente.');
-        }
-      });
-    }
+  const ingrediente = {
+    id: +this.ingredientesForm.id,
+    nombre: this.ingredientesForm.nombre,
+    cantidad: this.ingredientesForm.cantidad,
+    unidad_medida: this.ingredientesForm.unidad_medida
+  };
+
+  console.log("Ingrediente a guardar:", ingrediente);
+
+  if (this.modoEdicion) {
+    this.administradorService.actualizarIngrediente(ingrediente.id, ingrediente).subscribe({
+      next: () => {
+        console.log('Ingrediente actualizado');
+        this.getIngredientes();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualizado',
+          text: 'Ingrediente actualizado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar ingrediente:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar el ingrediente.'
+        });
+      }
+    });
+  } else {
+    this.administradorService.crearIngrediente(ingrediente).subscribe({
+      next: () => {
+        console.log('Ingrediente creado');
+        this.getIngredientes();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Creado',
+          text: 'Ingrediente creado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear ingrediente:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear el ingrediente.'
+        });
+      }
+    });
   }
+}
+
 
   agregarIngrediente() {
     if (!Array.isArray(this.pizzasForm.ingredientes)) {
@@ -386,63 +452,80 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
   }
 
   guardarPizza() {
-
-    if (this.pizzasForm.imagen) {
+  if (this.pizzasForm.imagen) {
     this.pizzasForm.imagen = this.pizzasForm.imagen.split(',')[1]; 
-    }
-
-    const pizza = {
-      id: +this.pizzasForm.id,
-      nombre: this.pizzasForm.nombre,
-      tipo: this.pizzasForm.tipo,
-      precio: this.pizzasForm.precio,
-      descripcion: this.pizzasForm.descripcion,
-      imagen: this.pizzasForm.imagen,
-      ingredientes: this.pizzasForm.ingredientes.map(i => ({
-        cantidad: i.cantidad,  
-        ingrediente: {
-          id: i.ingredienteId || (i.ingrediente && i.ingrediente.id)
-        }
-      }))
-    };
-    console.log("Imagen codificada:", this.pizzasForm.imagen);
-    console.log("JSON que se va a enviar:", JSON.stringify(pizza));
-    console.log("Pizza a guardar:", pizza);
-  
-    if (this.modoEdicion) {
- 
-      this.administradorService.actualizarPizza(pizza.id, pizza).subscribe({
-        next: () => {
-          console.log('Pizza actualizada');
-          this.getPizzas();  
-          this.cerrarModal(); 
-          alert('Pizza actualizada con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al actualizar pizza:', err);
-          alert('Error al modificar la pizza. Verificá los datos.');
-        }
-      });
-    } else {
- 
-      this.administradorService.crearPizza(pizza).subscribe({
-        next: () => {
-          console.log('Pizza creada');
-          this.getPizzas();  
-          this.cerrarModal(); 
-          alert('Pizza creada con éxito.');
-        },
-        error: (err) => {
-          console.error('Error al crear pizza:', err);
-          alert('Error al crear la pizza. Verificá los datos.');
-        }
-      });
-    }
   }
 
+  const pizza = {
+    id: +this.pizzasForm.id,
+    nombre: this.pizzasForm.nombre,
+    tipo: this.pizzasForm.tipo,
+    precio: this.pizzasForm.precio,
+    descripcion: this.pizzasForm.descripcion,
+    imagen: this.pizzasForm.imagen,
+    ingredientes: this.pizzasForm.ingredientes.map(i => ({
+      cantidad: i.cantidad,
+      ingrediente: {
+        id: i.ingredienteId || (i.ingrediente && i.ingrediente.id)
+      }
+    }))
+  };
 
-  guardarFiesta() {
+  console.log("Imagen codificada:", this.pizzasForm.imagen);
+  console.log("JSON que se va a enviar:", JSON.stringify(pizza));
+  console.log("Pizza a guardar:", pizza);
 
+  if (this.modoEdicion) {
+    this.administradorService.actualizarPizza(pizza.id, pizza).subscribe({
+      next: () => {
+        console.log('Pizza actualizada');
+        this.getPizzas();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualización exitosa',
+          text: 'Pizza actualizada con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar pizza:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar la pizza. Verificá los datos.'
+        });
+      }
+    });
+  } else {
+    this.administradorService.crearPizza(pizza).subscribe({
+      next: () => {
+        console.log('Pizza creada');
+        this.getPizzas();
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Creación exitosa',
+          text: 'Pizza creada con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear pizza:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear la pizza. Verificá los datos.'
+        });
+      }
+    });
+  }
+}
+
+
+guardarFiesta() {
   const fiesta = {
     id: +this.fiestasForm.id,
     cantidadPersonas: this.fiestasForm.cantidadPersonas,
@@ -471,11 +554,21 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
         console.log('Fiesta actualizada');
         this.getFiestas();
         this.cerrarModal();
-        alert('Fiesta modificada con éxito.');
+        Swal.fire({
+          icon: 'success',
+          title: 'Fiesta modificada',
+          text: 'Fiesta modificada con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       },
       error: (err) => {
         console.error('Error al actualizar fiesta:', err);
-        alert('Error al modificar la fiesta. Verificá los datos.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar la fiesta. Verificá los datos.'
+        });
       }
     });
   } else {
@@ -484,15 +577,26 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
         console.log('Fiesta creada');
         this.getFiestas();
         this.cerrarModal();
-        alert('Fiesta creada con éxito.');
+        Swal.fire({
+          icon: 'success',
+          title: 'Fiesta creada',
+          text: 'Fiesta creada con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
       },
       error: (err) => {
         console.error('Error al crear fiesta:', err);
-        alert('Error al crear la fiesta. Verificá los datos.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear la fiesta. Verificá los datos.'
+        });
       }
     });
   }
 }
+
 
   
   
@@ -631,90 +735,199 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
 
 
   eliminarAdmin(admin: any) {
-    if (!admin) return;
-  
-    if (confirm(`¿Estás seguro de que querés eliminar al administrador con ID ${admin.id}?`)) {
+  if (!admin) return;
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Querés eliminar al administrador "${admin.nombreUsuario}"? Esta acción no se puede deshacer.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
       this.administradorService.eliminarAdministrador(admin.id).subscribe({
         next: () => {
           console.log('Administrador eliminado');
-          this.getAdministradores(); 
-          alert('Administrador eliminado con éxito.');
+          this.getAdministradores();
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminado',
+            text: 'Administrador eliminado con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
         },
-        error: (err) => console.error('Error al eliminar administrador:', err)
+        error: (err) => {
+          console.error('Error al eliminar administrador:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al eliminar el administrador.'
+          });
+        }
       });
     }
-  }
+  });
+}
+
 
   eliminarCliente(cliente: any) {
-    if (!cliente) return;
-  
-    if (confirm(`¿Estás seguro de que querés eliminar al cliente con ID ${cliente.nombre}?`)) {
+  if (!cliente) return;
+
+  Swal.fire({
+    title: `¿Estás seguro?`,
+    text: `¿Querés eliminar al cliente "${cliente.nombreUsuario}"? Esta acción no se puede deshacer.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
       this.usuarioService.eliminarCliente(cliente.id).subscribe({
         next: () => {
           console.log('Cliente eliminado');
           this.getClientes(); 
-          alert('Cliente eliminado con éxito.');
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminado',
+            text: 'Cliente eliminado con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
         },
         error: (err) => {
           console.error('Error al eliminar cliente:', err);
-          alert('Ocurrió un error al eliminar el cliente.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al eliminar el cliente.'
+          });
         }
       });
     }
-  }
+  });
+}
+
   
  eliminarIngrediente(ingrediente: any) {
-    if (!ingrediente) return;
-  
-    if (confirm(`¿Estás seguro de que querés eliminar el ingrediente "${ingrediente.nombre}"?`)) {
+  if (!ingrediente) return;
+
+  Swal.fire({
+    title: `¿Estás seguro?`,
+    text: `¿Querés eliminar el ingrediente "${ingrediente.nombre}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
       this.administradorService.eliminarIngrediente(ingrediente.id).subscribe({
         next: () => {
           console.log('Ingrediente eliminado');
           this.getIngredientes();
-          alert('Ingrediente eliminado con éxito.');
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminado',
+            text: 'Ingrediente eliminado con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
         },
         error: (err) => {
           console.error('Error al eliminar ingrediente:', err);
-          alert('Ocurrió un error al eliminar el ingrediente.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al eliminar el ingrediente.'
+          });
         }
       });
     }
-  }
+  });
+}
+
 
 eliminarPizza(pizza: any) {
   if (!pizza) return;
 
-  if (confirm(`¿Estás seguro de que deseas eliminar la pizza "${pizza.nombre}"?`)) {
-    this.administradorService.eliminarPizza(pizza.id).subscribe({
-      next: () => {
-        console.log('Pizza eliminada');
-        this.getPizzas();
-        alert('Pizza eliminada con éxito.');
-      },
-      error: (err) => {
-        console.error('Error al eliminar la pizza:', err);
-        alert('Ocurrió un error al eliminar la pizza.');
-      }
-    });
-  }
+  Swal.fire({
+    title: `¿Estás seguro de que deseas eliminar la pizza "${pizza.nombre}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.administradorService.eliminarPizza(pizza.id).subscribe({
+        next: () => {
+          console.log('Pizza eliminada');
+          this.getPizzas();
+          Swal.fire({
+            icon: 'success',
+            title: 'Pizza eliminada',
+            text: 'Pizza eliminada con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al eliminar la pizza:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al eliminar la pizza.'
+          });
+        }
+      });
+    }
+  });
 }
 
 eliminarFiesta(fiesta: any) {
   if (!fiesta) return;
 
-  if (confirm(`¿Estás seguro de que deseas eliminar la fiesta"${fiesta.id}"?`)) {
-    this.administradorService.eliminarFiesta(fiesta.id).subscribe({
-      next: () => {
-        console.log('Fiesta eliminada');
-        this.getFiestas();
-        alert('Fiesta eliminada con éxito.');
-      },
-      error: (err) => {
-        console.error('Error al eliminar la fiesta:', err);
-        alert('Ocurrió un error al eliminar la fiestaa.');
-      }
-    });
-  }
+  Swal.fire({
+    title: `¿Estás seguro de que deseas eliminar la fiesta "${fiesta.id}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+     confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.administradorService.eliminarFiesta(fiesta.id).subscribe({
+        next: () => {
+          console.log('Fiesta eliminada');
+          this.getFiestas();
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminada',
+            text: 'Fiesta eliminada con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al eliminar la fiesta:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al eliminar la fiesta.'
+          });
+        }
+      });
+    }
+  });
 }
 
   
