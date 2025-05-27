@@ -220,7 +220,7 @@
   <div class="mb-3 d-flex gap-2">
     <button class="btn btn-primary" (click)="abrirModal('fiesta')">Crear Fiesta</button>
     <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">Modificar Fiesta</button>
-    <button class="btn btn-danger" (click)="eliminarAdmin(fiestaSeleccionada)">Eliminar</button>
+    <button class="btn btn-danger" (click)="eliminarFiesta(fiestaSeleccionada)">Eliminar</button>
   </div>
 
   <!-- Paginación -->
@@ -237,7 +237,7 @@
       <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
     </div>
 
-    <form (ngSubmit)="guardarUsuarioAdministrador()">
+    <form (ngSubmit)="guardarFiesta()">
       <div class="custom-modal-body">
         <!-- Campo oculto para el id -->
         <input type="hidden" [(ngModel)]="fiestasForm.id" name="id" />
@@ -262,7 +262,6 @@
           <input type="number" class="form-control" [(ngModel)]="fiestasForm.precio" name="precio" required />
         </div>
 
-   
         <div class="mb-3">
           <label for="pago" class="form-label">Pago</label>
           <select class="form-control" [(ngModel)]="fiestasForm.pago" name="pago" required>
@@ -271,13 +270,21 @@
           </select>
         </div>
 
-  
         <div class="mb-3">
           <label for="estado" class="form-label">Estado</label>
           <select class="form-control" [(ngModel)]="fiestasForm.estado" name="estado" required>
-            <option value="ENTREGADO">ENTREGADO</option>
             <option value="PENDIENTE">PENDIENTE</option>
-            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
+
+        <!-- NUEVO: Cliente -->
+        <div class="mb-3">
+          <label for="cliente" class="form-label">Cliente</label>
+          <select class="form-control" [(ngModel)]="fiestasForm.cliente.id" name="clienteId" required>
+            <option value="" disabled selected>Seleccione un cliente</option>
+            <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
+              {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
+            </option>
           </select>
         </div>
 
@@ -299,12 +306,9 @@
             </div>
           </div>
         </div>
-        
-
 
         <div class="mb-3">
           <h6>Pizzas en la Fiesta</h6>
-          
           <div *ngFor="let item of fiestasForm.pizzas; let i = index" class="d-flex gap-2 align-items-center mb-2">
             <div *ngIf="!modoEdicion">
               <select class="form-control" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}" required>
@@ -318,10 +322,11 @@
             <div *ngIf="modoEdicion">
               <input type="text" class="form-control" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
             </div>
+
             <input type="number" class="form-control" [(ngModel)]="fiestasForm.pizzas[i].cantidad" name="cantidad{{i}}" placeholder="Cantidad" required />
             <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
           </div>
-        
+
           <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
         </div>
       </div>
@@ -335,6 +340,7 @@
     </form>
   </div>
 </div>
+
   </section>
 
 
