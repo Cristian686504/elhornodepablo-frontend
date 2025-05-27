@@ -50,14 +50,15 @@
                 </div>
                 <div class="text-end">
                   <div class="stats-badge">{{ ingrediente || 'Error' }}</div>
-                  <div class="stats-badge mt-1">{{ anio || 'Año' }}</div>
+                  <div class="stats-badge ms-3 mt-1">{{ anio || 'Año' }}</div>
 
                 </div>
               </div>
             </div>
             <div class="card-body">
               <div class="chart-container">
-                <canvas #chartIngredientes baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="'line'">
+                <canvas #chartIngredientes baseChart [data]="lineChartData" [options]="lineChartOptions"
+                  [type]="'line'">
                 </canvas>
               </div>
             </div>
@@ -69,17 +70,18 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div class="chart-title-icon">
                   <span>💰</span>
-                  <h4>Ingresos</h4>
+                  <h4>Ingresos brutos</h4>
                 </div>
                 <div class="text-end">
-                  <div class="stats-badge">Ingresos</div>
-                  <div class="stats-badge mt-1">{{ anioIngresos || 'Año' }}</div>
+                  <div class="stats-badge">Ingresos brutos</div>
+                  <div class="stats-badge ms-3 mt-1">{{ anioIngresos || 'Año' }}</div>
                 </div>
               </div>
             </div>
             <div class="card-body">
               <div class="chart-container">
-                <canvas #chartIngresos baseChart [data]="incomeChartData" [options]="incomeChartOptions" [type]="'line'">
+                <canvas #chartIngresos baseChart [data]="incomeChartData" [options]="incomeChartOptions"
+                  [type]="'line'">
                 </canvas>
               </div>
             </div>
