@@ -37,19 +37,24 @@
   margin-top: 16px;
   font-size: 1.1rem;
   font-weight: bold;
-  color: #d32f2f;
+  color: #ed5a12;
 }
 
 .pedido-container {
-  max-width: 800px;
+  width: 1440px;
   margin: 0 auto;
   padding: 20px;
+  transition: width 0.3s ease;
+}
+
+.pedido-container.new-width {
+  width: 50%;
 }
 
 .pedido-container h1 {
   text-align: center;
   margin-bottom: 30px;
-  color: #d32f2f;
+  color: #ed5a12;
 }
 
 .pedido-step {
@@ -72,7 +77,7 @@
 
 .total h3 {
   margin: 0;
-  color: #d32f2f;
+  color: #ed5a12;
   font-size: 1.5rem;
 }
 
@@ -96,7 +101,7 @@
 .detalles-metodo h4 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #d32f2f;
+  color: #222;
 }
 
 ::ng-deep .mat-horizontal-stepper-header-container {
@@ -110,7 +115,7 @@
 }
 
 ::ng-deep .mat-step-header .mat-step-icon {
-  background-color: #d32f2f;
+  background-color: #ed5a12;
   color: white;
 }
 
@@ -119,7 +124,12 @@
 }
 
 ::ng-deep .mat-step-header .mat-step-label.mat-step-label-active {
-  color: #d32f2f;
+  color: #ed5a12;
+}
+
+::ng-deep .mat-step-content {
+  width: 100%;
+  max-width: none;
 }
 
 ::ng-deep .mat-horizontal-content-container {
@@ -185,4 +195,196 @@ mat-slide-toggle {
 
 .mat-calendar {
   border: 2px solid red;
+}
+
+
+.resumen-pedido {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.resumen-pedido h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.resumen-pedido h5 {
+  margin: 15px 0 10px 0;
+  color: #555;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.resumen-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 4px 0;
+}
+
+.resumen-item span:first-child {
+  font-weight: 500;
+  color: #666;
+}
+
+.resumen-item span:last-child {
+  color: #333;
+  text-align: right;
+}
+
+.opciones-especiales {
+  margin: 15px 0;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+.opciones-especiales .resumen-item span:first-child {
+  color: #ed5a12;
+  font-weight: 500;
+}
+
+.pedido-items {
+  border-top: 2px solid #ddd;
+  padding-top: 15px;
+  margin-top: 20px;
+}
+
+.pedido-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.pedido-item:last-child {
+  border-bottom: none;
+}
+
+.pizza-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pizza-nombre {
+  font-weight: 500;
+  color: #333;
+}
+
+.pizza-cantidad {
+  font-size: 14px;
+  color: #666;
+}
+
+.pizza-precio {
+  font-weight: 500;
+  color: #ed5a12;
+  font-size: 16px;
+}
+
+.pedido-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0 0 0;
+  padding: 10px 0;
+  border-top: 1px solid #ed5a12;
+  font-size: 18px;
+}
+
+.pedido-total strong {
+  color: #ed5a12;
+}
+
+@media (max-width: 600px) {
+  .resumen-pedido {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .resumen-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .resumen-item span:last-child {
+    text-align: left;
+    font-weight: 500;
+  }
+  
+  .pedido-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .pizza-info {
+    width: 100%;
+  }
+  
+  .pizza-precio {
+    align-self: flex-end;
+  }
+  
+  .pedido-total {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+
+.opciones-especiales .resumen-item {
+  background-color: rgba(237, 90, 18, 0.1);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.direccion-field {
+  margin-bottom: 16px;
+}
+
+.direccion-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.direccion-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 16px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba(0, 0, 0, 0.87);
+  }
+
+  &.has-direccion {
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  &.error {
+    border-color: #f44336;
+  }
+}
+
+.placeholder-texto {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ubicacion-icon {
+  color: #ed5a12;
 }

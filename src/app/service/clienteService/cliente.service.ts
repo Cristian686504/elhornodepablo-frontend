@@ -223,6 +223,26 @@ export class ClienteService {
       );
   }
 
+  crearFiesta(fiestaData: any): Observable<any> {
+    return this.http.post<any>(`http://localhost:8080/api/fiestas/crearFiesta`, fiestaData)
+      .pipe(
+        tap(response => {
+          console.log("Fiesta creada:", response);
+          return response;
+        })
+      );
+  }
+
+    getFechasHoras(): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/api/fiestas/getFechasHoras`)
+      .pipe(
+        tap(response => {
+          console.log("Fiestas fecha y hora:", response);
+          return response;
+        })
+      );
+  }
+
 
 
   logout() {

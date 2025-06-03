@@ -19,6 +19,9 @@ import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { esLocale } from 'ngx-bootstrap/locale';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MapAddressModalComponent } from "../mapa-direccion/mapa-direccion.component";
+
 
 defineLocale('es', esLocale);
 
@@ -40,7 +43,8 @@ defineLocale('es', esLocale);
     MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MenuPizzaComponent
+    MenuPizzaComponent,
+    MapAddressModalComponent
 ],
   providers: [provideAnimations()],
   templateUrl: './pedidos.component.html',
@@ -233,6 +237,40 @@ export class PedidosComponent implements OnInit {
       return this.pizzasSeleccionadas
         .reduce((total, pizza) => total + (pizza.precio * pizza.cantidad), 0);
     }
+
+    currentStepIndex = 0;
+
+    onStepChange(event: StepperSelectionEvent) {
+      this.currentStepIndex = event.selectedIndex;
+    }
+
+    showMapa = false;
+    direccionSeleccionada = '';
+    
+    openMapModal() {
+      this.showMapa = true;
+    }
+  
+    onDireccionSeleccionada(data: {direccion: string, ubicacion: any}) {
+      this.direccionSeleccionada = data.direccion;
+      this.pedidoForm.get('detallesEntrega.detallesDelivery.direccion')?.setValue(data.direccion);
+      this.showMapa = false;
+    }
+  
+    onMapaClosed() {
+      this.showMapa = false;
+    }
+  
+    get hasDireccionSeleccionada(): boolean {
+      return !!this.direccionSeleccionada && this.direccionSeleccionada.trim() !== '';
+    }
+  
+    get showDireccionError(): boolean {
+      const control = this.pedidoForm.get('detallesEntrega.detallesDelivery.direccion');
+      return !!(control?.hasError('required') && control?.touched);
+    }
+    
+
     
 }
   
