@@ -2,11 +2,51 @@
   padding: 16px;
 }
 
+.pizza-contenido {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  min-height: 550px;
+}
+
+.pizza-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-right: 380px;
+}
+
+.pizza-grid-wrapper {
+  position: relative;     
+  min-height: 400px;
+}
+
 .pizza-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 16px;
-  margin-bottom: 24px;
+  flex: 2;
+  min-width: 0;
+}
+
+.pedido-resumen {
+  flex: 1;
+  min-width: 280px;
+  max-width: 360px;
+  background-color: #ffffff;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .pizza-card {
@@ -37,13 +77,6 @@
   font-size: 16px;
 }
 
-.pedido-resumen {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 16px;
-  margin-top: 16px;
-}
-
 .pedido-items {
   margin: 16px 0;
 }
@@ -66,6 +99,17 @@
   display: flex;
   justify-content: space-between;
   margin-top: 16px;
+}
+
+.siguiente-btn {
+  background-color: #ed5a12 !important;
+  color: white !important;
+  
+  &:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+  }
 }
 
 .loading-estado, .error-estado {

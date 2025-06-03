@@ -1,0 +1,200 @@
+<div class="fiesta-container">
+  <form [formGroup]="fiestaForm" (ngSubmit)="onSubmit()">
+    <mat-horizontal-stepper #stepper>
+      
+      <mat-step [stepControl]="fiestaForm.controls['detallesFiesta']" formGroupName="detallesFiesta">
+        <ng-template matStepLabel>Detalles de la Fiesta</ng-template>
+        <div class="fiesta-step">
+          <h3>Información básica de la fiesta</h3>
+          
+          <mat-form-field appearance="fill" class="numero-personas">
+            <mat-label>Número de personas</mat-label>
+            <input matInput type="number" formControlName="numeroPersonas" min="1">
+            <mat-error *ngIf="fiestaForm.get('detallesFiesta.numeroPersonas')?.hasError('required')">
+              El número de personas es obligatorio
+            </mat-error>
+            <mat-error *ngIf="fiestaForm.get('detallesFiesta.numeroPersonas')?.hasError('min')">
+              Debe ser al menos 1 persona
+            </mat-error>
+          </mat-form-field>
+
+          <div class="comida-opciones">
+            <h4>¿Qué habrá en la fiesta?</h4>
+            
+            <mat-slide-toggle formControlName="incluirHamburguesas" class="toggle-comida">
+              Hamburguesas
+            </mat-slide-toggle>
+
+            <mat-slide-toggle formControlName="incluirChivitos" class="toggle-comida">
+              Chivitos
+            </mat-slide-toggle>
+          </div>
+          
+          <div class="botones-navegacion">
+            <button mat-button matStepperNext type="button" [disabled]="fiestaForm.get('detallesFiesta')?.invalid">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </mat-step>
+
+      <mat-step [stepControl]="fiestaForm.controls['detallesEvento']" formGroupName="detallesEvento">
+        <ng-template matStepLabel>Fecha y Ubicación</ng-template>
+        <div class="fiesta-step">
+          <h3>¿Cuándo y dónde será la fiesta?</h3>
+          
+          <div class="fecha-hora-container">
+            <mat-form-field appearance="fill">
+            <mat-label>Fecha de la fiesta</mat-label>
+            <input
+              matInput
+              bsDatepicker
+              formControlName="fechaFiesta"
+              placeholder="Selecciona una fecha"
+              [bsConfig]="bsConfig"
+            />
+            <mat-error *ngIf="fiestaForm.get('detallesEvento.fechaFiesta')?.hasError('required')">
+              La fecha es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Hora</mat-label>
+            <input
+              matInput
+              [ngxMatTimepicker]="picker"
+              formControlName="horaFiesta"
+              readonly
+            >
+            <ngx-mat-timepicker #picker
+              [color]="'warn'"
+              [format]="24"
+            ></ngx-mat-timepicker>
+            <mat-error *ngIf="fiestaForm.get('detallesEvento.horaFiesta')?.hasError('required')">
+              La hora es obligatoria
+            </mat-error>
+
+            <mat-error *ngIf="fiestaForm.get('detallesEvento.horaFiesta')?.hasError('formatoInvalido')">
+              Formato de hora inválido
+            </mat-error>
+
+            <mat-error *ngIf="fiestaForm.get('detallesEvento.horaFiesta')?.hasError('horaFueraDeRango')">
+              La hora debe ser mayor a las 7:00 AM 
+            </mat-error>
+
+            <mat-error *ngIf="fiestaForm.get('detallesEvento.horaFiesta')?.hasError('conflictoHorario')">
+              Ya existe un evento a las {{ horaEnConflicto }}. 
+              Debe haber al menos 6 horas de diferencia.
+            </mat-error>
+
+          </mat-form-field>
+        </div>
+        
+           <div class="direccion-field">
+              <mat-label class="direccion-label">Dirección de la fiesta</mat-label>
+              <div class="direccion-display" 
+                   [class.has-direccion]="hasDireccionSeleccionada"
+                   [class.error]="showDireccionError"
+                   (click)="openMapa()">
+                      
+                <span *ngIf="hasDireccionSeleccionada; else placeholder">
+                  {{ direccionSeleccionada }}
+                </span>
+                <ng-template #placeholder>
+                  <span class="placeholder-texto">Selecciona una dirección</span>
+                </ng-template>
+              
+                <mat-icon class="ubicacion-icon">location_on</mat-icon>
+              </div>
+            
+              <mat-error *ngIf="showDireccionError">
+                La dirección es obligatoria
+              </mat-error>
+            </div>
+            
+            <app-mapa-direccion 
+              *ngIf="showMapa"
+              (dirSeleccionada)="onDireccionSeleccionada({ direccion: $event.dir, ubicacion: $event.ubi })"
+              (modalClosed)="onMapaClosed()">
+            </app-mapa-direccion>
+          
+          <div class="botones-navegacion">
+            <button mat-button matStepperPrevious type="button">Atrás</button>
+            <button mat-button matStepperNext type="button" [disabled]="fiestaForm.get('detallesEvento')?.invalid">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </mat-step>
+      
+      <mat-step [stepControl]="fiestaForm.controls['detallesPago']" formGroupName="detallesPago">
+        <ng-template matStepLabel>Pago y Confirmación</ng-template>
+        <div class="fiesta-step">
+          <h3>Método de pago</h3>
+          
+          <mat-radio-group formControlName="metodoPago" class="radio-metodo-pago">
+            <mat-radio-button *ngFor="let metodo of metodoPago" [value]="metodo.value">
+              {{ metodo.viewValue }}
+            </mat-radio-button>
+          </mat-radio-group>
+
+          <div class="resumen-fiesta">
+            <h4>Resumen de la fiesta</h4>
+            <div class="resumen-item">
+              <span>Número de personas:</span>
+              <span>{{ fiestaForm.get('detallesFiesta.numeroPersonas')?.value || 0 }}</span>
+            </div>
+            <div class="resumen-item">
+              <span>Fecha:</span>
+              <span>{{ fiestaForm.get('detallesEvento.fechaFiesta')?.value | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="resumen-item">
+              <span>Hora:</span>
+              <span>{{ fiestaForm.get('detallesEvento.horaFiesta')?.value }}</span>
+            </div>
+            <div class="resumen-item">
+              <span>Dirección:</span>
+              <span>{{ fiestaForm.get('detallesEvento.direccion')?.value }}</span>
+            </div>
+            
+            <div class="comida-incluida">
+              <div class="resumen-item" *ngIf="fiestaForm.get('detallesFiesta.incluirHamburguesas')?.value">
+                <span>✓ Hamburguesas incluidas</span>
+              </div>
+              <div class="resumen-item" *ngIf="fiestaForm.get('detallesFiesta.incluirChivitos')?.value">
+                <span>✓ Chivitos incluidos</span>
+              </div>
+            </div>
+
+            <div class="precio-total">
+              <div class="total-calculo">
+                <span>Precio por persona ({{ fiestaForm.get('detallesFiesta.numeroPersonas')?.value }} personas):</span>
+                <span>+${{ (precioBasePorPersona * (fiestaForm.get('detallesFiesta.numeroPersonas')?.value || 0)).toFixed(2) }}</span>
+              </div>
+              <div class="total-calculo" *ngIf="fiestaForm.get('detallesFiesta.incluirHamburguesas')?.value">
+                <span>Hamburguesas ({{ fiestaForm.get('detallesFiesta.numeroPersonas')?.value }} personas):</span>
+                <span>+${{ (costoHamburguesas * (fiestaForm.get('detallesFiesta.numeroPersonas')?.value || 0)).toFixed(2) }}</span>
+              </div>
+              <div class="total-calculo" *ngIf="fiestaForm.get('detallesFiesta.incluirChivitos')?.value">
+                <span>Chivitos ({{ fiestaForm.get('detallesFiesta.numeroPersonas')?.value }} personas):</span>
+                <span>+${{ (costoChivitos * (fiestaForm.get('detallesFiesta.numeroPersonas')?.value || 0)).toFixed(2) }}</span>
+              </div>
+              <div class="fiesta-total">
+                <strong>Total de la fiesta:</strong>
+                <strong>${{ calcularTotalFiesta().toFixed(2) }}</strong>
+              </div>
+            </div>
+          </div>
+          
+          <div class="botones-navegacion">
+            <button mat-button matStepperPrevious type="button">Atrás</button>
+            <button mat-raised-button color="primary" type="submit" class="boton-organizar">
+              Organizar Fiesta
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </form>
+  <link rel="stylesheet" href="https://unpkg.com/ngx-bootstrap/datepicker/bs-datepicker.css">
+</div>
