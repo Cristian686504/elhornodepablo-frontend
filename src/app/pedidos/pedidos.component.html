@@ -1,10 +1,10 @@
-<div class="pedido-container">
+<div class="pedido-container" [ngClass]="{ 'new-width': currentStepIndex !== 0 }">
   
   
   <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
-    <mat-horizontal-stepper #stepper>
+    <mat-horizontal-stepper #stepper (selectionChange)="onStepChange($event)">
       <mat-step [stepControl]="pedidoForm.controls['datosPedido']" formGroupName="datosPedido">
-        <ng-template matStepLabel>Seleccionar Pizza</ng-template>
+        <ng-template matStepLabel>Menú</ng-template>
         <menu-pizza 
           [parentForm]="pedidoForm"
           (pizzasSeleccionadas)="onPizzasSeleccionadas($event)"
@@ -13,18 +13,22 @@
       </mat-step>
 
       <mat-step [stepControl]="pedidoForm.controls['detallesEntrega']" formGroupName="detallesEntrega">
-        <ng-template matStepLabel>Datos del pedido</ng-template>
-        
+        <ng-template matStepLabel>Fecha y Ubicación</ng-template>
+        <h3>Información básica del pedido</h3>
         <div class="pedido-step">
-          <h3>Fecha del pedido</h3>
-          <input matInput
-            type="text"
-            class="form-control"
-            bsDatepicker
-            formControlName="fechaEntrega"
-            placeholder="Selecciona una fecha"
-            [bsConfig]="bsConfig"
-          />
+          <mat-form-field appearance="fill">
+            <mat-label>Fecha del pedido</mat-label>
+            <input
+              matInput
+              bsDatepicker
+              formControlName="fechaEntrega"
+              placeholder="Selecciona una fecha"
+              [bsConfig]="bsConfig"
+            />
+            <mat-error *ngIf="pedidoForm.get('detallesEntrega.fechaEntrega')?.hasError('required')">
+              La fecha es obligatoria
+            </mat-error>
+          </mat-form-field>
           
           <mat-radio-group formControlName="metodo" class="radio-metodo-entrega">
             <mat-radio-button *ngFor="let metodo of metodoEntrega" [value]="metodo.value">
@@ -34,14 +38,34 @@
           
           <div *ngIf="pedidoForm.get('detallesEntrega.metodo')?.value === 'delivery'" formGroupName="detallesDelivery" class="detalles-metodo">
             <h4>Detalles de pedido</h4>
-            <mat-form-field appearance="fill">
-              <mat-label>Dirección</mat-label>
-              <input matInput formControlName="direccion">
-              <mat-error *ngIf="pedidoForm.get('detallesEntrega.detallesDelivery')?.get('direccion')?.hasError('required')">
+            <div class="direccion-field">
+              <mat-label class="direccion-label">Dirección</mat-label>
+              <div class="direccion-display" 
+                   [class.has-direccion]="hasDireccionSeleccionada"
+                   [class.error]="showDireccionError"
+                   (click)="openMapModal()">
+
+                <span *ngIf="hasDireccionSeleccionada; else placeholder">
+                  {{ direccionSeleccionada }}
+                </span>
+                <ng-template #placeholder>
+                  <span class="placeholder-texto">Selecciona una dirección</span>
+                </ng-template>
+
+                <mat-icon class="ubicacion-icon">location_on</mat-icon>
+              </div>
+
+              <mat-error *ngIf="showDireccionError">
                 La dirección es obligatoria
               </mat-error>
-            </mat-form-field>
+            </div>
 
+            <app-mapa-direccion 
+              *ngIf="showMapa"
+              (dirSeleccionada)="onDireccionSeleccionada({ direccion: $event.dir, ubicacion: $event.ubi })"
+              (modalClosed)="onMapaClosed()">
+            </app-mapa-direccion>
+           
             <mat-slide-toggle formControlName="esExterior">
               Envío al exterior
             </mat-slide-toggle>
@@ -63,10 +87,10 @@
       </mat-step>
       
       <mat-step [stepControl]="pedidoForm.controls['detallesPago']" formGroupName="detallesPago">
-        <ng-template matStepLabel>Confirmar pedido</ng-template>
+        <ng-template matStepLabel>Pago y Confirmación</ng-template>
         
         <div class="pedido-step">
-          <h3>Información de pago</h3>
+          <h3>Método de pago</h3>
           
           <mat-radio-group formControlName="metodoPago" class="radio-metodo-pago">
             <mat-radio-button *ngFor="let metodo of metodoPago" [value]="metodo.value">
@@ -106,7 +130,60 @@
             </mat-form-field>
           </div>
 
+          <div class="resumen-pedido">
+          <h4>Resumen del pedido</h4>
+                  
+          <div class="resumen-item">
+            <span>Fecha de entrega:</span>
+            <span>{{ pedidoForm.get('detallesEntrega.fechaEntrega')?.value | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="resumen-item">
+            <span>Método de entrega:</span>
+            <span>{{ 
+              pedidoForm.get('detallesEntrega.metodo')?.value === 'delivery' 
+                ? 'Delivery a domicilio' 
+                : 'Entrega en el local' 
+            }}</span>
+          </div>
+
+          <div class="resumen-item" *ngIf="pedidoForm.get('detallesEntrega.metodo')?.value === 'delivery'">
+            <span>Dirección:</span>
+            <span>{{ pedidoForm.get('detallesEntrega.detallesDelivery.direccion')?.value }}</span>
+          </div>
+
+          <div class="resumen-item" *ngIf="pedidoForm.get('detallesEntrega.detallesDelivery.esExterior')?.value">
+            <span>✓ Envío al exterior</span>
+            <span>Agencia: {{ pedidoForm.get('detallesEntrega.detallesDelivery.agenciaEnvio')?.value }}</span>
+          </div>
+
+          <div class="resumen-item">
+            <span>Método de pago:</span>
+            <span>{{ 
+              pedidoForm.get('detallesPago.metodoPago')?.value === 'EFECTIVO' 
+                ? 'Efectivo' 
+                : 'Transferencia' 
+            }}</span>
+          </div>
+
+          <div class="opciones-especiales">
+            <div class="resumen-item" *ngIf="pedidoForm.get('detallesPago.esPeriodico')?.value">
+              <span>✓ Pedido periódico:</span>
+              <span>{{ 
+                pedidoForm.get('detallesPago.periodicidad')?.value === 'diario' ? 'Diario' :
+                pedidoForm.get('detallesPago.periodicidad')?.value === 'semanal' ? 'Semanal' :
+                pedidoForm.get('detallesPago.periodicidad')?.value === 'mensual' ? 'Mensual' : ''
+              }}</span>
+            </div>
+
+            <div class="resumen-item" *ngIf="pedidoForm.get('detallesPago.esBeneficio')?.value">
+              <span>✓ Pedido a beneficio:</span>
+              <span>{{ pedidoForm.get('detallesPago.motivoBeneficio')?.value }}</span>
+            </div>
+          </div>
+        
           <div *ngIf="pizzasSeleccionadas.length > 0" class="pedido-items">
+            <h5>Pizzas seleccionadas:</h5>
             <div *ngFor="let pizza of pizzasSeleccionadas" class="pedido-item">
               <div class="pizza-info">
                 <span class="pizza-nombre">{{ pizza.nombre }}</span>
@@ -122,11 +199,11 @@
               <strong>${{ calcularTotal().toFixed(2) }}</strong>
             </div>
           </div>
-          
+        </div>
           
           <div class="botones-realizar">
             <button mat-button matStepperPrevious type="button">Atrás</button>
-            <button mat-raised-button color="primary" type="submit" class="boton-enviar">Realizar Pedido</button>
+            <button mat-raised-button style="background-color: #ed5a12; color: white;"  type="submit" class="boton-enviar">Realizar Pedido</button>
           </div>
         </div>
       </mat-step>
