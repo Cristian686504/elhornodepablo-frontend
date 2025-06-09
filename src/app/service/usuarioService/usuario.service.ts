@@ -110,5 +110,19 @@ export class UsuarioService {
         })
       );
     }
+
+    getClientesPaginados(page: number, size: number): Observable<{
+      content: getClientes[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+    }> {
+      return this.http.get<{
+        content: getClientes[];
+        totalElements: number;
+        totalPages: number;
+        number: number;
+      }>(`${this.API_URL}obtenerClientesPaginados?page=${page}&size=${size}`);
+    }
   
 }

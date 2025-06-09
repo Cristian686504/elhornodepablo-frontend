@@ -31,15 +31,47 @@ secciones = [
   listaIngredientes: any[] = [];
   listaPizzas: any[] = [];
   listaFiestas: any[] = [];
+  listaPedidos: any[] = [];
   seccionActiva: string = 'usuarios';
+  totalPaginas: number = 0;
+  paginaActual: number = 0;
+  tamañoPagina: number = 0;
+
+  // Variables de paginación para fiestas
+  paginaFiestas: number = 0;
+  fiestasPorPagina: number = 10;
+  totalPaginasFiestas: number = 0;
+
+  // Variables de paginación para pedidos
+  paginaPedidos: number = 0;
+  pedidosPorPagina: number = 10;
+  totalPaginasPedidos: number = 0;
+
+  // Propiedades de paginación
+  paginaAdministradores = 0;
+  administradoresPorPagina = 10;
+  totalPaginasAdministradores = 0;
+
+  // Propiedades de paginación para clientes
+  paginaUsuarios: number = 0;
+  usuariosPorPagina: number = 10;
+  totalPaginasUsuarios: number = 0;
 
   ngOnInit() {
     console.log('ngOnInit called');
     this.getAdministradores();
-    this.getClientes();
+    this.getUsuarios();
     this.getIngredientes();
     this.getPizzas();
+    // Inicialización de variables de paginación
+    this.paginaFiestas = 0;
+    this.fiestasPorPagina = 10;
+    this.totalPaginasFiestas = 0;
+    this.paginaPedidos = 0;
+    this.pedidosPorPagina = 10;
+    this.totalPaginasPedidos = 0;
     this.getFiestas();
+    this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
   }
 
   seleccionarSeccion(seccion: string) {
@@ -47,16 +79,29 @@ secciones = [
   }
 
   getAdministradores() {
-    this.administradorService.getAdministradores().subscribe(res => {
-      console.log('Datos recibidos:', res);
-      this.listaAdministradores = Array.isArray(res.administradores) ? res.administradores : [];
+    this.administradorService.getAdministradoresPaginados(this.paginaAdministradores, this.administradoresPorPagina).subscribe({
+      next: (response) => {
+        this.listaAdministradores = response.content;
+        this.totalPaginasAdministradores = response.totalPages;
+      },
+      error: (error) => {
+        console.error('Error al obtener administradores:', error);
+      }
     });
   }
 
-  getClientes() {
-    this.usuarioService.getClientes().subscribe(res => {
-      console.log('Clientes recibidos:', res);
-      this.listaUsuarios = Array.isArray(res.clientes) ? res.clientes : [];
+  getUsuarios() {
+    this.usuarioService.getClientesPaginados(this.paginaUsuarios, this.usuariosPorPagina).subscribe({
+      next: (response) => {
+        
+        this.listaUsuarios = response.content;
+        this.totalPaginasUsuarios = response.totalPages;
+      
+      },
+      error: (error) => {
+        console.error('Error al obtener usuarios:', error);
+        console.error('Detalles del error:', error.message);
+      }
     });
   }
 
@@ -85,22 +130,69 @@ secciones = [
     }
     
     getFiestas() {
-      this.administradorService.getFiestas().subscribe(res => {
-        console.log('Fiestas recibidas:', res);
-        if (Array.isArray(res.fiesta)) {
-          this.listaFiestas = res.fiesta;
-        } else {
+      console.log('Obteniendo fiestas - Página:', this.paginaFiestas, 'Tamaño:', this.fiestasPorPagina);
+      this.administradorService.getFiestasPaginadas(this.paginaFiestas, this.fiestasPorPagina).subscribe({
+        next: (res) => {
+
+          
+          if (res && Array.isArray(res.content)) {
+            this.listaFiestas = res.content;
+            this.totalPaginasFiestas = res.totalPages || 1;
+            this.paginaFiestas = res.number || 0;
+
+          } else {
+            this.listaFiestas = [];
+            console.warn('La respuesta no tiene la estructura esperada:', res);
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener fiestas:', error);
           this.listaFiestas = [];
-          console.warn('La propiedad Fiestas no es un array:', res.fiesta);
         }
       });
     }
+
+    getPedidos(page: number, size: number) {
+      this.administradorService.getPedidos(page, size).subscribe(res => {
+        console.log('Pedidos recibidos:', res);
+        if (res && Array.isArray(res.content)) {
+          this.listaPedidos = res.content;
+          this.totalPaginasPedidos = res.totalPages || 1;
+          this.paginaPedidos = res.number || 0;
+          console.log('Total páginas pedidos:', this.totalPaginasPedidos);
+          console.log('Página actual pedidos:', this.paginaPedidos);
+        } else {
+          this.listaPedidos = [];
+          this.totalPaginasPedidos = 1;
+          this.paginaPedidos = 0;
+          console.warn('La respuesta no tiene content como array:', res);
+        }
+      });
+    }
+
+    anteriorPaginaPedidos() {
+      if (this.paginaPedidos > 0) {
+        this.getPedidos(this.paginaPedidos - 1, this.pedidosPorPagina);
+      }
+    }
+
+    siguientePaginaPedidos() {
+      if (this.paginaPedidos < this.totalPaginasPedidos - 1) {
+        this.getPedidos(this.paginaPedidos + 1, this.pedidosPorPagina);
+      }
+    }
+
+
+
+
+
+
     
   
 
   modalActivo = false;
   modoEdicion = false;
-  tipoModal: 'cliente' | 'admin'  | 'ingrediente' | 'pizza' | 'fiesta' |null = null;
+  tipoModal: 'cliente' | 'admin'  | 'ingrediente' | 'pizza' | 'fiesta' | 'pedido' |null = null;
 
   usuarioForm = {
     id: '',
@@ -156,8 +248,45 @@ fiestasForm = {
   }>,
 };
 
+pedidoForm = {
+  id: '',
+  fechaEntrega: '',
+  entrega: false,
+  metodoPago: '',
+  estado: '',
+  periodicidad: '',
+  direccion: '',
+  motivoBeneficio: '',
+  agencia: '',
+  fechaPedido: '',
+  cliente: {
+    id: '',
+    nombreUsuario: '',
+    contrasenia: '',
+    nombreCompleto: ''
+  },
+  pizzas: [] as Array<{
+    cantidad: number;
+    pizza: {
+      id: '';
+      nombre: string;
+      tipo: string;
+      precio: number;
+      ingredientes: Array<{
+        id: number;
+        nombre: string;
+        cantidad: number;
+        unidad_medida: string;
+        gusto: boolean;
+      }>
+    }
+  }>
+};
 
-abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos?: any) {
+
+
+
+abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'pedido', datos?: any) {
   this.modalActivo = true;
   this.tipoModal = tipo;
   this.modoEdicion = !!datos;
@@ -234,7 +363,62 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
           },
           pizzas: []
         };
+  }else if (tipo === 'pedido') {
+    this.pedidoForm = datos ? {
+      id: datos.id,
+      fechaEntrega: datos.fechaEntrega,
+      entrega: datos.entrega,
+      metodoPago: datos.metodoPago,
+      estado: datos.estado,
+      periodicidad: datos.periodicidad,
+      direccion: datos.direccion,
+      motivoBeneficio: datos.motivoBeneficio,
+      agencia: datos.agencia,
+      fechaPedido: datos.fechaPedido,
+      cliente: datos.cliente ? {
+        id: datos.cliente.id || '',
+        nombreUsuario: datos.cliente.nombreUsuario || '',
+        contrasenia: '', // por seguridad
+        nombreCompleto: datos.cliente.nombreCompleto || ''
+      } : {
+        id: '',
+        nombreUsuario: '',
+        contrasenia: '',
+        nombreCompleto: '',
+      },
+      pizzas: datos.pizzas ? datos.pizzas.map((p: any) => ({
+        cantidad: p.cantidad || 1,
+        pizza: {
+          id: p.pizza.id,
+          nombre: p.pizza.nombre,
+          tipo: p.pizza.tipo,
+          precio: p.pizza.precio,
+          descripcion: p.pizza.descripcion || '',
+          ingredientes: p.pizza.ingredientes || []
+        }
+      })) : []
+    } : {
+      id: '',
+      fechaEntrega: '',
+      entrega: false,
+      metodoPago: '',
+      estado: 'PENDIENTE',
+      periodicidad: '',
+      direccion: '',
+      motivoBeneficio: '',
+      agencia: '',
+      fechaPedido: new Date().toISOString().split('T')[0],
+      cliente: {
+        id: '',
+        nombreUsuario: '',
+        contrasenia: '',
+        nombreCompleto: '',
+      },
+      pizzas: []
+    };
   }
+
+
 }
 
 
@@ -262,7 +446,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
     this.usuarioService.actualizarCliente(id, datosCliente).subscribe({
       next: () => {
         console.log('Cliente actualizado:', datosCliente);
-        this.getClientes();
+        this.getUsuarios();
         this.cerrarModal();
         Swal.fire({
           icon: 'success',
@@ -287,7 +471,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta', datos
     this.usuarioService.CrearUsuario(this.usuarioForm).subscribe({
       next: (res) => {
         console.log('Usuario creado:', res);
-        this.getClientes();
+        this.getUsuarios();
         this.cerrarModal();
         Swal.fire({
           icon: 'success',
@@ -606,8 +790,9 @@ guardarFiesta() {
   ingredienteSeleccionado: any = null;
   pizzaSeleccionada: any = null;
   fiestaSeleccionada: any = null;
+  pedidoSeleccionado: any = null;
 
-  seleccionarFila(item: any, tipo: 'cliente' | 'admin' | 'ingrediente'| 'pizza' | 'fiesta') {
+  seleccionarFila(item: any, tipo: 'cliente' | 'admin' | 'ingrediente'| 'pizza' | 'fiesta' | 'pedido') {
     if (tipo === 'cliente') {
       this.usuarioSeleccionado = item;
     } else if (tipo === 'admin') {
@@ -618,27 +803,18 @@ guardarFiesta() {
       this.pizzaSeleccionada = item;
     } else if (tipo === 'fiesta') {
       this.fiestaSeleccionada = item;
+    }else if (tipo === 'pedido') {
+      this.pedidoSeleccionado = item;
     }
   
     
   }
-
-  // Paginación
-  paginaUsuarios: number = 1;
-  paginaAdministradores: number = 1;
-
-  usuariosPorPagina: number = 10;
-  administradoresPorPagina: number = 10;
 
   paginaIngredientes: number = 1;
   ingredientesPorPagina: number = 10;
   
   paginaPizzas: number = 1;
   pizzasPorPagina: number = 10;
-
-  paginaFiestas: number = 1; 
-  fiestasPorPagina: number = 10;
-
 
   // Métodos para paginación
   getUsuariosPaginados() {
@@ -647,31 +823,34 @@ guardarFiesta() {
   }
 
   getAdministradoresPaginados() {
-    const startIndex = (this.paginaAdministradores - 1) * this.administradoresPorPagina;
-    return this.listaAdministradores.slice(startIndex, startIndex + this.administradoresPorPagina);
+    return this.listaAdministradores;
   }
 
   siguientePaginaUsuarios() {
-    if (this.paginaUsuarios * this.usuariosPorPagina < this.listaUsuarios.length) {
+    if (this.paginaUsuarios < this.totalPaginasUsuarios - 1) {
       this.paginaUsuarios++;
+      this.getUsuarios();
     }
   }
 
   anteriorPaginaUsuarios() {
-    if (this.paginaUsuarios > 1) {
+    if (this.paginaUsuarios > 0) {
       this.paginaUsuarios--;
+      this.getUsuarios();
     }
   }
 
   siguientePaginaAdministradores() {
-    if (this.paginaAdministradores * this.administradoresPorPagina < this.listaAdministradores.length) {
+    if (this.paginaAdministradores < this.totalPaginasAdministradores - 1) {
       this.paginaAdministradores++;
+      this.getAdministradores();
     }
   }
 
   anteriorPaginaAdministradores() {
-    if (this.paginaAdministradores > 1) {
+    if (this.paginaAdministradores > 0) {
       this.paginaAdministradores--;
+      this.getAdministradores();
     }
   }
 
@@ -715,21 +894,28 @@ guardarFiesta() {
     }
   }
 
+
+
+
+
+
+
   // Métodos para paginar fiestas
   getFiestasPaginados() {
-    const startIndex = (this.paginaFiestas - 1) * this.fiestasPorPagina;
-    return this.listaFiestas.slice(startIndex, startIndex + this.fiestasPorPagina);
-  }
-
-  siguientePaginaFiestas() {
-    if (this.paginaFiestas * this.fiestasPorPagina < this.listaFiestas.length) {
-      this.paginaFiestas++;
-    }
+    return this.listaFiestas;
   }
 
   anteriorPaginaFiestas() {
-    if (this.paginaFiestas > 1) {
+    if (this.paginaFiestas > 0) {
       this.paginaFiestas--;
+      this.getFiestas();
+    }
+  }
+
+  siguientePaginaFiestas() {
+    if (this.paginaFiestas < this.totalPaginasFiestas - 1) {
+      this.paginaFiestas++;
+      this.getFiestas();
     }
   }
 
@@ -791,7 +977,7 @@ guardarFiesta() {
       this.usuarioService.eliminarCliente(cliente.id).subscribe({
         next: () => {
           console.log('Cliente eliminado');
-          this.getClientes(); 
+          this.getUsuarios(); 
           Swal.fire({
             icon: 'success',
             title: 'Eliminado',
@@ -947,7 +1133,7 @@ eliminarFiesta(fiesta: any) {
 
   // Método para cerrar el modal
   cerrarModalP() {
-    this.mostrarModal = false; // Ocultar el modal
+    this.mostrarModal = false; 
   }
 
   getIngredienteNombre(ingredienteId: number): string {
@@ -978,7 +1164,15 @@ agregarPizzaAFiesta() {
 
 // Método para quitar pizza de la lista
 quitarPizza(index: number) {
-  this.fiestasForm.pizzas.splice(index, 1);
+  if (this.tipoModal === 'pedido' && this.pedidoForm.pizzas) {
+    this.pedidoForm.pizzas.splice(index, 1);
+    // Forzar la detección de cambios
+    this.pedidoForm = { ...this.pedidoForm };
+  } else if (this.tipoModal === 'fiesta' && this.fiestasForm.pizzas) {
+    this.fiestasForm.pizzas.splice(index, 1);
+    // Forzar la detección de cambios
+    this.fiestasForm = { ...this.fiestasForm };
+  }
 }
 
 procesarImagen(event: any) {
@@ -987,11 +1181,154 @@ procesarImagen(event: any) {
     const lector = new FileReader();
     lector.readAsDataURL(archivo);
     lector.onload = () => {
-      this.pizzasForm.imagen = lector.result as string; // Guardamos la imagen en formato Base64
+      this.pizzasForm.imagen = lector.result as string; 
       console.log('Imagen procesada:', this.pizzasForm.imagen);
       
     };
   }
 }
   
+
+
+agregarPizzaAPedido() {
+  if (!this.pedidoForm.pizzas) {
+    this.pedidoForm.pizzas = [];
+  }
+
+  this.pedidoForm.pizzas.push({
+    cantidad: 1, // o 0 si preferís
+    pizza: {
+      id: '',
+      nombre: '',
+      tipo: '',
+      precio: 0,
+      ingredientes: []
+    }
+  });
+}
+
+
+onPizzaSeleccionada(event: Event, index: number) {
+  const selectElement = event.target as HTMLSelectElement;  // casteo explícito
+  const pizzaIdStr = selectElement.value;
+  const pizzaId = Number(pizzaIdStr);
+  const pizzaSeleccionada = this.listaPizzas.find(p => p.id === pizzaId);
+  if (pizzaSeleccionada) {
+    this.pedidoForm.pizzas[index].pizza = { ...pizzaSeleccionada };
+  }
+}
+
+
+
+guardarPedido() {
+  const pedido = {
+    id: +this.pedidoForm.id,
+    fechaEntrega: this.pedidoForm.fechaEntrega,
+    entrega: this.pedidoForm.entrega,
+    metodoPago: this.pedidoForm.metodoPago,
+    estado: this.pedidoForm.estado,
+    periodicidad: this.pedidoForm.periodicidad,
+    direccion: this.pedidoForm.direccion,
+    motivoBeneficio: this.pedidoForm.motivoBeneficio,
+    agencia: this.pedidoForm.agencia,
+    fechaPedido: this.pedidoForm.fechaPedido,
+    cliente: {
+      id: +this.pedidoForm.cliente.id
+    },
+    pizzas: this.pedidoForm.pizzas.map(p => ({
+      cantidad: p.cantidad,
+      pizza: { id: +p.pizza.id }
+    }))
+  };
+console.log('ID actual del pedidoForm:', this.pedidoForm.id);
+
+  console.log("JSON que se va a enviar:", JSON.stringify(pedido, null, 2));
+
+  if (this.modoEdicion) {
+    this.administradorService.modificarPedido(pedido.id, pedido).subscribe({
+      next: () => {
+        console.log('Pedido actualizado');
+        this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Pedido modificado',
+          text: 'Pedido modificado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar pedido:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al modificar el pedido. Verificá los datos.'
+        });
+      }
+    });
+  } else {
+    this.administradorService.crearPedidoAdmin(pedido).subscribe({
+      next: () => {
+        console.log('Pedido creado');
+        this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
+        this.cerrarModal();
+        Swal.fire({
+          icon: 'success',
+          title: 'Pedido creado',
+          text: 'Pedido creado con éxito.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear pedido:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear el pedido. Verificá los datos.'
+        });
+      }
+    });
+  }
+}
+
+
+eliminarPedido() {
+  if (this.pedidoSeleccionado) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.administradorService.eliminarPedido(this.pedidoSeleccionado.id).subscribe({
+          next: () => {
+            Swal.fire(
+              '¡Eliminado!',
+              'El pedido ha sido eliminado.',
+              'success'
+            );
+            this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
+            this.pedidoSeleccionado = null;
+          },
+          error: (error) => {
+            console.error('Error al eliminar pedido:', error);
+            Swal.fire(
+              'Error',
+              'No se pudo eliminar el pedido.',
+              'error'
+            );
+          }
+        });
+      }
+    });
+  }
+}
+
 }

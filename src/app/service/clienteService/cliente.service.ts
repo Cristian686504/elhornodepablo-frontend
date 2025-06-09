@@ -67,7 +67,6 @@ interface detallesFiesta {
 }
 
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -263,4 +262,5 @@ export class ClienteService {
     const user = this.currentUserValue;
     return !!user && !!user.token;
   }
+
 }

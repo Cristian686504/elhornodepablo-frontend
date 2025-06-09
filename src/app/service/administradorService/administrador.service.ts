@@ -10,6 +10,28 @@ interface AuthResponse {
 
 }
 
+interface Pedido {
+  id: number;
+  fechaEntrega: Date;
+  entrega: boolean;
+  metodoPago: string;
+  estado: string;
+  periodicidad: string;
+  direccion: string;
+  motivoBeneficio: string;
+  agencia: string;
+  fechaPedido: Date;
+  cliente: cliente;
+  pizzas: PizzaPedido[];
+}
+
+interface PizzaPedido {
+  nombre: string;
+  tipo: string;
+  precio: number;
+  cantidad: number;
+  ingredientes: getIngredientes[];
+}
 
 interface getAdministradores {
   id: number;
@@ -18,6 +40,7 @@ interface getAdministradores {
   cedula: string;
   nombreCompleto: string;
 }
+
 
 interface Pizza {
   id: number;
@@ -91,6 +114,9 @@ export class AdministradorService {
 
   private API_URL_FIESTA = 'http://localhost:8080/api/fiestas/';
 
+  private API_URL_PEDIDOS = 'http://localhost:8080/api/pedidos/';
+
+
 
   constructor(private http: HttpClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<any>(this.getUserFromLocalStorage());
@@ -136,6 +162,20 @@ export class AdministradorService {
 
   getAdministradores(): Observable<{ administradores: getAdministradores[] }> {
     return this.http.get<{ administradores: getAdministradores[] }>(`${this.API_URL}getAdministradores`);
+  }
+
+  getAdministradoresPaginados(page: number, size: number): Observable<{
+    content: getAdministradores[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  }> {
+    return this.http.get<{
+      content: getAdministradores[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+    }>(`${this.API_URL}getAdministradoresPaginados?page=${page}&size=${size}`);
   }
 
   registrar(usuario: any): Observable<string> {
@@ -231,6 +271,20 @@ export class AdministradorService {
     return this.http.get<{ fiesta: Fiestas[] }>(`${this.API_URL_FIESTA}getFiestas`);
   }
 
+  getFiestasPaginadas(page: number, size: number): Observable<{
+    content: Fiestas[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  }> {
+    return this.http.get<{
+      content: Fiestas[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+    }>(`${this.API_URL_FIESTA}getFiestasPaginadas?page=${page}&size=${size}`);
+  }
+
   crearFiesta(fiestaData: any): Observable<string> {
     return this.http.post<string>(`${this.API_URL_FIESTA}crear`, fiestaData, {
       responseType: 'text' as 'json'
@@ -263,6 +317,48 @@ export class AdministradorService {
     });
   }
 
+  getPedidos(page: number, size: number): Observable<{
+  content: Pedido[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}> {
+  return this.http.get<{
+    content: Pedido[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+  }>(`${this.API_URL_PEDIDOS}getPedidos?page=${page}&size=${size}`);
+}
+
+crearPedido(pedidoData: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL_PEDIDOS}crear`, pedidoData, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  crearPedidoAdmin(pedido: any): Observable<string> {
+    return this.http.post<string>(`${this.API_URL_PEDIDOS}crearPedidosAdmin`, pedido, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  modificarPedido(id: number, pedido: any): Observable<string> {
+    return this.http.put<string>(`${this.API_URL_PEDIDOS}modificarPedido/${id}`, pedido, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  eliminarPedido(id: number): Observable<string> {
+    return this.http.delete<string>(`${this.API_URL_PEDIDOS}eliminarPedido/${id}`, {
+      responseType: 'text' as 'json'
+    });
+  }
+
+  getTodosLosPedidos(): Observable<{ pedido: Pedido[] }> {
+    return this.http.get<{ pedido: Pedido[] }>(`${this.API_URL_PEDIDOS}getPedidos`);
+  }
+
   cancelarFiesta(id: number, nombreUsuario: string): Observable<void> {
   const body = {
     id: id,
@@ -280,5 +376,18 @@ aceptarFiesta(id: number, nombreUsuario: string): Observable<void> {
 
   return this.http.put<void>(`${this.API_URL_FIESTA}aceptarFiesta`, body);
 }
+
+aceptarPedidoAdmin(id: number): Observable<string> {
+  return this.http.put<string>(`${this.API_URL_PEDIDOS}aceptarPedidoAdmin/${id}`, {}, {
+    responseType: 'text' as 'json'
+  });
+}
+
+cancelarPedidoAdmin(id: number): Observable<string> {
+  return this.http.put<string>(`${this.API_URL_PEDIDOS}cancelarPedidoAdmin/${id}`, {}, {
+    responseType: 'text' as 'json'
+  });
+}
+
 
 }

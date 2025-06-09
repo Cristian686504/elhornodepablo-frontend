@@ -1,7 +1,7 @@
 <section class="seccion-fiesta">
   <div class="container mt-5">
     <h2 class="mb-4 text-center">Fiestas Programadas</h2>
-    
+
     <!-- Filtro de Estado -->
     <div class="mb-4 text-center">
       <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarFiestas()">
@@ -19,15 +19,14 @@
             🎉 Fiesta #{{ fiesta.id }}
           </div>
           <div class="card-body">
-            <p><strong>Cliente:</strong> {{ fiesta.cliente?.nombreCompleto }}</p>
+            <p><strong>Cliente:</strong> {{ fiesta.cliente?.nombreUsuario }}</p>
             <p><strong>Dirección:</strong> {{ fiesta.direccion }}</p>
             <p><strong>Fecha:</strong> {{ fiesta.fechaFiesta }}</p>
             <p><strong>Hora a servir:</strong> {{ fiesta.horaServir }}</p>
             <p><strong>Cantidad de personas:</strong> {{ fiesta.cantidadPersonas }}</p>
             <p><strong>Pago:</strong> ${{ fiesta.pago }}</p>
-            <p><strong>Estado:</strong> 
-              <span class="badge" 
-                    [ngClass]="{
+            <p><strong>Estado:</strong>
+              <span class="badge" [ngClass]="{
                       'bg-success': fiesta.estado === 'ACEPTADO',
                       'bg-danger': fiesta.estado === 'CANCELADO',
                       'bg-warning text-dark': fiesta.estado === 'PENDIENTE'
@@ -46,10 +45,16 @@
             </ul>
 
             <div class="d-flex justify-content-between">
-              <button class="btn btn-outline-success w-45" (click)="aceptarFiesta(fiesta)">✅ Aceptar</button>
-              <button class="btn btn-outline-danger w-45" (click)="cancelarFiesta(fiesta)">❌ Cancelar</button>
+              <button class="btn btn-outline-success w-45" *ngIf="fiesta.estado === 'PENDIENTE'" (click)="aceptarFiesta(fiesta)">
+                ✅ Aceptar
+              </button>
 
+              <button class="btn btn-outline-danger w-45" *ngIf="fiesta.estado === 'PENDIENTE'"
+                (click)="cancelarFiesta(fiesta)">
+                ❌ Cancelar
+              </button>
             </div>
+
           </div>
         </div>
       </div>
@@ -61,8 +66,8 @@
         ◀ Anterior
       </button>
       <span class="align-self-center">Página {{ paginaFiestas }}</span>
-      <button class="btn btn-secondary ms-2" (click)="siguientePaginaFiestas()" 
-              [disabled]="paginaFiestas * fiestasPorPagina >= listaFiestas.length">
+      <button class="btn btn-secondary ms-2" (click)="siguientePaginaFiestas()"
+        [disabled]="paginaFiestas * fiestasPorPagina >= listaFiestas.length">
         Siguiente ▶
       </button>
     </div>
