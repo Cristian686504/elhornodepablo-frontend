@@ -1,152 +1,159 @@
 /* Modal general */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .modal.active {
-    display: flex;
-  }
-  
-  /* Contenido del modal */
-  .modal-content {
-    background-color: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 700px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  /* Animación de entrada */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Encabezado */
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 0.5rem;
-  }
-  
-  .modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #333;
-  }
-  
-  /* Botón cerrar */
-  .close-button {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #666;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  .close-button:hover {
-    color: #000;
-  }
-  
-  /* Cuerpo del modal */
-  .modal-body {
-    max-height: 40vh;
-    margin-top: 1rem;
-    overflow-y: auto;
-    padding-right: 15px;
-  }
-  
-  .loading,
-  .error-message {
-    text-align: center;
-    font-weight: bold;
-    margin: 1rem 0;
-  }
-  
-  .loading {
-    color: #3498db;
-  }
-  
-  .error-message {
-    color: #e74c3c;
-  }
-  
-  /* Detalles del pedido */
-  .pedido-detalles .detalle-item {
-    margin-bottom: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-    font-size: 1rem;
-    color: #444;
-  }
-  
-  .pedido-detalles .detalle-item label {
-    font-weight: bold;
-  }
-  
-  /* Sección de pizzas */
-  .pizzas {
-    margin-top: 1.5rem;
-  }
-  
-  .pizzas h3 {
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  
-  .no-pizzas {
-    color: #888;
-    font-style: italic;
-  }
-  
-  /* Tabla de pizzas */
-  .pizzas-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 0.5rem;
-  }
-  
-  .pizzas-table thead{
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil en la parte inferior */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.active {
+  display: flex;
+}
+
+/* Contenido del modal */
+.modal-content {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
 
-  .pizzas-table th,
-  .pizzas-table td {
-    padding: 0.75rem;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .pizzas-table th {
-    background-color: #f7f7f7;
-    color: #555;
-  }
-  
-  .pizzas-table tr:hover {
-    background-color: #f0f8ff;
-  }
+}
 
-  
+/* Encabezado */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Botón cerrar */
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease-in-out;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
+/* Cuerpo del modal */
+.modal-body {
+  max-height: 40vh;
+  margin-top: 1rem;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+.loading,
+.error-message {
+  text-align: center;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.loading {
+  color: #3498db;
+}
+
+.error-message {
+  color: #e74c3c;
+}
+
+/* Detalles del pedido */
+.pedido-detalles .detalle-item {
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #444;
+}
+
+.pedido-detalles .detalle-item label {
+  font-weight: bold;
+}
+
+.pedido-detalles .detalle-item span {
+  word-break: break-word;
+  white-space: normal;
+  max-width: 60%;
+  display: inline-block;
+}
+
+/* Sección de pizzas */
+.pizzas {
+  margin-top: 1.5rem;
+}
+
+.pizzas h3 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.no-pizzas {
+  color: #888;
+  font-style: italic;
+}
+
+/* Tabla de pizzas */
+.pizzas-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.pizzas-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil en la parte inferior */
+}
+
+.pizzas-table th,
+.pizzas-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.pizzas-table th {
+  background-color: #f7f7f7;
+  color: #555;
+}
+
+.pizzas-table tr:hover {
+  background-color: #f0f8ff;
+}

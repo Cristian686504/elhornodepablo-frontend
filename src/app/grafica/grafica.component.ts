@@ -230,19 +230,19 @@ export class GraficaComponent implements OnInit {
           ingresosMensuales.push(datos[mes] ?? 0);
         }
 
-          this.incomeChartData.datasets[0].data = ingresosMensuales;
+        this.incomeChartData.datasets[0].data = ingresosMensuales;
 
-          this.actualizarGraficoIngresos();
+        this.actualizarGraficoIngresos();
 
-          if (this.chartIngreso) {
-            this.chartIngreso?.chart?.update();
+        if (this.chartIngreso) {
+          this.chartIngreso?.chart?.update();
 
-          }
-        },
-        error: (err) => {
-          console.error('Error al obtener ingredientes usados:', err);
         }
-      });
+      },
+      error: (err) => {
+        console.error('Error al obtener ingredientes usados:', err);
+      }
+    });
     this.actualizarGraficoIngresos();
   }
 
@@ -267,15 +267,18 @@ export class GraficaComponent implements OnInit {
       }
     }
   }
-  
+
   getAnioGrafica(): void {
     this.administradorService.getAnioGrafica().subscribe({
       next: (lista) => {
         console.log('Respuesta del backend:', lista);
         this.anios = lista.anios; // ✅ usamos directamente "anios", no .map()
 
+
         if (this.anios.length > 0) {
           this.anio = this.anios[0]; // valor inicial
+          this.anioIngresos = this.anios[0];
+          this.getIngresos();
           this.getIngredientesUsados(); // carga inicial de datos
         }
       },
