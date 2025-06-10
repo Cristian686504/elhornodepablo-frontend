@@ -1,1 +1,80 @@
-<p>pedidos-admin works!</p>
+<section class="seccion-pedidos">
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Pedidos Registrados</h2>
+
+     <!-- Filtro de Estado -->
+    <div class="mb-4 text-center">
+      <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarPedidos()">
+        <option value="">Todos</option>
+        <option value="ACEPTADO">Aceptados</option>
+        <option value="CANCELADO">Cancelados</option>
+        <option value="PENDIENTE">Pendientes</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div *ngFor="let pedido of pedidosFiltrados" class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm border-primary border-2">
+          <div class="card-header bg-fiesta text-white fw-bold">
+            📦 Pedido #{{ pedido.id }}
+          </div>
+          <div class="card-body">
+            <p><strong>Cliente:</strong> {{ pedido.cliente?.nombreUsuario}}</p>
+            <p><strong>Dirección de entrega:</strong> {{ pedido.direccion }}</p>
+            <p><strong>Fecha del Pedido:</strong> {{ pedido.fechaPedido }}</p>
+            <p><strong>Fecha de Entrega:</strong> {{ pedido.fechaEntrega }}</p>
+            <p><strong>Entrega:</strong> {{ pedido.entrega ? 'Sí' : 'No' }}</p>
+            <p><strong>Método de Pago:</strong> {{ pedido.metodoPago }}</p>
+            <p><strong>Periodicidad:</strong> {{ pedido.periodicidad || 'Único' }}</p>
+            <p><strong>Agencia:</strong> {{ pedido.agencia || 'N/A' }}</p>
+            <p><strong>Motivo del Beneficio:</strong> {{ pedido.motivoBeneficio || 'Ninguno' }}</p>
+            <p><strong>Estado:</strong> 
+              <span class="badge"
+                    [ngClass]="{
+                      'bg-success': pedido.estado === 'ACEPTADO',
+                      'bg-danger': pedido.estado === 'CANCELADO',
+                      'bg-warning text-dark': pedido.estado === 'PENDIENTE'
+                    }">
+                {{ pedido.estado }}
+              </span>
+            </p>
+
+            <p *ngIf="pedido.pizzas.length"><strong>Pizzas:</strong></p>
+<ul class="list-group mb-3" *ngIf="pedido.pizzas.length">
+  <li class="list-group-item" *ngFor="let item of pedido.pizzas">
+    🍕 {{ item.pizza.nombre }} - {{ item.pizza.descripcion }} - Cantidad: {{ item.cantidad }}
+  </li>
+</ul>
+
+
+            
+
+            <!-- Acciones para modificar el estado del pedido -->
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-outline-success w-45" 
+                      (click)="aceptarPedido(pedido.id)"
+                      *ngIf="pedido.estado === 'PENDIENTE'">✅ Aceptar</button>
+
+              <button class="btn btn-outline-danger w-45"
+                      (click)="cancelarPedido(pedido.id)"
+                      *ngIf="pedido.estado === 'PENDIENTE'">❌ Cancelar</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center mt-4">
+      <button class="btn btn-secondary me-2" (click)="anteriorPaginaPedidos()" [disabled]="paginaActual === 0">
+        ◀ Anterior
+      </button>
+      <span class="align-self-center">Página {{ paginaActual + 1 }} de {{ totalPaginas }}</span>
+      <button class="btn btn-secondary ms-2" (click)="siguientePaginaPedidos()" 
+              [disabled]="paginaActual >= totalPaginas - 1">
+        Siguiente ▶
+      </button>
+    </div>
+  </div>
+</section>

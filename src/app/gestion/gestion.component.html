@@ -2,14 +2,26 @@
 
 <div class="container-fluid">
   <div class="row">
+
+
+
+    <nav class="navbar navbar-dark bg-orange d-md-none">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Menú</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle sidebar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
+
+
     <!-- Sidebar -->
-    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse border-end">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse border-end">
       <div class="position-sticky pt-3">
         <ul class="nav flex-column">
           <li class="nav-item" *ngFor="let seccion of secciones">
-            <a class="nav-link"
-              [class.active]="seccionActiva === seccion.id"
-              (click)="seleccionarSeccion(seccion.id)">
+            <a class="nav-link" [class.active]="seccionActiva === seccion.id" (click)="seleccionarSeccion(seccion.id)">
               {{ seccion.nombre }}
             </a>
           </li>
@@ -17,543 +29,1118 @@
       </div>
     </nav>
 
+
+
     <!-- Main content -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <!-- USUARIOS -->
-      <section *ngIf="seccionActiva === 'usuarios'" class="mt-4">
-        <h2>Usuarios Clientes</h2>
-        <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Buscar..." />
+      <section *ngIf="seccionActiva === 'usuarios'" class="container mt-4">
+
+        <!-- Usuarios Clientes -->
+        <div class="card">
+          <div class="card-header clientes-header">
+            <h2 class="card-title">
+              <div class="icon-circle">👥</div>
+              Usuarios Clientes
+            </h2>
+          </div>
+
+          <div class="card-content">
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar clientes...">
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nombre de Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Tipo de Cliente</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let usuario of listaUsuarios" (click)="seleccionarFila(usuario, 'cliente')"
+                    [class.table-primary]="usuarioSeleccionado === usuario">
+                    <td hidden>{{usuario.id}}</td>
+                    <td class="font-medium">{{ usuario.nombreUsuario }}</td>
+                    <td>{{ usuario.nombreCompleto }}</td>
+                    <td class="text-gray">{{ usuario.direccion }}</td>
+                    <td>{{ usuario.telefono }}</td>
+                    <td class="text-blue">{{ usuario.email }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="usuario.tipoCliente === 'COMERCIO' ? 'COMERCIO' : 'PERSONA'">
+                        {{ usuario.tipoCliente }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create" (click)="abrirModal('cliente')">
+                <i class="fas fa-plus"></i> Crear Cliente
+              </button>
+              <button class="btn btn-warning" (click)="abrirModal('cliente', usuarioSeleccionado)">
+                <i class="fas fa-edit"></i> Modificar Cliente
+              </button>
+              <button class="btn btn-danger" (click)="eliminarCliente(usuarioSeleccionado)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+
+            <!-- Paginación -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaUsuarios()"
+                [disabled]="paginaUsuarios === 0">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <span class="align-self-center">Página {{ paginaUsuarios + 1 }} de {{ totalPaginasUsuarios }}</span>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaUsuarios()"
+                [disabled]="paginaUsuarios >= totalPaginasUsuarios - 1">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Nombre de Usuario</th>
-                <th>Nombre Completo</th>
-                <th>Dirección</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Tipo de Cliente</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let usuario of getUsuariosPaginados()" 
-                  (click)="seleccionarFila(usuario, 'cliente')" 
-                  [class.table-primary]="usuarioSeleccionado === usuario">
-                <td>{{ usuario.nombreUsuario }}</td>
-                <td>{{ usuario.nombreCompleto }}</td>
-                <td>{{ usuario.direccion }}</td>
-                <td>{{ usuario.telefono }}</td>
-                <td>{{ usuario.email }}</td>
-                <td>{{ usuario.tipoCliente }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <!-- Usuarios Administradores -->
+        <div class="card">
+          <div class="card-header admins-header">
+            <h2 class="card-title">
+              <div class="icon-circle">🛡️</div>
+              Usuarios Administradores
+            </h2>
+          </div>
 
-        <div class="mb-3 d-flex gap-2">
-          <button class="btn btn-primary" (click)="abrirModal('cliente')">Crear Cliente</button>
-          <button class="btn btn-warning" (click)="abrirModal('cliente', usuarioSeleccionado)">Modificar Cliente</button>
-          <button class="btn btn-danger" (click)="eliminarCliente(usuarioSeleccionado)">Eliminar</button>
-        </div>
+          <div class="card-content">
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar administradores...">
+            </div>
 
-        <div class="mb-5 d-flex gap-2">
-          <button class="btn btn-outline-secondary" (click)="anteriorPaginaUsuarios()">Anterior</button>
-          <button class="btn btn-outline-secondary" (click)="siguientePaginaUsuarios()">Siguiente</button>
-        </div>
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nombre de Usuario</th>
+                    <th>Cédula</th>
+                    <th>Nombre Completo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let administrador of getAdministradoresPaginados()"
+                    (click)="seleccionarFila(administrador, 'admin')"
+                    [class.table-primary]="administradorSeleccionado === administrador">
+                    <td class="font-medium">{{ administrador.nombreUsuario }}</td>
+                    <td class="font-mono">{{ administrador.cedula }}</td>
+                    <td>{{ administrador.nombreCompleto }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-        <h2>Usuarios Administradores</h2>
-        <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Buscar..." />
-        </div>
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create-admin" (click)="abrirModal('admin')">
+                <i class="fas fa-plus"></i> Crear Administrador
+              </button>
+              <button class="btn btn-warning" (click)="abrirModal('admin', administradorSeleccionado)">
+                <i class="fas fa-edit"></i> Modificar Administrador
+              </button>
+              <button class="btn btn-danger" (click)="eliminarAdmin(administradorSeleccionado)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Nombre de usuario</th>
-                <th>Cédula</th>
-                <th>Nombre completo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let administrador of getAdministradoresPaginados()" 
-                  (click)="seleccionarFila(administrador, 'admin')" 
-                  [class.table-primary]="administradorSeleccionado === administrador">
-                <td>{{ administrador.nombreUsuario }}</td>
-                <td>{{ administrador.cedula }}</td>
-                <td>{{ administrador.nombreCompleto }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="mb-3 d-flex gap-2">
-          <button class="btn btn-primary" (click)="abrirModal('admin')">Crear Administrador</button>
-          <button class="btn btn-warning" (click)="abrirModal('admin', administradorSeleccionado)">Modificar Administrador</button>
-          <button class="btn btn-danger" (click)="eliminarAdmin(administradorSeleccionado)">Eliminar</button>
-        </div>
-
-        <div class="mb-5 d-flex gap-2">
-          <button class="btn btn-outline-secondary" (click)="anteriorPaginaAdministradores()">Anterior</button>
-          <button class="btn btn-outline-secondary" (click)="siguientePaginaAdministradores()">Siguiente</button>
+            <!-- Paginación -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaAdministradores()"
+                [disabled]="paginaAdministradores === 0">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <span class="align-self-center">Página {{ paginaAdministradores + 1 }} de {{ totalPaginasAdministradores
+                }}</span>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaAdministradores()"
+                [disabled]="paginaAdministradores >= totalPaginasAdministradores - 1">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </section>
+
 
       <!-- MODALS -->
-      <!-- Modal Cliente -->
-      <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'cliente'">
-        <div class="custom-modal">
-          <div class="custom-modal-header">
-            <h5 class="custom-modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Usuario Cliente</h5>
-            <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+      <!-- Modal Cliente con estilos del Modal Admin -->
+      <div class="modal-overlay" *ngIf="modalActivo && tipoModal === 'cliente'">
+        <div class="modal-container">
+          <div class="modal-header">
+            <div class="modal-title-section">
+              <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                    fill="currentColor" />
+                  <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="currentColor" />
+                </svg>
+              </div>
+              <h2 class="modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Usuario Cliente</h2>
+            </div>
+            <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
           </div>
-          <form (ngSubmit)="guardarUsuarioCliente()">
-            <div class="custom-modal-body">
+
+          <form (ngSubmit)="guardarUsuarioCliente()" class="modal-form">
+            <div class="modal-body">
               <input type="hidden" [(ngModel)]="usuarioForm.id" name="id" />
 
-              
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de Usuario" [(ngModel)]="usuarioForm.nombreUsuario" name="nombre_usuario" required />
-              
-              
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre Completo" [(ngModel)]="usuarioForm.nombreCompleto" name="nombre_completo" required />
-              
-              
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Dirección" [(ngModel)]="usuarioForm.direccion" name="direccion" />
-              
-              
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Teléfono" [(ngModel)]="usuarioForm.telefono" name="telefono" />
-              
-              
-              <input type="email" class="form-control col-12 col-md-6" placeholder="Email" [(ngModel)]="usuarioForm.email" name="email" />
-
-              
-              <input type="password" class="form-control col-12 col-md-6" placeholder="Contraseña" [(ngModel)]="usuarioForm.contrasenia" name="contrasena" />
-              
-     
-              <select class="form-control col-12 col-md-6" [(ngModel)]="usuarioForm.tipoCliente" name="tipo_cliente" required>
-                <option value="COMERCIO">COMERCIO</option>
-                <option value="PERSONA">PERSONA</option>
-              </select>
-            </div>
-
-
-            <div class="custom-modal-footer">
-              <button type="submit" class="btn btn-success">{{modoEdicion ? 'Guardar Cambios' : 'Crear Usuario'}}</button>
-              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      
-      <!-- Modal Admin -->
-      <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'admin'">
-        <div class="custom-modal">
-          <div class="custom-modal-header">
-            <h5 class="custom-modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Usuario Administrador</h5>
-            <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
-          </div>
-          <form (ngSubmit)="guardarUsuarioAdministrador()">
-            <div class="custom-modal-body">
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de Usuario" [(ngModel)]="adminForm.nombreUsuario" name="admin_nombre" required />
-              <input type="text" class="form-control col-12 col-md-6" placeholder="Cédula" [(ngModel)]="adminForm.cedula" name="admin_cedula" />
-              <input type="text" class="form-control col-12" placeholder="Nombre Completo" [(ngModel)]="adminForm.nombreCompleto" name="admin_nombre_completo" />
-            </div>
-            <div class="custom-modal-footer">
-              <button type="submit" class="btn btn-success">{{modoEdicion ? 'Guardar Cambios' : 'Crear Administrador'}}</button>
-              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-      
-      <!-- PEDIDOS -->
-      <section *ngIf="seccionActiva === 'pedidos'" class="mt-4">
-        <h2>Pedidos</h2>
-        <p>Aquí irá la tabla de pedidos...</p>
-      </section>
-
-        <!-- FIESTAS -->
-<section *ngIf="seccionActiva === 'fiestas'" class="mt-4">
-  <h2>Fiestas</h2>
-  
-  <!-- Búsqueda -->
-  <div class="mb-3">
-    <input type="text" class="form-control" placeholder="Buscar..." />
-  </div>
-
-  <!-- Tabla de Fiestas -->
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Fecha Fiesta</th>
-          <th>Hora Servir</th>
-          <th>Cant. Personas</th>
-          <th>Precio</th>
-          <th>Pago</th>
-          <th>Estado</th>
-          <th>Dirección</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let fiesta of getFiestasPaginados()"
-            (click)="seleccionarFila(fiesta, 'fiesta')"
-            [class.table-primary]="fiestaSeleccionada === fiesta">
-          <td>{{ fiesta.id }}</td>
-          <td>{{ fiesta.fechaFiesta }}</td>
-          <td>{{ fiesta.horaServir }}</td>
-          <td>{{ fiesta.cantidadPersonas }}</td>
-          <td>{{ fiesta.precio }}</td>
-          <td>{{ fiesta.pago }}</td>
-          <td>{{ fiesta.estado }}</td>
-          <td>{{ fiesta.direccion }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Botones de acciones -->
-  <div class="mb-3 d-flex gap-2">
-    <button class="btn btn-primary" (click)="abrirModal('fiesta')">Crear Fiesta</button>
-    <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">Modificar Fiesta</button>
-    <button class="btn btn-danger" (click)="eliminarFiesta(fiestaSeleccionada)">Eliminar</button>
-  </div>
-
-  <!-- Paginación -->
-  <div class="mb-5 d-flex gap-2">
-    <button class="btn btn-outline-secondary" (click)="anteriorPaginaFiestas()">Anterior</button>
-    <button class="btn btn-outline-secondary" (click)="siguientePaginaFiestas()">Siguiente</button>
-  </div>
-
- <!-- Modal para crear/modificar fiesta -->
-<div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'fiesta'">
-  <div class="custom-modal">
-    <div class="custom-modal-header">
-      <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Fiesta</h5>
-      <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
-    </div>
-
-    <form (ngSubmit)="guardarFiesta()">
-      <div class="custom-modal-body">
-        <!-- Campo oculto para el id -->
-        <input type="hidden" [(ngModel)]="fiestasForm.id" name="id" />
-
-        <div class="mb-3">
-          <label for="fechaFiesta" class="form-label">Fecha de la Fiesta</label>
-          <input type="date" class="form-control" [(ngModel)]="fiestasForm.fechaFiesta" name="fechaFiesta" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="horaServir" class="form-label">Hora de Servicio</label>
-          <input type="time" class="form-control" [(ngModel)]="fiestasForm.horaServir" name="horaServir" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="cantidadPersonas" class="form-label">Cantidad de Personas</label>
-          <input type="number" class="form-control" [(ngModel)]="fiestasForm.cantidadPersonas" name="cantidadPersonas" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="precio" class="form-label">Precio</label>
-          <input type="number" class="form-control" [(ngModel)]="fiestasForm.precio" name="precio" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="pago" class="form-label">Pago</label>
-          <select class="form-control" [(ngModel)]="fiestasForm.pago" name="pago" required>
-            <option value="EFECTIVO">EFECTIVO</option>
-            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="estado" class="form-label">Estado</label>
-          <select class="form-control" [(ngModel)]="fiestasForm.estado" name="estado" required>
-            <option value="PENDIENTE">PENDIENTE</option>
-          </select>
-        </div>
-
-        <!-- NUEVO: Cliente -->
-        <div class="mb-3">
-          <label for="cliente" class="form-label">Cliente</label>
-          <select class="form-control" [(ngModel)]="fiestasForm.cliente.id" name="clienteId" required>
-            <option value="" disabled selected>Seleccione un cliente</option>
-            <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
-              {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
-            </option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="direccion" class="form-label">Dirección</label>
-          <input type="text" class="form-control" [(ngModel)]="fiestasForm.direccion" name="direccion" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="Extras" class="form-label">Extras</label>
-          <div class="d-flex flex-column">
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.hamburguesa" name="hamburguesa" id="hamburguesa" />
-              <label class="form-check-label" for="hamburguesa">Hamburguesa</label>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.chivito" name="chivito" id="chivito" />
-              <label class="form-check-label" for="chivito">Chivito</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <h6>Pizzas en la Fiesta</h6>
-          <div *ngFor="let item of fiestasForm.pizzas; let i = index" class="d-flex gap-2 align-items-center mb-2">
-            <div *ngIf="!modoEdicion">
-              <select class="form-control" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}" required>
-                <option value="" disabled>Seleccione una pizza</option>
-                <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
-                  {{ pizza.nombre }} ({{ pizza.tipo }})
-                </option>
-              </select>
-            </div>
-
-            <div *ngIf="modoEdicion">
-              <input type="text" class="form-control" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
-            </div>
-
-            <input type="number" class="form-control" [(ngModel)]="fiestasForm.pizzas[i].cantidad" name="cantidad{{i}}" placeholder="Cantidad" required />
-            <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
-          </div>
-
-          <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
-        </div>
-      </div>
-
-      <div class="custom-modal-footer">
-        <button type="submit" class="btn btn-success">
-          {{ modoEdicion ? 'Guardar Cambios' : 'Crear Fiesta' }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-  </section>
-
-
-       <!-- PIZZAS -->
-      <section *ngIf="seccionActiva === 'pizzas'" class="mt-4">
-        <h2 class="">Pizzas</h2>
-
-        <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Buscar..." />
-        </div>
-      
-        <div class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Descripción</th>
-                <th>Tipo</th>
-                <th>Ingredientes</th> 
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let pizza of getPizzasPaginadas()" 
-                  (click)="seleccionarFila(pizza, 'pizza')" 
-                  [class.table-primary]="pizzaSeleccionada === pizza">
-                <td>{{ pizza.nombre }}</td>
-                <td>{{ pizza.precio | currency }}</td>
-                <td>{{ pizza.descripcion }}</td>
-                <td>{{ pizza.tipo }}</td>
-                <td><button (click)="abrirModalIngredientes(pizza)">Ver Ingredientes</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      
-        <!-- Botones de acción para Pizzas -->
-        <div class="mb-3 d-flex gap-2">
-          <button class="btn btn-primary" (click)="abrirModal('pizza')">Crear Pizza</button>
-          <button class="btn btn-warning" (click)="abrirModal('pizza', pizzaSeleccionada)">Modificar Pizza</button>
-          <button class="btn btn-danger" (click)="eliminarPizza(pizzaSeleccionada)">Eliminar</button>
-        </div>
-      
-        <!-- Paginación para Pizzas -->
-        <div class="mb-5 d-flex gap-2">
-          <button class="btn btn-outline-secondary" (click)="anteriorPaginaPizzas()">Anterior</button>
-          <button class="btn btn-outline-secondary" (click)="siguientePaginaPizzas()">Siguiente</button>
-        </div>
-
-   <!-- Modal para mostrar los ingredientes de la pizza -->
-   <div class="modal" tabindex="-1" [ngClass]="{'show': mostrarModal}" style="display: block;" *ngIf="mostrarModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Ingredientes de {{ pizzaSeleccionada?.nombre }}</h5>
-          <button type="button" class="close" (click)="cerrarModalP()">
-            <span>&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <ul>
-            <li *ngFor="let ingrediente of pizzaSeleccionada?.ingredientes">
-              Ingrediente: {{ ingrediente?.ingrediente?.nombre }} : {{ ingrediente?.cantidad }}({{ ingrediente?.ingrediente?.unidad_medida }})
- 
-            </li>
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModalP()">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'pizza'">
-    <div class="custom-modal">
-      <div class="custom-modal-header">
-        <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Pizza</h5>
-        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
-      </div>
-      <form (ngSubmit)="guardarPizza()">
-        <div class="custom-modal-body">
-          <input type="hidden" [(ngModel)]="pizzasForm.id" name="id" />
-
-          <!-- Campo para subir imagen -->
-      <div class="mt-3">
-        <h6>Imagen de la pizza</h6>
-       <input type="file" class="form-control" (change)="procesarImagen($event)" accept="image/*" />
-      </div>
-
-      <!-- Vista previa de la imagen -->
-      <div *ngIf="pizzasForm.imagen">
-        <img [src]="pizzasForm.imagen" alt="Vista previa de la pizza" class="img-thumbnail mt-2" style="max-width: 200px;" />
-      </div>
-          
-          <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre de la Pizza" [(ngModel)]="pizzasForm.nombre" name="nombre" required />
-          
-          <input type="number" class="form-control col-12 col-md-6" placeholder="Precio" [(ngModel)]="pizzasForm.precio" name="precio" required />
-          
-          <input type="text" class="form-control col-12 col-md-6" placeholder="Descripción" [(ngModel)]="pizzasForm.descripcion" name="descripcion" required />
-          
-          <select class="form-control col-12 col-md-6" [(ngModel)]="pizzasForm.tipo" name="tipo" required>
-            <option value="Pizza redonda">Pizza redonda</option>
-            <option value="Pizza 1/2 metro">Pizza 1/2 metro</option>
-            <option value="Pizza cuadradas">Pizza cuadradas</option>
-            <option value="Pizza gigantes">Pizza gigantes</option>
-          </select>
-  
-          <!-- Sección para agregar ingredientes -->
-          <div class="mt-3">
-            <h6>Ingredientes</h6>
-            <div *ngFor="let item of pizzasForm.ingredientes; let i = index" class="d-flex gap-2 align-items-center mb-2">
-   
-              <div *ngIf="modoEdicion">
-            <input type="hidden" [(ngModel)]="pizzasForm.ingredientes[i].ingrediente.id" name="ingredienteId{{i}}" required />
-  <input type="text" class="form-control" 
-         [value]="pizzasForm.ingredientes[i].ingrediente.nombre" 
-         readonly />
-</div>
-
-
-
-              <div *ngIf="!modoEdicion">
-                <select class="form-control" [(ngModel)]="pizzasForm.ingredientes[i].ingredienteId" name="ingrediente{{i}}" required>
-                  <option [value]="0" disabled>Seleccione un ingrediente</option>
-                  <option *ngFor="let ingrediente of listaIngredientes" [value]="ingrediente.id">
-                    {{ ingrediente.nombre }}({{ ingrediente.unidad_medida }})
-                  </option>
-                </select>
+              <div class="form-group">
+                <label for="nombre_usuario" class="form-label">
+                  <span class="label-text">Nombre de Usuario</span>
+                  <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="nombre_usuario" type="text" class="form-input" placeholder="Ingrese el nombre de usuario"
+                    [(ngModel)]="usuarioForm.nombreUsuario" name="nombre_usuario" required />
+                </div>
               </div>
-              
-              <input type="number" class="form-control" placeholder="Cantidad" [(ngModel)]="pizzasForm.ingredientes[i].cantidad" name="cantidad{{i}}" required min="1"/>
-              <button type="button" class="btn btn-danger" (click)="quitarIngrediente(i)">Quitar</button>
+
+              <div class="form-group">
+                <label for="nombre_completo" class="form-label">
+                  <span class="label-text">Nombre Completo</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="nombre_completo" type="text" class="form-input" placeholder="Ingrese el nombre completo"
+                    [(ngModel)]="usuarioForm.nombreCompleto" name="nombre_completo" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="direccion" class="form-label">
+                  <span class="label-text">Dirección</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="direccion" type="text" class="form-input" placeholder="Ingrese la dirección"
+                    [(ngModel)]="usuarioForm.direccion" name="direccion" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="telefono" class="form-label">
+                  <span class="label-text">Teléfono</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="telefono" type="text" class="form-input" placeholder="Ingrese el teléfono"
+                    [(ngModel)]="usuarioForm.telefono" name="telefono" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span class="label-text">Email</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="email" type="email" class="form-input" placeholder="Ingrese el email"
+                    [(ngModel)]="usuarioForm.email" name="email" />
+                </div>
+              </div>
+
+              <div class="form-group" *ngIf="!usuarioSeleccionado">
+                <label for="contrasena" class="form-label">
+                  <span class="label-text">Contraseña</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="contrasena" type="password" class="form-input" placeholder="Ingrese la contraseña"
+                    [(ngModel)]="usuarioForm.contrasenia" name="contrasena" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="tipo_cliente" class="form-label">
+                  <span class="label-text">Tipo de Cliente</span>
+                  <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <select id="tipo_cliente" class="form-select" [(ngModel)]="usuarioForm.tipoCliente"
+                    name="tipo_cliente" required>
+                    <option value="" disabled selected hidden>Seleccione una opción</option>
+                    <option value="COMERCIO">COMERCIO</option>
+                    <option value="PERSONA">PERSONA</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <button type="button" class="btn btn-primary" (click)="agregarIngrediente()">Agregar Ingrediente</button>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor" />
+                </svg>
+                {{ modoEdicion ? 'Guardar Cambios' : 'Crear Usuario' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+
+      <!-- Modal Admin -->
+      <div class="modal-overlay" *ngIf="modalActivo && tipoModal === 'admin'">
+        <div class="modal-container">
+          <div class="modal-header">
+            <div class="modal-title-section">
+              <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                    fill="currentColor" />
+                  <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="currentColor" />
+                </svg>
+              </div>
+              <h2 class="modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Usuario Administrador</h2>
+            </div>
+            <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <form (ngSubmit)="guardarUsuarioAdministrador()" class="modal-form">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="admin_nombre" class="form-label">
+                  <span class="label-text">Nombre de Usuario</span>
+                  <span class="required">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="admin_nombre" type="text" class="form-input" placeholder="Ingrese el nombre de usuario"
+                    [(ngModel)]="adminForm.nombreUsuario" name="admin_nombre" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="admin_cedula" class="form-label">
+                  <span class="label-text">Cédula</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="admin_cedula" type="text" class="form-input" placeholder="Ingrese la cédula"
+                    [(ngModel)]="adminForm.cedula" name="admin_cedula" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="admin_nombre_completo" class="form-label">
+                  <span class="label-text">Nombre Completo</span>
+                </label>
+                <div class="input-wrapper">
+                  <input id="admin_nombre_completo" type="text" class="form-input"
+                    placeholder="Ingrese el nombre completo" [(ngModel)]="adminForm.nombreCompleto"
+                    name="admin_nombre_completo" />
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor" />
+                </svg>
+                {{modoEdicion ? 'Guardar Cambios' : 'Crear Administrador'}}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <!-- PEDIDOS -->
+      <section *ngIf="seccionActiva === 'pedidos'" class="container mt-4">
+        <!-- Pedidos -->
+        <div class="card">
+          <div class="card-header pedidos-header">
+            <h2 class="card-title">
+              <div class="icon-circle">📦</div>
+              Pedidos
+            </h2>
+          </div>
+
+          <div class="card-content">
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar pedidos..." />
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Fecha Pedido</th>
+                    <th>Fecha Entrega</th>
+                    <th>Entrega</th>
+                    <th>Método Pago</th>
+                    <th>Estado</th>
+                    <th>Periodicidad</th>
+                    <th>Dirección</th>
+                    <th>Cliente</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let pedido of listaPedidos" (click)="seleccionarFila(pedido, 'pedido')"
+                    [class.table-primary]="pedidoSeleccionado === pedido">
+                    <td hidden>{{ pedido.id }}</td>
+                    <td>{{ pedido.fechaPedido | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ pedido.fechaEntrega | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ pedido.entrega ? 'Sí' : 'No' }}</td>
+                    <td>{{ pedido.metodoPago }}</td>
+                    <td>{{ pedido.estado }}</td>
+                    <td>{{ pedido.periodicidad }}</td>
+                    <td>{{ pedido.direccion }}</td>
+                    <td>{{ pedido.cliente.nombreUsuario }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create" (click)="abrirModal('pedido')">
+                <i class="fas fa-plus"></i> Crear Pedido
+              </button>
+              <button class="btn btn-warning" [disabled]="!pedidoSeleccionado"
+                (click)="abrirModal('pedido', pedidoSeleccionado)">
+                <i class="fas fa-edit"></i> Modificar Pedido
+              </button>
+              <button class="btn btn-danger" [disabled]="!pedidoSeleccionado" (click)="eliminarPedido()">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+
+            <!-- Paginación de Pedidos -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaPedidos()"
+                [disabled]="paginaPedidos === 0">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <span class="align-self-center">Página {{ paginaPedidos + 1 }} de {{ totalPaginasPedidos }}</span>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaPedidos()"
+                [disabled]="paginaPedidos >= totalPaginasPedidos - 1">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
           </div>
         </div>
-        
-        <div class="custom-modal-footer mt-3">
-          <button type="submit" class="btn btn-success">{{ modoEdicion ? 'Guardar Cambios' : 'Crear Pizza' }}</button>
-          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  
 
-      </section>
-
-         <!-- INGREDIENTES -->
-      <section *ngIf="seccionActiva === 'ingredientes'" class="mt-4">
-        <h2>Ingredientes</h2>
-        <div class="mb-3">
-          <input type="text" class="form-control" placeholder="Buscar..." />
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Nombre de ingedientes</th>
-                <th>Cantidad</th>
-                <th>Unidad de medida</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let ingrediente of getIngredientesPaginados()" 
-                 (click)="seleccionarFila(ingrediente, 'ingrediente')" 
-                 [class.table-primary]="ingredienteSeleccionado === ingrediente">
-                    <td>{{ ingrediente.nombre }}</td>
-                    <td>{{ ingrediente.cantidad }}</td>
-                    <td>{{ ingrediente.unidad_medida }}</td>
-                </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="mb-3 d-flex gap-2">
-          <button class="btn btn-primary" (click)="abrirModal('ingrediente')">Crear Ingrediente</button>
-          <button class="btn btn-warning" (click)="abrirModal('ingrediente', ingredienteSeleccionado)">Modificar Ingrediente</button>
-          <button class="btn btn-danger" (click)="eliminarIngrediente(ingredienteSeleccionado)">Eliminar</button>
-        </div>
-
-        <div class="mb-5 d-flex gap-2">
-          <button class="btn btn-outline-secondary" (click)="anteriorPaginaIngredientes()">Anterior</button>
-          <button class="btn btn-outline-secondary" (click)="siguientePaginaIngredientes()">Siguiente</button>
-        </div>
-        <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'ingrediente'">
+        <!-- Modal para crear/modificar pedido -->
+        <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'pedido'">
           <div class="custom-modal">
             <div class="custom-modal-header">
-              <h5 class="custom-modal-title">{{modoEdicion ? 'Modificar' : 'Crear'}} Ingrediente</h5>
+              <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Pedido</h5>
+              <p *ngIf="modoEdicion">ID del pedido: <strong>{{ pedidoForm.id || '(sin id)' }}</strong></p>
               <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
             </div>
 
-            <form (ngSubmit)="guardarIngrediente()">
+            <form>
               <div class="custom-modal-body">
-                <input type="hidden" [(ngModel)]="ingredientesForm.id" name="id" />
-        
-                <input type="text" class="form-control col-12 col-md-6" placeholder="Nombre del Ingrediente" [(ngModel)]="ingredientesForm.nombre" name="nombre" required />
-        
-                <input type="number" class="form-control col-12 col-md-6" placeholder="Cantidad" [(ngModel)]="ingredientesForm.cantidad" name="cantidad" required />
-        
-                <input type="text" class="form-control col-12 col-md-6" placeholder="Unidad de Medida" [(ngModel)]="ingredientesForm.unidad_medida" name="unidad_medida" required />
+                <!-- Campo oculto para el id -->
+                <input type="hidden" [(ngModel)]="pedidoForm.id" name="id" />
+
+                <div class="mb-3">
+                  <label for="fechaPedido" class="form-label">Fecha de Pedido</label>
+                  <input type="date" class="form-control" [(ngModel)]="pedidoForm.fechaPedido" name="fechaPedido"
+                    required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
+                  <input type="date" class="form-control" [(ngModel)]="pedidoForm.fechaEntrega" name="fechaEntrega" />
+                </div>
+
+                <div class="mb-3 form-check">
+                  <input type="checkbox" class="form-check-input" [(ngModel)]="pedidoForm.entrega" name="entrega"
+                    id="entregaCheck" />
+                  <label class="form-check-label" for="entregaCheck">Entrega</label>
+                </div>
+
+                <div class="mb-3">
+                  <label for="metodoPago" class="form-label">Método de Pago</label>
+                  <select class="form-select" [(ngModel)]="pedidoForm.metodoPago" name="metodoPago" required>
+                    <option value="" disabled selected>Seleccione un método de pago</option>
+                    <option value="EFECTIVO">EFECTIVO</option>
+                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="estado" class="form-label">Estado</label>
+                  <select class="form-select" [(ngModel)]="pedidoForm.estado" name="estado" required>
+                    <option value="" disabled selected>Seleccione un estado</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                    <option value="ACEPTADO">ACEPTADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="periodicidad" class="form-label">Periodicidad</label>
+                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.periodicidad" name="periodicidad" />
+                </div>
+
+                <div class="mb-3">
+                  <label for="direccion" class="form-label">Dirección</label>
+                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.direccion" name="direccion"
+                    required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="motivoBeneficio" class="form-label">Motivo Beneficio</label>
+                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.motivoBeneficio"
+                    name="motivoBeneficio" />
+                </div>
+
+                <div class="mb-3">
+                  <label for="agencia" class="form-label">Agencia</label>
+                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.agencia" name="agencia" />
+                </div>
+
+                <!-- Cliente -->
+                <div class="mb-3">
+                  <label for="cliente" class="form-label">Cliente</label>
+                  <select class="form-select" [(ngModel)]="pedidoForm.cliente.id" name="clienteId" required>
+                    <option [value]="null" disabled>Seleccione un cliente</option>
+                    <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
+                      {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
+                    </option>
+                  </select>
+                </div>
+
+
+                <div class="mb-3">
+                  <h6>Pizzas en la Fiesta</h6>
+                  <div *ngFor="let item of pedidoForm.pizzas; let i = index"
+                    class="d-flex gap-2 align-items-center mb-2">
+                    <div *ngIf="!modoEdicion">
+                      <select class="form-control" [(ngModel)]="pedidoForm.pizzas[i].pizza.id" name="pizza{{i}}"
+                        required>
+                        <option value="" disabled>Seleccione una pizza</option>
+                        <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
+                          {{ pizza.nombre }} ({{ pizza.tipo }})
+                        </option>
+                      </select>
+                    </div>
+
+                    <div *ngIf="modoEdicion">
+                      <input type="text" class="form-control" [value]="pedidoForm.pizzas[i].pizza.nombre" readonly />
+                    </div>
+
+                    <input type="number" class="form-control" [(ngModel)]="pedidoForm.pizzas[i].cantidad"
+                      name="cantidad{{i}}" placeholder="Cantidad" required min="1" />
+                    <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" (click)="agregarPizzaAPedido()">Agregar Pizza</button>
+                </div>
+
               </div>
-        
+
               <div class="custom-modal-footer">
-                <button type="submit" class="btn btn-success">{{modoEdicion ? 'Guardar Cambios' : 'Crear Ingrediente'}}</button>
+                <button type="button" class="btn btn-success" (click)="guardarPedido()">
+                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Pedido' }}
+                </button>
                 <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
               </div>
             </form>
           </div>
         </div>
       </section>
+
+
+      <!-- FIESTAS -->
+      <section *ngIf="seccionActiva === 'fiestas'" class="container mt-4">
+        <div class="card">
+          <div class="card-header fiestas-header">
+            <h2 class="card-title">
+              <div class="icon-circle">🎉</div>
+              Fiestas
+            </h2>
+          </div>
+
+          <div class="card-content">
+
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar fiestas..." />
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Fecha Fiesta</th>
+                    <th>Hora Servir</th>
+                    <th>Cant. Personas</th>
+                    <th>Precio</th>
+                    <th>Pago</th>
+                    <th>Estado</th>
+                    <th>Dirección</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let fiesta of listaFiestas" (click)="seleccionarFila(fiesta, 'fiesta')"
+                    [class.table-primary]="fiestaSeleccionada === fiesta">
+                    <td>{{ fiesta.fechaFiesta | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ fiesta.horaServir | date:'HH:mm' }}</td>
+                    <td>{{ fiesta.cantidadPersonas }}</td>
+                    <td>{{ fiesta.precio }}</td>
+                    <td>{{ fiesta.pago }}</td>
+                    <td>{{ fiesta.estado }}</td>
+                    <td>{{ fiesta.direccion }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create" (click)="abrirModal('fiesta')">
+                <i class="fas fa-plus"></i> Crear Fiesta
+              </button>
+              <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">
+                <i class="fas fa-edit"></i> Modificar Fiesta
+              </button>
+              <button class="btn btn-danger" (click)="eliminarFiesta(fiestaSeleccionada)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+
+            <!-- Paginación de Fiestas -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaFiestas()"
+                [disabled]="paginaFiestas === 0">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <span class="align-self-center">Página {{ paginaFiestas + 1 }} de {{ totalPaginasFiestas }}</span>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaFiestas()"
+                [disabled]="paginaFiestas >= totalPaginasFiestas - 1">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal para crear/modificar fiesta -->
+        <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'fiesta'">
+          <div class="custom-modal">
+            <div class="custom-modal-header">
+              <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Fiesta</h5>
+              <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+            </div>
+
+            <form (ngSubmit)="guardarFiesta()">
+              <div class="custom-modal-body">
+                <!-- Campo oculto para el id -->
+                <input type="hidden" [(ngModel)]="fiestasForm.id" name="id" />
+
+                <div class="mb-3">
+                  <label for="fechaFiesta" class="form-label">Fecha de la Fiesta</label>
+                  <input type="date" class="form-control" [(ngModel)]="fiestasForm.fechaFiesta" name="fechaFiesta"
+                    required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="horaServir" class="form-label">Hora de Servicio</label>
+                  <input type="time" class="form-control" [(ngModel)]="fiestasForm.horaServir" name="horaServir"
+                    required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="cantidadPersonas" class="form-label">Cantidad de Personas</label>
+                  <input type="number" class="form-control" [(ngModel)]="fiestasForm.cantidadPersonas"
+                    name="cantidadPersonas" required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="precio" class="form-label">Precio</label>
+                  <input type="number" class="form-control" [(ngModel)]="fiestasForm.precio" name="precio" required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="pago" class="form-label">Pago</label>
+                  <select class="form-select" [(ngModel)]="fiestasForm.pago" name="pago" required>
+                    <option value="EFECTIVO">EFECTIVO</option>
+                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="estado" class="form-label">Estado</label>
+                  <select class="form-select" [(ngModel)]="fiestasForm.estado" name="estado" required>
+                    <option value="CANCELADO">CANCELADO</option>
+                    <option value="ACEPTADO">ACEPTADO</option>
+                    <option value="PENDIENTE">PENDIENTE</option>
+                  </select>
+                </div>
+
+                <!-- NUEVO: Cliente -->
+                <div class="mb-3">
+                  <label for="cliente" class="form-label">Cliente</label>
+                  <select class="form-control" [(ngModel)]="fiestasForm.cliente.id" name="clienteId" required>
+                    <option value="" disabled selected>Seleccione un cliente</option>
+                    <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
+                      {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="direccion" class="form-label">Dirección</label>
+                  <input type="text" class="form-control" [(ngModel)]="fiestasForm.direccion" name="direccion"
+                    required />
+                </div>
+
+                <div class="mb-3">
+                  <label for="Extras" class="form-label">Extras</label>
+                  <div class="d-flex flex-column">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.hamburguesa"
+                        name="hamburguesa" id="hamburguesa" />
+                      <label class="form-check-label" for="hamburguesa">Hamburguesa</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.chivito" name="chivito"
+                        id="chivito" />
+                      <label class="form-check-label" for="chivito">Chivito</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <h6>Pizzas en la Fiesta</h6>
+                  <div *ngFor="let item of fiestasForm.pizzas; let i = index"
+                    class="d-flex gap-2 align-items-center mb-2">
+                    <div *ngIf="!modoEdicion">
+                      <select class="form-control" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}"
+                        required>
+                        <option value="" disabled>Seleccione una pizza</option>
+                        <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
+                          {{ pizza.nombre }} ({{ pizza.tipo }})
+                        </option>
+                      </select>
+                    </div>
+
+                    <div *ngIf="modoEdicion">
+                      <input type="text" class="form-control" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
+                    </div>
+
+                    <input type="number" class="form-control" [(ngModel)]="fiestasForm.pizzas[i].cantidad"
+                      name="cantidad{{i}}" placeholder="Cantidad" required />
+                    <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                  </div>
+
+                  <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
+                </div>
+              </div>
+
+              <div class="custom-modal-footer">
+                <button type="submit" class="btn btn-success">
+                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Fiesta' }}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- PIZZAS -->
+      <section *ngIf="seccionActiva === 'pizzas'" class="container mt-4">
+        <div class="card">
+          <div class="card-header pizzas-header">
+            <h2 class="card-title">
+              <div class="icon-circle">🍕</div>
+              Pizzas
+            </h2>
+          </div>
+
+          <div class="card-content">
+
+            <!-- Búsqueda -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar pizzas..." />
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Descripción</th>
+                    <th>Tipo</th>
+                    <th>Ingredientes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let pizza of getPizzasPaginadas()" (click)="seleccionarFila(pizza, 'pizza')"
+                    [class.table-primary]="pizzaSeleccionada === pizza">
+                    <td>{{ pizza.nombre }}</td>
+                    <td>{{ pizza.precio | currency }}</td>
+                    <td>{{ pizza.descripcion }}</td>
+                    <td>{{ pizza.tipo }}</td>
+                    <td>
+                      <button class="btn btn-primary" (click)="abrirModalIngredientes(pizza)">
+                        Ver Ingredientes
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create" (click)="abrirModal('pizza')">
+                <i class="fas fa-plus"></i> Crear Pizza
+              </button>
+              <button class="btn btn-warning" (click)="abrirModal('pizza', pizzaSeleccionada)">
+                <i class="fas fa-edit"></i> Modificar Pizza
+              </button>
+              <button class="btn btn-danger" (click)="eliminarPizza(pizzaSeleccionada)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+
+            <!-- Paginación -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaPizzas()">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaPizzas()">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal modal-ingredientes" tabindex="-1" [ngClass]="{'show': mostrarModal}" style="display: block;"
+          *ngIf="mostrarModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Ingredientes de {{ pizzaSeleccionada?.nombre }}</h5>
+                <button type="button" class="close" (click)="cerrarModalP()">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <ul>
+                  <li *ngFor="let ingrediente of pizzaSeleccionada?.ingredientes">
+                    Ingrediente: {{ ingrediente?.ingrediente?.nombre }} : {{ ingrediente?.cantidad }}({{
+                    ingrediente?.ingrediente?.unidad_medida }})
+                  </li>
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalP()">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Modal Pizza con clases específicas -->
+        <div class="modal-overlay modal-pizza-overlay" *ngIf="modalActivo && tipoModal === 'pizza'">
+          <div class="modal-container modal-pizza-container">
+            <div class="modal-header">
+              <div class="modal-title-section">
+                <div class="modal-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10..." fill="currentColor" />
+                  </svg>
+                </div>
+                <h2 class="modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Pizza</h2>
+              </div>
+              <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <form (ngSubmit)="guardarPizza()" class="modal-form">
+              <div class="modal-body modal-pizza-body">
+                <input type="hidden" [(ngModel)]="pizzasForm.id" name="id" />
+
+                <!-- Imagen -->
+                <div class="form-group">
+                  <label class="form-label">Imagen de la Pizza</label>
+                  <div class="input-wrapper">
+                    <input type="file" class="form-input" (change)="procesarImagen($event)" accept="image/*" />
+                  </div>
+                  <div *ngIf="pizzasForm.imagen" class="mt-2">
+                    <img [src]="pizzasForm.imagen" alt="Vista previa de la pizza" class="img-preview-pizza" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Nombre de la Pizza</label>
+                  <input type="text" class="form-input" [(ngModel)]="pizzasForm.nombre" name="nombre" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Precio</label>
+                  <input type="number" class="form-input" [(ngModel)]="pizzasForm.precio" name="precio" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Descripción</label>
+                  <input type="text" class="form-input" [(ngModel)]="pizzasForm.descripcion" name="descripcion"
+                    required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Tipo de Pizza</label>
+                  <select class="form-select" [(ngModel)]="pizzasForm.tipo" name="tipo" required>
+                    <option value="" disabled selected hidden>Seleccione un tipo de pizza</option>
+                    <option value="Pizza redonda">Pizza redonda</option>
+                    <option value="Pizza 1/2 metro">Pizza 1/2 metro</option>
+                    <option value="Pizza cuadradas">Pizza cuadradas</option>
+                    <option value="Pizza gigantes">Pizza gigantes</option>
+                  </select>
+                </div>
+
+
+                <!-- Ingredientes -->
+                <div class="form-group">
+                  <label class="form-label">Ingredientes</label>
+                  <div *ngFor="let item of pizzasForm.ingredientes; let i = index" class="ingrediente-item">
+                    <div *ngIf="modoEdicion">
+                      <input type="hidden" [(ngModel)]="pizzasForm.ingredientes[i].ingrediente.id"
+                        name="ingredienteId{{i}}" required />
+                      <input type="text" class="form-input" [value]="pizzasForm.ingredientes[i].ingrediente.nombre"
+                        readonly />
+                    </div>
+
+                    <div *ngIf="!modoEdicion">
+                      <select class="form-select ingrediente-select"
+                        [(ngModel)]="pizzasForm.ingredientes[i].ingredienteId" name="ingrediente{{i}}" required>
+                        <option [value]="0" disabled>Seleccione un ingrediente</option>
+                        <option *ngFor="let ingrediente of listaIngredientes" [value]="ingrediente.id">
+                          {{ ingrediente.nombre }}({{ ingrediente.unidad_medida }})
+                        </option>
+                      </select>
+                    </div>
+
+                    <input type="number" class="form-input small-input" placeholder="Cantidad"
+                      [(ngModel)]="pizzasForm.ingredientes[i].cantidad" name="cantidad{{i}}" required min="1" />
+                    <button type="button" class="btn btn-danger" (click)="quitarIngrediente(i)">Quitar</button>
+                  </div>
+                  <button type="button" class="btn btn-primary mt-2" (click)="agregarIngrediente()">Agregar
+                    Ingrediente</button>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Pizza' }}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+
+
+      </section>
+
+      <!-- INGREDIENTES -->
+      <section *ngIf="seccionActiva === 'ingredientes'" class="container mt-4">
+
+        <div class="card">
+          <div class="card-header ingredientes-header">
+            <h2 class="card-title">
+              <div class="icon-circle">🥕</div>
+              Ingredientes
+            </h2>
+          </div>
+
+          <div class="card-content">
+
+            <!-- Buscador -->
+            <div class="search-container mb-3">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Buscar ingredientes..." />
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nombre de ingredientes</th>
+                    <th>Cantidad</th>
+                    <th>Unidad de medida</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let ingrediente of getIngredientesPaginados()"
+                    (click)="seleccionarFila(ingrediente, 'ingrediente')"
+                    [class.table-primary]="ingredienteSeleccionado === ingrediente">
+                    <td>{{ ingrediente.nombre }}</td>
+                    <td>{{ ingrediente.cantidad }}</td>
+                    <td>{{ ingrediente.unidad_medida }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Botones -->
+            <div class="action-buttons d-flex gap-2 mb-3">
+              <button class="btn btn-create" (click)="abrirModal('ingrediente')">
+                <i class="fas fa-plus"></i> Crear Ingrediente
+              </button>
+              <button class="btn btn-warning" (click)="abrirModal('ingrediente', ingredienteSeleccionado)">
+                <i class="fas fa-edit"></i> Modificar Ingrediente
+              </button>
+              <button class="btn btn-danger" (click)="eliminarIngrediente(ingredienteSeleccionado)">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+
+            <!-- Paginación -->
+            <div class="pagination d-flex gap-2 mb-5">
+              <button class="btn btn-outline-secondary" (click)="anteriorPaginaIngredientes()">
+                <i class="fas fa-chevron-left"></i> Anterior
+              </button>
+              <button class="btn btn-outline-secondary" (click)="siguientePaginaIngredientes()">
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Modal crear/modificar ingrediente con clases modal cliente -->
+        <div class="modal-overlay" *ngIf="modalActivo && tipoModal === 'ingrediente'">
+          <div class="modal-container">
+            <div class="modal-header">
+              <div class="modal-title-section">
+                <div class="modal-icon">
+                  <!-- Puedes poner un ícono aquí si querés -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 2C10.3431 2 9 3.34315 9 5C9 6.65685 10.3431 8 12 8C13.6569 8 15 6.65685 15 5C15 3.34315 13.6569 2 12 2Z"
+                      fill="currentColor" />
+                    <path d="M12 10C8.68629 10 6 12.6863 6 16H18C18 12.6863 15.3137 10 12 10Z" fill="currentColor" />
+                  </svg>
+                </div>
+                <h2 class="modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Ingrediente</h2>
+              </div>
+              <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <form (ngSubmit)="guardarIngrediente()" class="modal-form">
+              <div class="modal-body">
+                <input type="hidden" [(ngModel)]="ingredientesForm.id" name="id" />
+
+                <div class="form-group">
+                  <label for="nombre_ingrediente" class="form-label">
+                    <span class="label-text" required>Nombre del Ingrediente</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input id="nombre_ingrediente" type="text" class="form-input" placeholder="Nombre del Ingrediente"
+                      [(ngModel)]="ingredientesForm.nombre" name="nombre" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cantidad_ingrediente" class="form-label">
+                    <span class="label-text">Cantidad</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input id="cantidad_ingrediente" type="number" class="form-input" placeholder="Cantidad"
+                      [(ngModel)]="ingredientesForm.cantidad" name="cantidad" required min="0.01" step="0.01" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="unidad_medida" class="form-label">
+                    <span class="label-text">Unidad de Medida</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select id="unidad_medida" class="form-select" [(ngModel)]="ingredientesForm.unidad_medida"
+                      name="unidad_medida" required>
+                      <option value="" disabled selected hidden>Seleccione unidad de medida</option>
+                      <option value="G">G</option>
+                      <option value="KG">KG</option>
+                      <option value="ML">ML</option>
+                      <option value="L">L</option>
+                      <option value="CDRA">CDRA</option>
+                      <option value="OZ">OZ</option>
+                      <option value="LB">LB</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                      fill="currentColor" />
+                  </svg>
+                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Ingrediente' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+      </section>
+
     </main>
   </div>
 </div>

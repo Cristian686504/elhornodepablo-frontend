@@ -20,13 +20,6 @@ export class FiestasAdminComponent implements OnInit{
     private usuarioService: UsuarioService
   ) {}
 
-secciones = [
-    { id: 'usuarios', nombre: 'Usuarios' },
-    { id: 'pedidos', nombre: 'Pedidos' },
-    { id: 'fiestas', nombre: 'Fiestas' },
-    { id: 'pizzas', nombre: 'Pizzas' },
-    { id: 'ingredientes', nombre: 'Ingredientes' }
-  ];
 
   listaAdministradores: any[] = [];
   listaUsuarios: any[] = [];
