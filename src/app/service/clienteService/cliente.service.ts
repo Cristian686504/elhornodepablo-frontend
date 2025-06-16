@@ -48,6 +48,7 @@ interface detallesPedido {
   fechaPedido: string;
   metodoPago: string;
   periodicidad: string;
+  motivoBeneficio: string;
   pizzas: PizzaDetalle[];
   precioTotal: string;
 

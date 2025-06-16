@@ -23,6 +23,7 @@ export class ModalDetallePedidoComponent implements OnChanges{
   fechaPedido: string = '';
   metodoPago: string = '';
   periodicidad: string = '';
+  motivoBeneficio: string = '';
   precioTotal: string = '';
   pizzas: any[] = [];
   loading: boolean = false;
@@ -64,7 +65,7 @@ export class ModalDetallePedidoComponent implements OnChanges{
       next: (detallesPedido) => {
         if (detallesPedido) {
   
-          this.agencia = detallesPedido.agencia;
+          this.agencia = detallesPedido.agencia || 'No aplica';
           this.direccion = detallesPedido.direccion;
           this.entrega = detallesPedido.entrega;
           this.fechaEntrega = detallesPedido.fechaEntrega;
@@ -72,6 +73,7 @@ export class ModalDetallePedidoComponent implements OnChanges{
           this.metodoPago = detallesPedido.metodoPago;
           this.periodicidad = detallesPedido.periodicidad;
           this.precioTotal = detallesPedido.precioTotal;
+          this.motivoBeneficio = detallesPedido.motivoBeneficio || 'No aplica';
           this.pizzas = detallesPedido.pizzas || [];
         } else {
           this.error = "No se encontraron detalles para este pedido";
