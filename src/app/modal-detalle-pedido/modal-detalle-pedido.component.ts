@@ -71,7 +71,7 @@ export class ModalDetallePedidoComponent implements OnChanges{
           this.fechaEntrega = detallesPedido.fechaEntrega;
           this.fechaPedido = detallesPedido.fechaPedido;
           this.metodoPago = detallesPedido.metodoPago;
-          this.periodicidad = detallesPedido.periodicidad;
+          this.periodicidad = detallesPedido.periodicidad || 'No aplica';
           this.precioTotal = detallesPedido.precioTotal;
           this.motivoBeneficio = detallesPedido.motivoBeneficio || 'No aplica';
           this.pizzas = detallesPedido.pizzas || [];
