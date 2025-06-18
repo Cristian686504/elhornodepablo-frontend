@@ -21,6 +21,7 @@ import { esLocale } from 'ngx-bootstrap/locale';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MapAddressModalComponent } from "../mapa-direccion/mapa-direccion.component";
+import Swal from 'sweetalert2';
 
 
 defineLocale('es', esLocale);
@@ -176,7 +177,9 @@ export class PedidosComponent implements OnInit {
 
         const pizzasValidas = this.pizzasSeleccionadas.filter(p => p.cantidad > 0);
         if (pizzasValidas.length === 0) {
-          alert('Debes seleccionar al menos una pizza con cantidad mayor a cero.');
+          Swal.fire({text: 'Debes seleccionar al menos una pizza con cantidad mayor a cero.',
+            icon: "warning"
+          });
           return;
         }
         
@@ -211,18 +214,24 @@ export class PedidosComponent implements OnInit {
 
         this.clienteService.crearPedido(pedidoRequest).subscribe(
           response => {
-            alert(response.mensaje || 'Pedido creado exitosamente');
+            Swal.fire({text: response.mensaje || 'Pedido creado exitosamente',
+            icon: "success"
+          });
             this.pedidoForm.reset();
             this.router.navigate(['/']);
           },
           error => {
             console.error('Error al crear pedido', error);
-            alert('Error al crear el pedido. Por favor, intente nuevamente más tarde.');
+            Swal.fire({text: 'Error al crear el pedido. Por favor, intente nuevamente más tarde.',
+            icon: "error"
+          });
           }
         );
       } else {
         this.pedidoForm.markAllAsTouched();
-        alert('Por favor, complete correctamente todos los campos requeridos.');
+        Swal.fire({text: 'Por favor, complete correctamente todos los campos requeridos.',
+            icon: "warning"
+          });
       }
     }
 

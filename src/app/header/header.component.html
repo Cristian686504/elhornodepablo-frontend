@@ -1,5 +1,6 @@
 <div class="header">
-    <img src="images/logo.jpg" alt="El Horno De Pablo" class="logo">
+    <img src="images/logo.jpg" alt="El Horno De Pablo" class="logo" (click)="currentUser && irInicio()" />
+
       <h1 class="title">El Horno De Pablo</h1>
       
       <div *ngIf="currentUser" [routerLink]="'/perfil'" class="user-profile-user">
@@ -21,14 +22,14 @@
         </div>
       </div>
 </div>
-
+<!--
 <div *ngIf="currentUser"  class="nav-bar">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" >Inicio</a>
     <a *ngIf="currentUser.tipo === 'true' || currentUser.tipo === true"  routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
     <a *ngIf="currentUser.tipo === 'false' || currentUser.tipo === false"  routerLink="/tipo" routerLinkActive="active">Pedidos</a>
     <a routerLink="/fiestas" routerLinkActive="active">Fiesta</a>
 </div>
-
+-->
 <div *ngIf="currentUserAdmin" class="nav-bar">
     <a routerLink="/gestion" routerLinkActive="active">Gestión</a>
     <a routerLink="/pedidos-admin" routerLinkActive="active">Pedidos</a>
