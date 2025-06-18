@@ -1,0 +1,159 @@
+.inicio-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.hero-section {
+  position: relative;
+  height: 45vh;
+  background-image: url('/images/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  
+}
+
+.hero-titulo {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background-color: rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-subtitulo {
+  font-size: 1.3rem;
+  font-weight: 500;
+  opacity: 0.95;
+  position: relative;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.4); 
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.acciones {
+  padding: 60px 0px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.acciones-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.accion-card {
+  position: relative;
+  height: 350px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+.pizza-card {
+  background-image: url('/images/pizza-horno.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.fiesta-card {
+  background-image: url('/images/chivitos.jpeg');
+  background-size: cover;
+  background-position: center;}
+
+.card-contenido {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px 30px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: white;
+  text-align: center;
+  z-index: 2;
+}
+
+.card-icono {
+  font-size: 3rem !important;
+  margin-bottom: 16px;
+  display: block;
+  width: auto !important;
+  height: auto !important;
+}
+
+.card-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.card-subtitulo {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+.info-tira {
+  background: linear-gradient(45deg, #ff6b35, #f7931e);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.texto-tira {
+  span {
+    animation: fadeInOut 4s infinite;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 1; }
+  33%, 66% { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .hero-titulo {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitulo {
+    font-size: 1.1rem;
+  }
+  
+  .acciones-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-titulo {
+    font-size: 1.5rem;
+  }
+  
+  .card-subtitulo {
+    font-size: 1rem;
+  }
+}

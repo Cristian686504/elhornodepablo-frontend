@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ClienteService } from '../service/clienteService/cliente.service';
 import { AdministradorService } from '../service/administradorService/administrador.service';
 
@@ -16,7 +16,9 @@ export class HeaderComponent implements OnInit {
   currentUserAdmin: any = null;
 
 
-  constructor(private clienteService: ClienteService, private administradorService: AdministradorService) {}
+  constructor(private clienteService: ClienteService, private administradorService: AdministradorService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.clienteService.currentUser.subscribe(user => {
@@ -42,5 +44,11 @@ export class HeaderComponent implements OnInit {
 
 cerrarSesion(){
   this.administradorService.logout();
+}
+
+irInicio() {
+if (this.currentUser) {
+    this.router.navigate(['/']);
+  }
 }
 }

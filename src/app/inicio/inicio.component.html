@@ -1,1 +1,48 @@
-<p>inicio works!</p>
+<div class="inicio-container">
+  <section class="hero-section">
+    <h1 class="hero-titulo">El Horno de Pablo</h1>
+    <p class="hero-subtitulo">Pizza al horno para vos y tus fiestas</p>
+  </section>
+
+  <section class="acciones">
+    <div class="acciones-container">
+      <a 
+        *ngIf="currentUser.tipo === 'true' || currentUser.tipo === true" 
+        routerLink="/pedidos" 
+        class="accion-card pizza-card"
+      >
+        <div class="card-contenido">
+          <mat-icon class="card-icono">local_pizza</mat-icon>
+          <h2 class="card-titulo">Realizar un pedido</h2>
+          <p class="card-subtitulo">Explorá nuestro menú y realizá tu pedido online</p>
+        </div>
+      </a>
+
+      <a 
+        *ngIf="currentUser.tipo === 'false' || currentUser.tipo === false" 
+        routerLink="/tipo" 
+        class="accion-card pizza-card"
+      >
+        <div class="card-contenido">
+          <mat-icon class="card-icono">local_pizza</mat-icon>
+          <h2 class="card-titulo">Realizar un pedido</h2>
+          <p class="card-subtitulo">Explorá nuestro menú y realizá tu pedido online</p>
+        </div>
+      </a>
+      
+      <a routerLink="/fiestas" class="accion-card fiesta-card">
+        <div class="card-contenido">
+          <mat-icon class="card-icono">celebration</mat-icon>
+          <h2 class="card-titulo">Organizar una Fiesta</h2>
+          <p class="card-subtitulo">Reservá tu evento y dejanos encargarnos del resto</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="info-tira">
+    <div class="texto-tira">
+      <span>{{ mensajeTira }}</span>
+    </div>
+  </section>
+</div>

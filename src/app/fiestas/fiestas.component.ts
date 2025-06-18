@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { MapAddressModalComponent } from "../mapa-direccion/mapa-direccion.component";
 import { MatIconModule } from '@angular/material/icon';
 import { ClienteService } from '../service/clienteService/cliente.service';
+import Swal from 'sweetalert2';
 
 
 
@@ -156,18 +157,24 @@ export class FiestasComponent implements OnInit {
 
       this.clienteService.crearFiesta(fiestaRequest).subscribe(
           response => {
-            alert(response.mensaje || 'Fiesta pedida exitosamente');
+            Swal.fire({ text: response.mensaje || 'Fiesta pedida exitosamente',
+              icon: "success"
+            });
             this.fiestaForm.reset();
             this.router.navigate(['/']);
           },
           error => {
             console.error('Error al pedir la fiesta', error);
-            alert('Error al pedir la fiesta. Por favor, intente nuevamente más tarde.');
+            Swal.fire({text: 'Error al pedir la fiesta. Por favor, intente nuevamente más tarde.',
+              icon: "error"
+            });
           }
         );
     } else {
       this.fiestaForm.markAllAsTouched;
-      alert('Por favor, complete correctamente todos los campos requeridos.');
+      Swal.fire({text: 'Por favor, complete correctamente todos los campos requeridos.',
+        icon: "warning"
+      });
     }
   }
 
