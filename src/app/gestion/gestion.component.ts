@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdministradorService } from '../service/administradorService/administrador.service';
 import { UsuarioService } from '../service/usuarioService/usuario.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import * as L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 @Component({
   selector: 'app-gestion',
@@ -12,13 +14,23 @@ import Swal from 'sweetalert2';
   templateUrl: './gestion.component.html',
   styleUrls: ['./gestion.component.css']
 })
-export class GestionComponent implements OnInit {
+export class GestionComponent implements OnInit, AfterViewInit {
+  @ViewChild('map') mapContainer!: ElementRef;
+  @ViewChild('mapPedido') mapPedidoContainer!: ElementRef;
+  @ViewChild('mapFiesta') mapFiestaContainer!: ElementRef;
+  private map: L.Map | null = null;
+  private mapPedido: L.Map | null = null;
+  private mapFiesta: L.Map | null = null;
+  private marker: L.Marker | null = null;
+  private markerPedido: L.Marker | null = null;
+  private markerFiesta: L.Marker | null = null;
 
   constructor(
     private administradorService: AdministradorService,
     private usuarioService: UsuarioService
   ) {}
-secciones = [
+
+  secciones = [
     { id: 'usuarios', nombre: 'Usuarios' },
     { id: 'pedidos', nombre: 'Pedidos' },
     { id: 'fiestas', nombre: 'Fiestas' },
@@ -72,6 +84,136 @@ secciones = [
     this.totalPaginasPedidos = 0;
     this.getFiestas();
     this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
+  }
+
+  ngAfterViewInit() {
+    // No inicializamos el mapa aquí, lo haremos cuando se abra el modal
+  }
+
+  private initMap() {
+    if (this.map) return;
+
+    setTimeout(() => {
+      if (this.mapContainer && this.mapContainer.nativeElement) {
+        this.map = L.map(this.mapContainer.nativeElement).setView([-34.9205, -56.1666], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(this.map);
+
+        this.map.on('click', (e: L.LeafletMouseEvent) => {
+          const { lat, lng } = e.latlng;
+          this.updateMarker(lat, lng);
+          this.getAddressFromCoordinates(lat, lng);
+        });
+      }
+    }, 100);
+  }
+
+  private initMapPedido() {
+    if (this.mapPedido) return;
+
+    setTimeout(() => {
+      if (this.mapPedidoContainer && this.mapPedidoContainer.nativeElement) {
+        this.mapPedido = L.map(this.mapPedidoContainer.nativeElement).setView([-34.9205, -56.1666], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(this.mapPedido);
+
+        this.mapPedido.on('click', (e: L.LeafletMouseEvent) => {
+          const { lat, lng } = e.latlng;
+          this.updateMarkerPedido(lat, lng);
+          this.getAddressFromCoordinatesPedido(lat, lng);
+        });
+      }
+    }, 100);
+  }
+
+  private initMapFiesta() {
+    if (this.mapFiesta) return;
+
+    setTimeout(() => {
+      if (this.mapFiestaContainer && this.mapFiestaContainer.nativeElement) {
+        this.mapFiesta = L.map(this.mapFiestaContainer.nativeElement).setView([-34.9205, -56.1666], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(this.mapFiesta);
+
+        this.mapFiesta.on('click', (e: L.LeafletMouseEvent) => {
+          const { lat, lng } = e.latlng;
+          this.updateMarkerFiesta(lat, lng);
+          this.getAddressFromCoordinatesFiesta(lat, lng);
+        });
+      }
+    }, 100);
+  }
+
+  private updateMarker(lat: number, lng: number) {
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    } else {
+      this.marker = L.marker([lat, lng]).addTo(this.map!);
+    }
+  }
+
+  private updateMarkerPedido(lat: number, lng: number) {
+    if (this.markerPedido) {
+      this.markerPedido.setLatLng([lat, lng]);
+    } else {
+      this.markerPedido = L.marker([lat, lng]).addTo(this.mapPedido!);
+    }
+  }
+
+  private updateMarkerFiesta(lat: number, lng: number) {
+    if (this.markerFiesta) {
+      this.markerFiesta.setLatLng([lat, lng]);
+    } else {
+      this.markerFiesta = L.marker([lat, lng]).addTo(this.mapFiesta!);
+    }
+  }
+
+  private async getAddressFromCoordinates(lat: number, lng: number) {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await response.json();
+      if (data.display_name) {
+        this.usuarioForm.direccion = data.display_name;
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección:', error);
+    }
+  }
+
+  private async getAddressFromCoordinatesPedido(lat: number, lng: number) {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await response.json();
+      if (data.display_name) {
+        this.pedidoForm.direccion = data.display_name;
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección:', error);
+    }
+  }
+
+  private async getAddressFromCoordinatesFiesta(lat: number, lng: number) {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await response.json();
+      if (data.display_name) {
+        this.fiestasForm.direccion = data.display_name;
+      }
+    } catch (error) {
+      console.error('Error al obtener la dirección:', error);
+    }
   }
 
   seleccionarSeccion(seccion: string) {
@@ -258,6 +400,7 @@ pedidoForm = {
   direccion: '',
   motivoBeneficio: '',
   agencia: '',
+  precio: '',
   fechaPedido: '',
   cliente: {
     id: '',
@@ -306,6 +449,10 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
       telefono: '',
       tipoCliente: '',
     };
+    
+    setTimeout(() => {
+      this.initMap();
+    }, 100);
   } else if (tipo === 'admin') {
     this.adminForm = datos ? { ...datos } : {
       id: '',
@@ -363,6 +510,10 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
           },
           pizzas: []
         };
+
+    setTimeout(() => {
+      this.initMapFiesta();
+    }, 100);
   }else if (tipo === 'pedido') {
     this.pedidoForm = datos ? {
       id: datos.id,
@@ -374,11 +525,12 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
       direccion: datos.direccion,
       motivoBeneficio: datos.motivoBeneficio,
       agencia: datos.agencia,
+      precio: datos.precio,
       fechaPedido: datos.fechaPedido,
       cliente: datos.cliente ? {
         id: datos.cliente.id || '',
         nombreUsuario: datos.cliente.nombreUsuario || '',
-        contrasenia: '', // por seguridad
+        contrasenia: '', 
         nombreCompleto: datos.cliente.nombreCompleto || ''
       } : {
         id: '',
@@ -405,6 +557,7 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
       estado: 'PENDIENTE',
       periodicidad: '',
       direccion: '',
+      precio: '',
       motivoBeneficio: '',
       agencia: '',
       fechaPedido: new Date().toISOString().split('T')[0],
@@ -416,6 +569,10 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
       },
       pizzas: []
     };
+
+    setTimeout(() => {
+      this.initMapPedido();
+    }, 100);
   }
 
 
@@ -427,71 +584,152 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
     this.modalActivo = false;
     this.tipoModal = null;
     this.modoEdicion = false;
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+      this.marker = null;
+    }
+    if (this.mapPedido) {
+      this.mapPedido.remove();
+      this.mapPedido = null;
+      this.markerPedido = null;
+    }
+    if (this.mapFiesta) {
+      this.mapFiesta.remove();
+      this.mapFiesta = null;
+      this.markerFiesta = null;
+    }
+  }
+
+  validarUsuario(): boolean {
+    const errores = [];
+
+    if (!this.usuarioForm.nombreUsuario) {
+      errores.push('El nombre de usuario es requerido');
+    } else if (this.usuarioForm.nombreUsuario.length < 3) {
+      errores.push('El nombre de usuario debe tener al menos 3 caracteres');
+    }
+
+    if (!this.usuarioForm.nombreCompleto) {
+      errores.push('El nombre completo es requerido');
+    }
+
+    if (!this.usuarioForm.direccion) {
+      errores.push('La dirección es requerida');
+    }
+
+    if (!this.usuarioForm.email) {
+      errores.push('El email es requerido');
+    } else if (!this.validarEmail(this.usuarioForm.email)) {
+      errores.push('El email debe tener un formato válido');
+    }
+
+    if (!this.usuarioForm.telefono) {
+      errores.push('El teléfono es requerido');
+    } else if (!this.validarTelefono(this.usuarioForm.telefono)) {
+      errores.push('El teléfono debe contener al menos 8 dígitos numéricos');
+    }
+
+    if (!this.usuarioForm.tipoCliente) {
+      errores.push('El tipo de cliente es requerido');
+    }
+
+    if (!this.modoEdicion && !this.usuarioForm.contrasenia) {
+      errores.push('La contraseña es requerida');
+    }
+
+    if (errores.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de validación',
+        html: errores.join('<br>')
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  validarEmail(email: string): boolean {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }
+
+  validarTelefono(telefono: string): boolean {
+    const regex = /^[0-9]{8,}$/;
+    return regex.test(telefono);
   }
 
   guardarUsuarioCliente() {
-  if (this.modoEdicion) {
-    const id = +this.usuarioForm.id;
-    const datosCliente = {
-      id,
-      nombreUsuario:  this.usuarioForm.nombreUsuario,
-      contrasenia:    this.usuarioForm.contrasenia,
-      nombreCompleto: this.usuarioForm.nombreCompleto,
-      direccion:      this.usuarioForm.direccion,
-      email:          this.usuarioForm.email,
-      telefono:       this.usuarioForm.telefono,
-      tipoCliente:    this.usuarioForm.tipoCliente
-    };
+    if (!this.validarUsuario()) {
+      return;
+    }
 
-    this.usuarioService.actualizarCliente(id, datosCliente).subscribe({
-      next: () => {
-        console.log('Cliente actualizado:', datosCliente);
-        this.getUsuarios();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Cliente modificado',
-          text: 'El cliente ha sido actualizado exitosamente.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: err => {
-        console.error('Error al modificar cliente:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al modificar el cliente. Verificá los datos.',
-        });
-      }
-    });
-  } else {
-    console.log('Crear cliente:', this.usuarioForm);
+    if (this.modoEdicion) {
+      const id = +this.usuarioForm.id;
+      const datosCliente: any = {
+        id,
+        nombreUsuario: this.usuarioForm.nombreUsuario,
+        nombreCompleto: this.usuarioForm.nombreCompleto,
+        direccion: this.usuarioForm.direccion,
+        email: this.usuarioForm.email,
+        telefono: this.usuarioForm.telefono,
+        tipoCliente: this.usuarioForm.tipoCliente
+      };
 
-    this.usuarioService.CrearUsuario(this.usuarioForm).subscribe({
-      next: (res) => {
-        console.log('Usuario creado:', res);
-        this.getUsuarios();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Usuario creado',
-          text: 'El usuario ha sido creado exitosamente.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (err) => {
-        console.error('Error al crear el usuario:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al crear el usuario. Verificá los datos.',
-        });
+      // Solo agregar contraseña si se modificó
+      if (this.usuarioForm.contrasenia) {
+        datosCliente.contrasenia = this.usuarioForm.contrasenia;
       }
-    });
+
+      this.usuarioService.actualizarCliente(id, datosCliente).subscribe({
+        next: () => {
+          console.log('Cliente actualizado:', datosCliente);
+          this.getUsuarios();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Cliente modificado',
+            text: 'El cliente ha sido actualizado exitosamente.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: err => {
+          console.error('Error al modificar cliente:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al modificar el cliente. Verificá los datos.',
+          });
+        }
+      });
+    } else {
+      console.log('Crear cliente:', this.usuarioForm);
+      this.usuarioService.CrearUsuario(this.usuarioForm).subscribe({
+        next: (res) => {
+          console.log('Usuario creado:', res);
+          this.getUsuarios();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Usuario creado',
+            text: 'El usuario ha sido creado exitosamente.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al crear el usuario:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al crear el usuario. Verificá los datos.',
+          });
+        }
+      });
+    }
   }
-}
 
 
   guardarUsuarioAdministrador() {
@@ -1235,6 +1473,7 @@ guardarPedido() {
     cliente: {
       id: +this.pedidoForm.cliente.id
     },
+    precio: this.pedidoForm.precio,
     pizzas: this.pedidoForm.pizzas.map(p => ({
       cantidad: p.cantidad,
       pizza: { id: +p.pizza.id }

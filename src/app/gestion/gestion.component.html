@@ -70,7 +70,7 @@
                     [class.table-primary]="usuarioSeleccionado === usuario">
                     <td hidden>{{usuario.id}}</td>
                     <td class="font-medium">{{ usuario.nombreUsuario }}</td>
-                    <td>{{ usuario.nombreCompleto }}</td>
+                    <td class="font-medium">{{ usuario.nombreCompleto }}</td>
                     <td class="text-gray">{{ usuario.direccion }}</td>
                     <td>{{ usuario.telefono }}</td>
                     <td class="text-blue">{{ usuario.email }}</td>
@@ -234,10 +234,12 @@
                   <span class="label-text">Dirección</span>
                 </label>
                 <div class="input-wrapper">
-                  <input id="direccion" type="text" class="form-input" placeholder="Ingrese la dirección"
-                    [(ngModel)]="usuarioForm.direccion" name="direccion" />
+                  <input id="direccion" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa"
+                    [(ngModel)]="usuarioForm.direccion" name="direccion" readonly />
                 </div>
+                <div #map style="height: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;"></div>
               </div>
+              
 
               <div class="form-group">
                 <label for="telefono" class="form-label">
@@ -408,6 +410,7 @@
                     <th>Periodicidad</th>
                     <th>Dirección</th>
                     <th>Cliente</th>
+                    <th>Precio</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -422,6 +425,7 @@
                     <td>{{ pedido.periodicidad }}</td>
                     <td>{{ pedido.direccion }}</td>
                     <td>{{ pedido.cliente.nombreUsuario }}</td>
+                    <td>{{ pedido.precio }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -456,120 +460,210 @@
           </div>
         </div>
 
-        <!-- Modal para crear/modificar pedido -->
-        <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'pedido'">
-          <div class="custom-modal">
-            <div class="custom-modal-header">
-              <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Pedido</h5>
-              <p *ngIf="modoEdicion">ID del pedido: <strong>{{ pedidoForm.id || '(sin id)' }}</strong></p>
-              <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+        <!-- Modal para crear/modificar pedido con estilo unificado -->
+        <div class="modal-overlay" *ngIf="modalActivo && tipoModal === 'pedido'">
+          <div class="modal-container">
+            <div class="modal-header">
+              <div class="modal-title-section">
+                <div class="modal-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10..." fill="currentColor" />
+                  </svg>
+                </div>
+                <h2 class="modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Pedido</h2>
+              </div>
+
+              <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
             </div>
 
-            <form>
-              <div class="custom-modal-body">
-                <!-- Campo oculto para el id -->
+            <form class="modal-form" (ngSubmit)="guardarPedido()">
+              <div class="modal-body">
                 <input type="hidden" [(ngModel)]="pedidoForm.id" name="id" />
 
-                <div class="mb-3">
-                  <label for="fechaPedido" class="form-label">Fecha de Pedido</label>
-                  <input type="date" class="form-control" [(ngModel)]="pedidoForm.fechaPedido" name="fechaPedido"
-                    required />
+                <!-- Fecha Pedido -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Fecha de Pedido</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" class="form-input" [(ngModel)]="pedidoForm.fechaPedido" name="fechaPedido"
+                      required />
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
-                  <input type="date" class="form-control" [(ngModel)]="pedidoForm.fechaEntrega" name="fechaEntrega" />
+                <!-- Fecha Entrega -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Fecha de Entrega</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" class="form-input" [(ngModel)]="pedidoForm.fechaEntrega" name="fechaEntrega" />
+                  </div>
                 </div>
 
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" [(ngModel)]="pedidoForm.entrega" name="entrega"
-                    id="entregaCheck" />
-                  <label class="form-check-label" for="entregaCheck">Entrega</label>
+                <!-- Precio -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Precio</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="number" class="form-input" placeholder="Ingrese el precio"
+                      [(ngModel)]="pedidoForm.precio" name="precio" required />
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="metodoPago" class="form-label">Método de Pago</label>
-                  <select class="form-select" [(ngModel)]="pedidoForm.metodoPago" name="metodoPago" required>
-                    <option value="" disabled selected>Seleccione un método de pago</option>
-                    <option value="EFECTIVO">EFECTIVO</option>
-                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-                  </select>
+                <!-- Entrega Checkbox -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Entrega</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <label class="custom-checkbox-container">
+                      <input type="checkbox" [(ngModel)]="pedidoForm.entrega" name="entrega" />
+                      <div class="custom-checkmark"></div>
+                    </label>
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="estado" class="form-label">Estado</label>
-                  <select class="form-select" [(ngModel)]="pedidoForm.estado" name="estado" required>
-                    <option value="" disabled selected>Seleccione un estado</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                    <option value="ACEPTADO">ACEPTADO</option>
-                    <option value="CANCELADO">CANCELADO</option>
-                  </select>
+                <!-- Método de Pago -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Método de Pago</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="pedidoForm.metodoPago" name="metodoPago" required>
+                      <option value="" disabled selected hidden>Seleccione un método de pago</option>
+                      <option value="EFECTIVO">EFECTIVO</option>
+                      <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="periodicidad" class="form-label">Periodicidad</label>
-                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.periodicidad" name="periodicidad" />
+                <!-- Estado -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Estado</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="pedidoForm.estado" name="estado" required>
+                      <option value="" disabled selected hidden>Seleccione un estado</option>
+                      <option value="PENDIENTE">PENDIENTE</option>
+                      <option value="ACEPTADO">ACEPTADO</option>
+                      <option value="CANCELADO">CANCELADO</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="direccion" class="form-label">Dirección</label>
-                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.direccion" name="direccion"
-                    required />
+                <!-- Periodicidad -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Periodicidad</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="text" class="form-input" placeholder="Ingrese la periodicidad"
+                      [(ngModel)]="pedidoForm.periodicidad" name="periodicidad" />
+                  </div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="motivoBeneficio" class="form-label">Motivo Beneficio</label>
-                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.motivoBeneficio"
-                    name="motivoBeneficio" />
+                <!-- Dirección -->
+                <div class="form-group">
+                  <label for="direccion_pedido" class="form-label">
+                    <span class="label-text">Dirección de Entrega</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input id="direccion_pedido" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa"
+                      [(ngModel)]="pedidoForm.direccion" name="direccion" readonly required />
+                  </div>
+                  <div #mapPedido style="height: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;"></div>
                 </div>
 
-                <div class="mb-3">
-                  <label for="agencia" class="form-label">Agencia</label>
-                  <input type="text" class="form-control" [(ngModel)]="pedidoForm.agencia" name="agencia" />
+                <!-- Motivo Beneficio -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Motivo Beneficio</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="text" class="form-input" placeholder="Ingrese el motivo"
+                      [(ngModel)]="pedidoForm.motivoBeneficio" name="motivoBeneficio" />
+                  </div>
+                </div>
+
+                <!-- Agencia -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Agencia</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="text" class="form-input" placeholder="Ingrese la agencia"
+                      [(ngModel)]="pedidoForm.agencia" name="agencia" />
+                  </div>
                 </div>
 
                 <!-- Cliente -->
-                <div class="mb-3">
-                  <label for="cliente" class="form-label">Cliente</label>
-                  <select class="form-select" [(ngModel)]="pedidoForm.cliente.id" name="clienteId" required>
-                    <option [value]="null" disabled>Seleccione un cliente</option>
-                    <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
-                      {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
-                    </option>
-                  </select>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Cliente</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="pedidoForm.cliente.id" name="clienteId" required>
+                      <option value="" disabled selected hidden>Seleccione un cliente</option>
+                      <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
+                        {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
 
-                <div class="mb-3">
-                  <h6>Pizzas en la Fiesta</h6>
-                  <div *ngFor="let item of pedidoForm.pizzas; let i = index"
-                    class="d-flex gap-2 align-items-center mb-2">
-                    <div *ngIf="!modoEdicion">
-                      <select class="form-control" [(ngModel)]="pedidoForm.pizzas[i].pizza.id" name="pizza{{i}}"
-                        required>
-                        <option value="" disabled>Seleccione una pizza</option>
-                        <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
-                          {{ pizza.nombre }} ({{ pizza.tipo }})
-                        </option>
-                      </select>
+                <!-- Pizzas -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Pizzas en el Pedido</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <div *ngFor="let item of pedidoForm.pizzas; let i = index" class="mb-2">
+                      <div class="d-flex gap-2 align-items-center">
+                        <div *ngIf="!modoEdicion">
+                          <select class="form-select" [(ngModel)]="pedidoForm.pizzas[i].pizza.id" name="pizza{{i}}"
+                            required>
+                            <option value="" disabled hidden>Seleccione una pizza</option>
+                            <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
+                              {{ pizza.nombre }} ({{ pizza.tipo }})
+                            </option>
+                          </select>
+                        </div>
+                        <div *ngIf="modoEdicion">
+                          <input type="text" class="form-input" [value]="pedidoForm.pizzas[i].pizza.nombre" readonly />
+                        </div>
+                        <input type="number" class="form-input" [(ngModel)]="pedidoForm.pizzas[i].cantidad"
+                          name="cantidad{{i}}" placeholder="Cantidad" required min="1" />
+                        <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                      </div>
                     </div>
-
-                    <div *ngIf="modoEdicion">
-                      <input type="text" class="form-control" [value]="pedidoForm.pizzas[i].pizza.nombre" readonly />
-                    </div>
-
-                    <input type="number" class="form-control" [(ngModel)]="pedidoForm.pizzas[i].cantidad"
-                      name="cantidad{{i}}" placeholder="Cantidad" required min="1" />
-                    <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                    <button type="button" class="btn btn-primary mt-2" (click)="agregarPizzaAPedido()">Agregar
+                      Pizza</button>
                   </div>
-
-                  <button type="button" class="btn btn-primary" (click)="agregarPizzaAPedido()">Agregar Pizza</button>
                 </div>
 
               </div>
 
-              <div class="custom-modal-footer">
-                <button type="button" class="btn btn-success" (click)="guardarPedido()">
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                      fill="currentColor" />
+                  </svg>
                   {{ modoEdicion ? 'Guardar Cambios' : 'Crear Pedido' }}
                 </button>
                 <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
@@ -577,6 +671,8 @@
             </form>
           </div>
         </div>
+
+
       </section>
 
 
@@ -654,129 +750,193 @@
             </div>
           </div>
         </div>
-
         <!-- Modal para crear/modificar fiesta -->
-        <div class="custom-modal-overlay" *ngIf="modalActivo && tipoModal === 'fiesta'">
-          <div class="custom-modal">
-            <div class="custom-modal-header">
-              <h5 class="custom-modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Fiesta</h5>
-              <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+        <div class="modal-overlay" *ngIf="modalActivo && tipoModal === 'fiesta'">
+          <div class="modal-container">
+            <div class="modal-header">
+              <div class="modal-title-section">
+                <div class="modal-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10..." fill="currentColor" />
+                  </svg>
+                </div>
+                <h2 class="modal-title">{{ modoEdicion ? 'Modificar' : 'Crear' }} Fiesta</h2>
+              </div>
+              <button type="button" class="close-button" (click)="cerrarModal()" aria-label="Cerrar">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </button>
             </div>
 
-            <form (ngSubmit)="guardarFiesta()">
-              <div class="custom-modal-body">
-                <!-- Campo oculto para el id -->
+            <form (ngSubmit)="guardarFiesta()" class="modal-form">
+              <div class="modal-body">
                 <input type="hidden" [(ngModel)]="fiestasForm.id" name="id" />
 
-                <div class="mb-3">
-                  <label for="fechaFiesta" class="form-label">Fecha de la Fiesta</label>
-                  <input type="date" class="form-control" [(ngModel)]="fiestasForm.fechaFiesta" name="fechaFiesta"
-                    required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="horaServir" class="form-label">Hora de Servicio</label>
-                  <input type="time" class="form-control" [(ngModel)]="fiestasForm.horaServir" name="horaServir"
-                    required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="cantidadPersonas" class="form-label">Cantidad de Personas</label>
-                  <input type="number" class="form-control" [(ngModel)]="fiestasForm.cantidadPersonas"
-                    name="cantidadPersonas" required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="precio" class="form-label">Precio</label>
-                  <input type="number" class="form-control" [(ngModel)]="fiestasForm.precio" name="precio" required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="pago" class="form-label">Pago</label>
-                  <select class="form-select" [(ngModel)]="fiestasForm.pago" name="pago" required>
-                    <option value="EFECTIVO">EFECTIVO</option>
-                    <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label for="estado" class="form-label">Estado</label>
-                  <select class="form-select" [(ngModel)]="fiestasForm.estado" name="estado" required>
-                    <option value="CANCELADO">CANCELADO</option>
-                    <option value="ACEPTADO">ACEPTADO</option>
-                    <option value="PENDIENTE">PENDIENTE</option>
-                  </select>
-                </div>
-
-                <!-- NUEVO: Cliente -->
-                <div class="mb-3">
-                  <label for="cliente" class="form-label">Cliente</label>
-                  <select class="form-control" [(ngModel)]="fiestasForm.cliente.id" name="clienteId" required>
-                    <option value="" disabled selected>Seleccione un cliente</option>
-                    <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
-                      {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label for="direccion" class="form-label">Dirección</label>
-                  <input type="text" class="form-control" [(ngModel)]="fiestasForm.direccion" name="direccion"
-                    required />
-                </div>
-
-                <div class="mb-3">
-                  <label for="Extras" class="form-label">Extras</label>
-                  <div class="d-flex flex-column">
-                    <div class="form-check">
-                      <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.hamburguesa"
-                        name="hamburguesa" id="hamburguesa" />
-                      <label class="form-check-label" for="hamburguesa">Hamburguesa</label>
-                    </div>
-                    <div class="form-check">
-                      <input type="checkbox" class="form-check-input" [(ngModel)]="fiestasForm.chivito" name="chivito"
-                        id="chivito" />
-                      <label class="form-check-label" for="chivito">Chivito</label>
-                    </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Fecha de la Fiesta</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="date" class="form-input" [(ngModel)]="fiestasForm.fechaFiesta" name="fechaFiesta"
+                      required />
                   </div>
                 </div>
 
-                <div class="mb-3">
-                  <h6>Pizzas en la Fiesta</h6>
-                  <div *ngFor="let item of fiestasForm.pizzas; let i = index"
-                    class="d-flex gap-2 align-items-center mb-2">
-                    <div *ngIf="!modoEdicion">
-                      <select class="form-control" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}"
-                        required>
-                        <option value="" disabled>Seleccione una pizza</option>
-                        <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
-                          {{ pizza.nombre }} ({{ pizza.tipo }})
-                        </option>
-                      </select>
-                    </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Hora de Servicio</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="time" class="form-input" [(ngModel)]="fiestasForm.horaServir" name="horaServir"
+                      required />
+                  </div>
+                </div>
 
-                    <div *ngIf="modoEdicion">
-                      <input type="text" class="form-control" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
-                    </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Cantidad de Personas</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="number" class="form-input" placeholder="Ingrese la cantidad"
+                      [(ngModel)]="fiestasForm.cantidadPersonas" name="cantidadPersonas" required />
+                  </div>
+                </div>
 
-                    <input type="number" class="form-control" [(ngModel)]="fiestasForm.pizzas[i].cantidad"
-                      name="cantidad{{i}}" placeholder="Cantidad" required />
-                    <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Precio</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="number" class="form-input" placeholder="Ingrese el precio"
+                      [(ngModel)]="fiestasForm.precio" name="precio" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Pago</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="fiestasForm.pago" name="pago" required>
+                      <option value="" disabled selected hidden>Seleccione un método de pago</option>
+                      <option value="EFECTIVO">EFECTIVO</option>
+                      <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Estado</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="fiestasForm.estado" name="estado" required>
+                      <option value="" disabled selected hidden>Seleccione un estado</option>
+                      <option value="PENDIENTE">PENDIENTE</option>
+                      <option value="ACEPTADO">ACEPTADO</option>
+                      <option value="CANCELADO">CANCELADO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Cliente</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="fiestasForm.cliente.id" name="clienteId" required>
+                      <option value="" disabled selected hidden>Seleccione un cliente</option>
+                      <option *ngFor="let usuario of listaUsuarios" [value]="usuario.id">
+                        {{ usuario.nombreCompleto }} - {{ usuario.tipoCliente }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="direccion_fiesta" class="form-label">
+                    <span class="label-text">Dirección del Evento</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input id="direccion_fiesta" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa"
+                      [(ngModel)]="fiestasForm.direccion" name="direccion" readonly required />
+                  </div>
+                  <div #mapFiesta style="height: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;"></div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Extras</span>
+                  </label>
+                  <div class="custom-input-wrapper d-flex flex-column">
+                    <label class="custom-checkbox-container" for="hamburguesa">
+                      <input type="checkbox" id="hamburguesa" name="hamburguesa"
+                        [(ngModel)]="fiestasForm.hamburguesa" />
+                      <div class="custom-checkmark"></div>Hamburguesa
+                    </label>
+
+                    <label class="custom-checkbox-container" for="chivito">
+                      <input type="checkbox" id="chivito" name="chivito" [(ngModel)]="fiestasForm.chivito" />
+                      <div class="custom-checkmark"></div>Chivito
+                    </label>
                   </div>
 
-                  <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Pizzas en la Fiesta</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <div *ngFor="let item of fiestasForm.pizzas; let i = index"
+                      class="d-flex gap-2 align-items-center mb-2">
+                      <div *ngIf="!modoEdicion" class="flex-grow-1">
+                        <select class="form-select" [(ngModel)]="fiestasForm.pizzas[i].pizza.id" name="pizza{{i}}"
+                          required>
+                          <option value="" disabled selected hidden>Seleccione una pizza</option>
+                          <option *ngFor="let pizza of listaPizzas" [value]="pizza.id">
+                            {{ pizza.nombre }} ({{ pizza.tipo }})
+                          </option>
+                        </select>
+                      </div>
+                      <div *ngIf="modoEdicion" class="flex-grow-1">
+                        <input type="text" class="form-input" [value]="fiestasForm.pizzas[i].pizza.nombre" readonly />
+                      </div>
+
+                      <input type="number" class="form-input" [(ngModel)]="fiestasForm.pizzas[i].cantidad"
+                        name="cantidad{{i}}" placeholder="Cantidad" required min="1" />
+                      <button type="button" class="btn btn-danger" (click)="quitarPizza(i)">Eliminar</button>
+                    </div>
+                    <button type="button" class="btn btn-primary" (click)="agregarPizzaAFiesta()">Agregar Pizza</button>
+                  </div>
                 </div>
               </div>
 
-              <div class="custom-modal-footer">
-                <button type="submit" class="btn btn-success">
-                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Fiesta' }}
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                      fill="currentColor" />
+                  </svg>
+                  {{ modoEdicion ? 'Guardar Cambios' : 'Crear Pedido' }}
                 </button>
                 <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
               </div>
             </form>
           </div>
         </div>
+
+
 
       </section>
 
@@ -904,7 +1064,9 @@
 
                 <!-- Imagen -->
                 <div class="form-group">
-                  <label class="form-label">Imagen de la Pizza</label>
+                  <label class="form-label">
+                    <span class="label-text">Imagen de la Pizza</span>
+                  </label>
                   <div class="input-wrapper">
                     <input type="file" class="form-input" (change)="procesarImagen($event)" accept="image/*" />
                   </div>
@@ -914,37 +1076,62 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Nombre de la Pizza</label>
-                  <input type="text" class="form-input" [(ngModel)]="pizzasForm.nombre" name="nombre" required />
+                  <label class="form-label">
+                    <span class="label-text">Nombre de la Pizza</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="text" class="form-input" [(ngModel)]="pizzasForm.nombre" name="nombre" required
+                      placeholder="Ingrese el nombre de la pizza" />
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Precio</label>
-                  <input type="number" class="form-input" [(ngModel)]="pizzasForm.precio" name="precio" required />
+                  <label class="form-label">
+                    <span class="label-text">Precio</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="number" class="form-input" [(ngModel)]="pizzasForm.precio" name="precio" required
+                      placeholder="Ingrese el precio" />
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Descripción</label>
-                  <input type="text" class="form-input" [(ngModel)]="pizzasForm.descripcion" name="descripcion"
-                    required />
+                  <label class="form-label">
+                    <span class="label-text">Descripción</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <input type="text" class="form-input" [(ngModel)]="pizzasForm.descripcion" name="descripcion"
+                      required placeholder="Ingrese la descripción" />
+                  </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">Tipo de Pizza</label>
-                  <select class="form-select" [(ngModel)]="pizzasForm.tipo" name="tipo" required>
-                    <option value="" disabled selected hidden>Seleccione un tipo de pizza</option>
-                    <option value="Pizza redonda">Pizza redonda</option>
-                    <option value="Pizza 1/2 metro">Pizza 1/2 metro</option>
-                    <option value="Pizza cuadradas">Pizza cuadradas</option>
-                    <option value="Pizza gigantes">Pizza gigantes</option>
-                  </select>
+                  <label class="form-label">
+                    <span class="label-text">Tipo de Pizza</span>
+                    <span class="required">*</span>
+                  </label>
+                  <div class="input-wrapper">
+                    <select class="form-select" [(ngModel)]="pizzasForm.tipo" name="tipo" required>
+                      <option value="" disabled selected hidden>Seleccione un tipo de pizza</option>
+                      <option value="Pizza redonda">Pizza redonda</option>
+                      <option value="Pizza 1/2 metro">Pizza 1/2 metro</option>
+                      <option value="Pizza cuadradas">Pizza cuadradas</option>
+                      <option value="Pizza gigantes">Pizza gigantes</option>
+                    </select>
+                  </div>
                 </div>
-
 
                 <!-- Ingredientes -->
                 <div class="form-group">
-                  <label class="form-label">Ingredientes</label>
-                  <div *ngFor="let item of pizzasForm.ingredientes; let i = index" class="ingrediente-item">
+                  <label class="form-label">
+                    <span class="label-text">Ingredientes</span>
+                    <span class="required">*</span>
+                  </label>
+
+                  <div *ngFor="let item of pizzasForm.ingredientes; let i = index" class="ingrediente-item mb-2">
                     <div *ngIf="modoEdicion">
                       <input type="hidden" [(ngModel)]="pizzasForm.ingredientes[i].ingrediente.id"
                         name="ingredienteId{{i}}" required />
@@ -953,19 +1140,25 @@
                     </div>
 
                     <div *ngIf="!modoEdicion">
-                      <select class="form-select ingrediente-select"
-                        [(ngModel)]="pizzasForm.ingredientes[i].ingredienteId" name="ingrediente{{i}}" required>
-                        <option [value]="0" disabled>Seleccione un ingrediente</option>
-                        <option *ngFor="let ingrediente of listaIngredientes" [value]="ingrediente.id">
-                          {{ ingrediente.nombre }}({{ ingrediente.unidad_medida }})
-                        </option>
-                      </select>
+                      <div class="input-wrapper">
+                        <select class="form-select ingrediente-select"
+                          [(ngModel)]="pizzasForm.ingredientes[i].ingredienteId" name="ingrediente{{i}}" required>
+                          <option value="" disabled selected hidden>Seleccione un ingrediente</option>
+                          <option *ngFor="let ingrediente of listaIngredientes" [value]="ingrediente.id">
+                            {{ ingrediente.nombre }} ({{ ingrediente.unidad_medida }})
+                          </option>
+                        </select>
+                      </div>
                     </div>
 
-                    <input type="number" class="form-input small-input" placeholder="Cantidad"
-                      [(ngModel)]="pizzasForm.ingredientes[i].cantidad" name="cantidad{{i}}" required min="1" />
+                    <div class="input-wrapper">
+                      <input type="number" class="form-input small-input" placeholder="Cantidad"
+                        [(ngModel)]="pizzasForm.ingredientes[i].cantidad" name="cantidad{{i}}" required min="1" />
+                    </div>
+
                     <button type="button" class="btn btn-danger" (click)="quitarIngrediente(i)">Quitar</button>
                   </div>
+
                   <button type="button" class="btn btn-primary mt-2" (click)="agregarIngrediente()">Agregar
                     Ingrediente</button>
                 </div>
@@ -980,6 +1173,7 @@
             </form>
           </div>
         </div>
+
 
 
 

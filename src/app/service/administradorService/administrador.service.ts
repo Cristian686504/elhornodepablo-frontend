@@ -22,6 +22,7 @@ interface Pedido {
   agencia: string;
   fechaPedido: Date;
   cliente: cliente;
+  precio: number;
   pizzas: PizzaPedido[];
 }
 

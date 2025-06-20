@@ -535,12 +535,13 @@ body {
   height: 100%;
 }
 
-/* Modal Body */
 .modal-body {
   padding: 1rem;
   overflow-y: auto;
   flex-grow: 1; 
+  max-height: 70vh; 
 }
+
 
 /* Form Groups */
 .form-group {
@@ -859,3 +860,82 @@ body {
   min-width: 250px;
   flex-grow: 1;      
 }
+
+/* Ocultar el checkbox nativo */
+.custom-checkbox-container input {
+  display: none;
+}
+
+.custom-checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  gap: 0.5em;
+}
+
+/* Caja personalizada para el checkbox */
+.custom-checkmark {
+  position: relative;
+  height: 1.3em;
+  width: 1.3em;
+  background-color: transparent;
+  border-radius: 0.25em;
+  border: 2px solid #ec991c;
+  transition: all 0.25s;
+  box-sizing: border-box;
+}
+
+/* Fondo azul cuando está chequeado */
+.custom-checkbox-container input:checked ~ .custom-checkmark {
+  background-color: #ec991c;
+  border-color: #ec991c;
+}
+
+/* Marca de check (invisible cuando no está chequeado) */
+.custom-checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 0.45em;
+  top: 0.25em;
+  width: 0.25em;
+  height: 0.5em;
+  border: solid white;
+  border-width: 0 0.15em 0.15em 0;
+  transform: rotate(45deg);
+  border-radius: 0;
+}
+
+/* Mostrar el check cuando está marcado */
+.custom-checkbox-container input:checked ~ .custom-checkmark::after {
+  display: block;
+}
+
+/* Texto al lado del checkbox */
+.custom-label-text {
+  user-select: none;
+}
+
+:host ::ng-deep .leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+:host ::ng-deep .leaflet-control-container .leaflet-control {
+  z-index: 2;
+}
+
+#mapFiesta {
+  width: 100%;
+  height: 200px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
