@@ -319,20 +319,20 @@ export class AdministradorService {
   }
 
   getPedidos(page: number, size: number): Observable<{
-  content: Pedido[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-}> {
-  return this.http.get<{
     content: Pedido[];
     totalElements: number;
     totalPages: number;
     number: number;
-  }>(`${this.API_URL_PEDIDOS}getPedidos?page=${page}&size=${size}`);
-}
+  }> {
+    return this.http.get<{
+      content: Pedido[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+    }>(`${this.API_URL_PEDIDOS}getPedidos?page=${page}&size=${size}`);
+  }
 
-crearPedido(pedidoData: any): Observable<string> {
+  crearPedido(pedidoData: any): Observable<string> {
     return this.http.post<string>(`${this.API_URL_PEDIDOS}crear`, pedidoData, {
       responseType: 'text' as 'json'
     });

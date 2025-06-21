@@ -1,75 +1,112 @@
-<section class="seccion-fiesta">
+<section class="seccion-pedidos">
   <div class="container mt-5">
-    <h2 class="mb-4 text-center">Fiestas Programadas</h2>
+    <h2 class="titulo-seccion mb-4 text-center">Fiestas Programadas</h2>
 
     <!-- Filtro de Estado -->
-    <div class="mb-4 text-center">
-      <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarFiestas()">
-        <option value="">Todos</option>
-        <option value="ACEPTADO">Aceptadas</option>
-        <option value="CANCELADO">Canceladas</option>
-        <option value="PENDIENTE">Pendientes</option>
+    <div class="filtro-container mb-4 text-center">
+      <label for="estadoFiltro" class="filtro-label">Filtrar por estado:</label>
+      <select id="estadoFiltro" class="filtro-select" [(ngModel)]="estadoFiltro" (change)="filtrarFiestas()">
+        <option value="">Todas las fiestas</option>
+        <option value="ACEPTADO">Fiestas Aceptadas</option>
+        <option value="CANCELADO">Fiestas Canceladas</option>
+        <option value="PENDIENTE">Fiestas Pendientes</option>
       </select>
     </div>
 
-    <div class="row">
-      <div *ngFor="let fiesta of getFiestasPaginados()" class="col-md-6 col-lg-4 mb-4">
-        <div class="card shadow-sm border-primary border-2">
+    <div class="row" [@listAnimation]="fiestasPaginadas.length">
+      <div *ngFor="let fiesta of fiestasPaginadas" class="col-md-6 col-lg-4 mb-4">
+        <div class="card card-pedido shadow-sm h-100" 
+             [ngClass]="{
+               'status-border-aceptado': fiesta.estado === 'ACEPTADO',
+               'status-border-cancelado': fiesta.estado === 'CANCELADO',
+               'status-border-pendiente': fiesta.estado === 'PENDIENTE'
+             }">
           <div class="card-header bg-fiesta text-white fw-bold">
-            🎉 Fiesta #{{ fiesta.id }}
+            <i class="fas fa-birthday-cake me-2"></i>Fiesta #{{ fiesta.id }}
           </div>
-          <div class="card-body">
-            <p><strong>Cliente:</strong> {{ fiesta.cliente?.nombreUsuario }}</p>
-            <p><strong>Dirección:</strong> {{ fiesta.direccion }}</p>
-            <p><strong>Fecha:</strong> {{ fiesta.fechaFiesta }}</p>
-            <p><strong>Hora a servir:</strong> {{ fiesta.horaServir }}</p>
-            <p><strong>Cantidad de personas:</strong> {{ fiesta.cantidadPersonas }}</p>
-            <p><strong>Pago:</strong> ${{ fiesta.pago }}</p>
-            <p><strong>Estado:</strong>
-              <span class="badge" [ngClass]="{
-                      'bg-success': fiesta.estado === 'ACEPTADO',
-                      'bg-danger': fiesta.estado === 'CANCELADO',
-                      'bg-warning text-dark': fiesta.estado === 'PENDIENTE'
-                    }">
-                {{ fiesta.estado }}
-              </span>
-            </p>
-            <p><strong>Hamburguesas:</strong> {{ fiesta.hamburguesa ? 'Sí' : 'No' }}</p>
-            <p><strong>Chivitos:</strong> {{ fiesta.chivito ? 'Sí' : 'No' }}</p>
+          <div class="card-body d-flex flex-column">
+            <div>
+              <p><i class="fas fa-user me-2"></i><strong>Cliente:</strong> {{ fiesta.cliente?.nombreUsuario }}</p>
+              <p><i class="fas fa-map-marker-alt me-2"></i><strong>Dirección:</strong> {{ fiesta.direccion }}</p>
+              <p><i class="fas fa-calendar-alt me-2"></i><strong>Fecha:</strong> {{ fiesta.fechaFiesta }}</p>
+              <p><i class="fas fa-clock me-2"></i><strong>Hora a servir:</strong> {{ fiesta.horaServir }}</p>
+              <p><i class="fas fa-users me-2"></i><strong>Cantidad de personas:</strong> {{ fiesta.cantidadPersonas }}</p>
+              <p><i class="fas fa-dollar-sign me-2"></i><strong>Pago:</strong> ${{ fiesta.pago }}</p>
+              <p><i class="fas fa-info-circle me-2"></i><strong>Estado:</strong>
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-success': fiesta.estado === 'ACEPTADO',
+                        'bg-danger': fiesta.estado === 'CANCELADO',
+                        'bg-warning text-dark': fiesta.estado === 'PENDIENTE'
+                      }">
+                  {{ fiesta.estado }}
+                </span>
+              </p>
+              <p><i class="fas fa-hamburger me-2"></i><strong>Hamburguesas:</strong> {{ fiesta.hamburguesa ? 'Sí' : 'No' }}</p>
+              <p><i class="fas fa-utensils me-2"></i><strong>Chivitos:</strong> {{ fiesta.chivito ? 'Sí' : 'No' }}</p>
 
-            <p *ngIf="fiesta.pizzas.length"><strong>Pizzas:</strong></p>
-            <ul class="list-group mb-3" *ngIf="fiesta.pizzas.length">
-              <li class="list-group-item" *ngFor="let pizza of fiesta.pizzas">
-                🍕 {{ pizza.pizza?.nombre }} ({{ pizza.pizza?.tipo }}) - Cantidad: {{ pizza.cantidad }}
-              </li>
-            </ul>
-
-            <div class="d-flex justify-content-between">
-              <button class="btn btn-outline-success w-45" *ngIf="fiesta.estado === 'PENDIENTE'" (click)="aceptarFiesta(fiesta)">
-                ✅ Aceptar
-              </button>
-
-              <button class="btn btn-outline-danger w-45" *ngIf="fiesta.estado === 'PENDIENTE'"
-                (click)="cancelarFiesta(fiesta)">
-                ❌ Cancelar
-              </button>
+              <div *ngIf="fiesta.pizzas.length">
+                <p><i class="fas fa-pizza-slice me-2"></i><strong>Pizzas:</strong></p>
+                <ul class="list-group mb-3">
+                  <li class="list-group-item" *ngFor="let pizza of fiesta.pizzas">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div class="me-auto">
+                        <div class="fw-bold">{{ pizza.pizza?.nombre }}</div>
+                        <small class="text-muted">{{ pizza.pizza?.tipo }}</small>
+                      </div>
+                      <span class="badge bg-fiesta rounded-pill ms-2">{{ pizza.cantidad }}</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
 
+            <!-- Acciones para modificar el estado de la fiesta -->
+            <div class="d-flex justify-content-between mt-auto">
+              <button class="btn btn-outline-success w-45" 
+                      (click)="aceptarFiesta(fiesta)"
+                      *ngIf="fiesta.estado === 'PENDIENTE'"><i class="fas fa-check me-1"></i>Aceptar</button>
+
+              <button class="btn btn-outline-danger w-45"
+                      (click)="cancelarFiesta(fiesta)"
+                      *ngIf="fiesta.estado === 'PENDIENTE'"><i class="fas fa-times me-1"></i>Cancelar</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Paginación -->
-    <div class="d-flex justify-content-center mt-4">
-      <button class="btn btn-secondary me-2" (click)="anteriorPaginaFiestas()" [disabled]="paginaFiestas === 1">
-        ◀ Anterior
-      </button>
-      <span class="align-self-center">Página {{ paginaFiestas }}</span>
-      <button class="btn btn-secondary ms-2" (click)="siguientePaginaFiestas()"
-        [disabled]="paginaFiestas * fiestasPorPagina >= listaFiestas.length">
-        Siguiente ▶
-      </button>
+    <!-- Indicador de carga -->
+    <div class="text-center mt-4" *ngIf="cargando">
+      <div class="spinner-border text-fiesta" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2 text-muted">Cargando fiestas...</p>
     </div>
+
+    <!-- Paginación -->
+    <nav aria-label="Page navigation" *ngIf="totalPaginas > 1 && !cargando">
+      <div class="pagination-wrapper">
+        <ul class="pagination pagination-clean">
+          <li class="page-item" [class.disabled]="paginaActual === 0 || cargando">
+            <a class="page-link" href="#" (click)="anteriorPaginaFiestas(); $event.preventDefault()">
+              <i class="fas fa-arrow-left"></i>
+            </a>
+          </li>
+          
+          <li class="page-item page-info-item">
+            <span class="page-info-text">
+              {{ paginaActual + 1 }} / {{ totalPaginas }}
+            </span>
+          </li>
+          
+          <li class="page-item" [class.disabled]="paginaActual >= totalPaginas - 1 || cargando">
+            <a class="page-link" href="#" (click)="siguientePaginaFiestas(); $event.preventDefault()">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </div>
 </section>

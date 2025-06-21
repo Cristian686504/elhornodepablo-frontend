@@ -1,80 +1,114 @@
 <section class="seccion-pedidos">
   <div class="container mt-5">
-    <h2 class="mb-4 text-center">Pedidos Registrados</h2>
+    <h2 class="titulo-seccion mb-4 text-center">Pedidos Registrados</h2>
 
      <!-- Filtro de Estado -->
-    <div class="mb-4 text-center">
-      <select id="estadoFiltro" class="form-select w-auto" [(ngModel)]="estadoFiltro" (change)="filtrarPedidos()">
-        <option value="">Todos</option>
-        <option value="ACEPTADO">Aceptados</option>
-        <option value="CANCELADO">Cancelados</option>
-        <option value="PENDIENTE">Pendientes</option>
+    <div class="filtro-container mb-4 text-center">
+      <label for="estadoFiltro" class="filtro-label">Filtrar por estado:</label>
+      <select id="estadoFiltro" class="filtro-select" [(ngModel)]="estadoFiltro" (change)="filtrarPedidos()">
+        <option value="">Todos los pedidos</option>
+        <option value="ACEPTADO">Pedidos Aceptados</option>
+        <option value="CANCELADO">Pedidos Cancelados</option>
+        <option value="PENDIENTE">Pedidos Pendientes</option>
       </select>
     </div>
 
-    <div class="row">
+    <div class="row" [@listAnimation]="pedidosFiltrados.length">
       <div *ngFor="let pedido of pedidosFiltrados" class="col-md-6 col-lg-4 mb-4">
-        <div class="card shadow-sm border-primary border-2">
+        <div class="card card-pedido shadow-sm h-100" 
+             [ngClass]="{
+               'status-border-aceptado': pedido.estado === 'ACEPTADO',
+               'status-border-cancelado': pedido.estado === 'CANCELADO',
+               'status-border-pendiente': pedido.estado === 'PENDIENTE'
+             }">
           <div class="card-header bg-fiesta text-white fw-bold">
-            📦 Pedido #{{ pedido.id }}
+            <i class="fas fa-box me-2"></i>Pedido #{{ pedido.id }}
           </div>
-          <div class="card-body">
-            <p><strong>Cliente:</strong> {{ pedido.cliente?.nombreUsuario}}</p>
-            <p><strong>Dirección de entrega:</strong> {{ pedido.direccion }}</p>
-            <p><strong>Fecha del Pedido:</strong> {{ pedido.fechaPedido }}</p>
-            <p><strong>Fecha de Entrega:</strong> {{ pedido.fechaEntrega }}</p>
-            <p><strong>Entrega:</strong> {{ pedido.entrega ? 'Sí' : 'No' }}</p>
-            <p><strong>Método de Pago:</strong> {{ pedido.metodoPago }}</p>
-            <p><strong>Periodicidad:</strong> {{ pedido.periodicidad || 'Único' }}</p>
-            <p><strong>Agencia:</strong> {{ pedido.agencia || 'N/A' }}</p>
-            <p><strong>Motivo del Beneficio:</strong> {{ pedido.motivoBeneficio || 'Ninguno' }}</p>
-            <p><strong>Estado:</strong> 
-              <span class="badge"
-                    [ngClass]="{
-                      'bg-success': pedido.estado === 'ACEPTADO',
-                      'bg-danger': pedido.estado === 'CANCELADO',
-                      'bg-warning text-dark': pedido.estado === 'PENDIENTE'
-                    }">
-                {{ pedido.estado }}
-              </span>
-            </p>
+          <div class="card-body d-flex flex-column">
+            <div>
+              <p><i class="fas fa-user me-2"></i><strong>Cliente:</strong> {{ pedido.cliente?.nombreUsuario}}</p>
+              <p><i class="fas fa-map-marker-alt me-2"></i><strong>Dirección de entrega:</strong> {{ pedido.direccion }}</p>
+              <p><i class="fas fa-calendar-alt me-2"></i><strong>Fecha del Pedido:</strong> {{ pedido.fechaPedido }}</p>
+              <p><i class="fas fa-calendar-check me-2"></i><strong>Fecha de Entrega:</strong> {{ pedido.fechaEntrega }}</p>
+              <p><i class="fas fa-truck me-2"></i><strong>Entrega:</strong> {{ pedido.entrega ? 'Sí' : 'No' }}</p>
+              <p><i class="fas fa-credit-card me-2"></i><strong>Método de Pago:</strong> {{ pedido.metodoPago }}</p>
+              <p><i class="fas fa-redo-alt me-2"></i><strong>Periodicidad:</strong> {{ pedido.periodicidad || 'Único' }}</p>
+              <p><i class="fas fa-building me-2"></i><strong>Agencia:</strong> {{ pedido.agencia || 'N/A' }}</p>
+              <p><i class="fas fa-gift me-2"></i><strong>Motivo del Beneficio:</strong> {{ pedido.motivoBeneficio || 'Ninguno' }}</p>
+              <p><i class="fas fa-info-circle me-2"></i><strong>Estado:</strong>
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-success': pedido.estado === 'ACEPTADO',
+                        'bg-danger': pedido.estado === 'CANCELADO',
+                        'bg-warning text-dark': pedido.estado === 'PENDIENTE'
+                      }">
+                  {{ pedido.estado }}
+                </span>
+              </p>
+            </div>
 
-            <p *ngIf="pedido.pizzas.length"><strong>Pizzas:</strong></p>
-<ul class="list-group mb-3" *ngIf="pedido.pizzas.length">
-  <li class="list-group-item" *ngFor="let item of pedido.pizzas">
-    🍕 {{ item.pizza.nombre }} - {{ item.pizza.descripcion }} - Cantidad: {{ item.cantidad }}
-  </li>
-</ul>
-
-
-            
+            <div *ngIf="pedido.pizzas.length">
+              <p><i class="fas fa-pizza-slice me-2"></i><strong>Pizzas:</strong></p>
+              <ul class="list-group mb-3">
+                <li class="list-group-item" *ngFor="let item of pedido.pizzas">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="me-auto">
+                      <div class="fw-bold">{{ item.pizza.nombre }}</div>
+                      <small class="text-muted">{{ item.pizza.descripcion }}</small>
+                    </div>
+                    <span class="badge bg-fiesta rounded-pill ms-2">{{ item.cantidad }}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
 
             <!-- Acciones para modificar el estado del pedido -->
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-auto">
               <button class="btn btn-outline-success w-45" 
                       (click)="aceptarPedido(pedido.id)"
-                      *ngIf="pedido.estado === 'PENDIENTE'">✅ Aceptar</button>
+                      *ngIf="pedido.estado === 'PENDIENTE'"><i class="fas fa-check me-1"></i>Aceptar</button>
 
               <button class="btn btn-outline-danger w-45"
                       (click)="cancelarPedido(pedido.id)"
-                      *ngIf="pedido.estado === 'PENDIENTE'">❌ Cancelar</button>
+                      *ngIf="pedido.estado === 'PENDIENTE'"><i class="fas fa-times me-1"></i>Cancelar</button>
             </div>
-
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Paginación -->
-    <div class="d-flex justify-content-center mt-4">
-      <button class="btn btn-secondary me-2" (click)="anteriorPaginaPedidos()" [disabled]="paginaActual === 0">
-        ◀ Anterior
-      </button>
-      <span class="align-self-center">Página {{ paginaActual + 1 }} de {{ totalPaginas }}</span>
-      <button class="btn btn-secondary ms-2" (click)="siguientePaginaPedidos()" 
-              [disabled]="paginaActual >= totalPaginas - 1">
-        Siguiente ▶
-      </button>
+    <!-- Indicador de carga -->
+    <div class="text-center mt-4" *ngIf="cargando">
+      <div class="spinner-border text-fiesta" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2 text-muted">Cargando pedidos...</p>
     </div>
+
+    <!-- Paginación -->
+    <nav aria-label="Page navigation" *ngIf="totalPaginas > 1 && !cargando">
+      <div class="pagination-wrapper">
+        <ul class="pagination pagination-clean">
+          <li class="page-item" [class.disabled]="paginaActual === 0 || cargando">
+            <a class="page-link" href="#" (click)="anteriorPaginaPedidos(); $event.preventDefault()">
+              <i class="fas fa-arrow-left"></i>
+            </a>
+          </li>
+          
+          <li class="page-item page-info-item">
+            <span class="page-info-text">
+              {{ paginaActual + 1 }} / {{ totalPaginas }}
+            </span>
+          </li>
+          
+          <li class="page-item" [class.disabled]="paginaActual >= totalPaginas - 1 || cargando">
+            <a class="page-link" href="#" (click)="siguientePaginaPedidos(); $event.preventDefault()">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </div>
 </section>
+

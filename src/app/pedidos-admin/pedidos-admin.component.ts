@@ -4,13 +4,29 @@ import { AdministradorService } from '../service/administradorService/administra
 import { UsuarioService } from '../service/usuarioService/usuario.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 @Component({
   selector: 'app-pedidos-admin',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './pedidos-admin.component.html',
-  styleUrl: './pedidos-admin.component.css'
+  styleUrl: './pedidos-admin.component.css',
+  animations: [
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'scale(0.95)' }),
+          stagger('100ms', [
+            animate('350ms cubic-bezier(0.35, 0, 0.25, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+          ])
+        ], { optional: true }),
+        query(':leave', [
+          animate('400ms cubic-bezier(0.35, 0, 0.25, 1)', style({ opacity: 0, transform: 'scale(0.95)' }))
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class PedidosAdminComponent {
 
@@ -37,7 +53,9 @@ secciones = [
   totalPaginas: number = 0;
   paginaActual: number = 0;
   tamañoPagina: number = 0;
-
+  estadoFiltro: string = '';
+  pedidosFiltrados: any[] = [];
+  cargando: boolean = false;
 
   ngOnInit() {
     console.log('ngOnInit called');
@@ -50,51 +68,57 @@ secciones = [
     this.seccionActiva = seccion;
   }
 
-  estadoFiltro: string = '';
-pedidosFiltrados: any[] = [];
-
-filtrarPedidos() {
-  if (!this.estadoFiltro) {
-    this.pedidosFiltrados = this.listaPedidos;
-  } else {
-    this.pedidosFiltrados = this.listaPedidos.filter(
-      pedido => pedido.estado === this.estadoFiltro
-    );
-  }
-}
-
-    getPedidos(page: number, size: number) { 
-  this.administradorService.getPedidos(page, size).subscribe(res => {
-    console.log('Respuesta completa del backend:', res); // <-- Debug aquí
-
-    if (Array.isArray(res.content)) {
-      this.listaPedidos = res.content;
-      this.totalPaginas = res.totalPages;
-      this.paginaActual = res.number;
-      this.filtrarPedidos(); 
+  filtrarPedidos() {
+    if (!this.estadoFiltro) {
+      this.pedidosFiltrados = this.listaPedidos;
     } else {
-      this.listaPedidos = [];
-      this.pedidosFiltrados = [];
-      console.warn('La respuesta no tiene content como array:', res);
+      this.pedidosFiltrados = this.listaPedidos.filter(
+        pedido => pedido.estado === this.estadoFiltro
+      );
     }
-  });
-}
-
-
-
-anteriorPaginaPedidos() {
-  if (this.paginaActual > 0) {
-    this.getPedidos(this.paginaActual - 1, this.tamañoPagina);
   }
-}
 
-siguientePaginaPedidos() {
-  if (this.paginaActual < this.totalPaginas - 1) {
-    this.getPedidos(this.paginaActual + 1, this.tamañoPagina);
+  getPedidos(page: number, size: number) { 
+    this.cargando = true;
+    this.administradorService.getPedidos(page, size).subscribe(res => {
+      console.log('Respuesta completa del backend:', res);
+
+      if (Array.isArray(res.content)) {
+        this.listaPedidos = res.content;
+        this.totalPaginas = res.totalPages;
+        this.paginaActual = res.number;
+        this.filtrarPedidos();
+        this.cargando = false;
+      } else {
+        this.listaPedidos = [];
+        this.pedidosFiltrados = [];
+        this.cargando = false;
+        console.warn('La respuesta no tiene content como array:', res);
+      }
+    });
   }
-}
 
-usuarioForm = {
+  anteriorPaginaPedidos() {
+    if (this.paginaActual > 0 && !this.cargando) {
+      this.cargando = true;
+      this.pedidosFiltrados = []; // Vaciar para disparar animación de salida
+      setTimeout(() => {
+        this.getPedidos(this.paginaActual - 1, this.tamañoPagina);
+      }, 400); // Delay igual a la duración de la animación de salida
+    }
+  }
+
+  siguientePaginaPedidos() {
+    if (this.paginaActual < this.totalPaginas - 1 && !this.cargando) {
+      this.cargando = true;
+      this.pedidosFiltrados = []; // Vaciar para disparar animación de salida
+      setTimeout(() => {
+        this.getPedidos(this.paginaActual + 1, this.tamañoPagina);
+      }, 400); // Delay igual a la duración de la animación de salida
+    }
+  }
+
+  usuarioForm = {
     id: '',
     nombreUsuario: '',
     contrasenia: '',
