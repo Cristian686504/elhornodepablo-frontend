@@ -64,7 +64,7 @@ export class PedidosComponent implements OnInit {
     
     metodoEntrega = [
       { value: 'delivery', viewValue: 'Delivery a domicilio' },
-      { value: 'entregaLocal', viewValue: 'Entrega en el local' }
+      { value: 'entregaLocal', viewValue: 'Retiro en el local' }
     ];
 
     metodoPago = [
