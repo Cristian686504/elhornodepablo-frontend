@@ -34,6 +34,7 @@ interface datosFiestasCliente {
 }
 
 interface PizzaDetalle {
+  nombre: string;
   tipo: string;
   cantidad: number;
   gusto: string;

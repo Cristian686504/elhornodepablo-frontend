@@ -52,17 +52,17 @@
           <table *ngIf="pizzas.length > 0" class="pizzas-table">
             <thead>
               <tr>
+                <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Cantidad</th>
-                <th>Gusto</th>
                 <th>Precio C/U</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let pizza of pizzas">
+                <td>{{ pizza.nombrePizza }}</td>
                 <td>{{ pizza.tipo }}</td>
                 <td>{{ pizza.cantidad }}</td>
-                <td>{{ pizza.gusto }}</td>
                 <td>{{ pizza.precioPizza }}$</td>
               </tr>
             </tbody>
