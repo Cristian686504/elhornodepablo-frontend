@@ -390,5 +390,11 @@ cancelarPedidoAdmin(id: number): Observable<string> {
   });
 }
 
+finalizarPedido(id: number) {
+  return this.http.put(`${this.API_URL_PEDIDOS}finalizarPedido/${id}`, {}, { responseType: 'text' });
+}
 
+finalizarFiesta(id: number) {
+  return this.http.put(`${this.API_URL_FIESTA}finalizarFiesta/${id}`, {}, { responseType: 'text' });
+}
 }

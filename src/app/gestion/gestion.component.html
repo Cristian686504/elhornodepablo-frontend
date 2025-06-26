@@ -46,12 +46,6 @@
           </div>
 
           <div class="card-content">
-            <!-- Búsqueda -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar clientes...">
-            </div>
-
             <!-- Tabla -->
             <div class="table-responsive">
               <table class="table table-hover table-bordered">
@@ -84,30 +78,30 @@
               </table>
             </div>
 
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create" (click)="abrirModal('cliente')">
-                <i class="fas fa-plus"></i> Crear Cliente
-              </button>
-              <button class="btn btn-warning" (click)="abrirModal('cliente', usuarioSeleccionado)">
-                <i class="fas fa-edit"></i> Modificar Cliente
-              </button>
-              <button class="btn btn-danger" (click)="eliminarCliente(usuarioSeleccionado)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaUsuarios()"
-                [disabled]="paginaUsuarios === 0">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <span class="align-self-center">Página {{ paginaUsuarios + 1 }} de {{ totalPaginasUsuarios }}</span>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaUsuarios()"
-                [disabled]="paginaUsuarios >= totalPaginasUsuarios - 1">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <!-- Botones y paginación en la misma fila -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="action-buttons d-flex gap-2">
+                <button class="btn btn-create" (click)="abrirModal('cliente')">
+                  <i class="fas fa-plus"></i> Crear Cliente
+                </button>
+                <button class="btn btn-warning" (click)="abrirModal('cliente', usuarioSeleccionado)">
+                  <i class="fas fa-edit"></i> Modificar Cliente
+                </button>
+                <button class="btn btn-danger" (click)="eliminarCliente(usuarioSeleccionado)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 ms-auto">
+                <button class="btn btn-outline-secondary" (click)="anteriorPaginaUsuarios()"
+                  [disabled]="paginaUsuarios === 0">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaUsuarios + 1 }} de {{ totalPaginasUsuarios }}</span>
+                <button class="btn btn-outline-secondary" (click)="siguientePaginaUsuarios()"
+                  [disabled]="paginaUsuarios >= totalPaginasUsuarios - 1">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -122,12 +116,6 @@
           </div>
 
           <div class="card-content">
-            <!-- Búsqueda -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar administradores...">
-            </div>
-
             <!-- Tabla -->
             <div class="table-responsive">
               <table class="table table-hover table-bordered">
@@ -139,7 +127,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let administrador of getAdministradoresPaginados()"
+                  <tr *ngFor="let administrador of listaAdministradores"
                     (click)="seleccionarFila(administrador, 'admin')"
                     [class.table-primary]="administradorSeleccionado === administrador">
                     <td class="font-medium">{{ administrador.nombreUsuario }}</td>
@@ -149,32 +137,30 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create-admin" (click)="abrirModal('admin')">
-                <i class="fas fa-plus"></i> Crear Administrador
-              </button>
-              <button class="btn btn-warning" (click)="abrirModal('admin', administradorSeleccionado)">
-                <i class="fas fa-edit"></i> Modificar Administrador
-              </button>
-              <button class="btn btn-danger" (click)="eliminarAdmin(administradorSeleccionado)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaAdministradores()"
-                [disabled]="paginaAdministradores === 0">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <span class="align-self-center">Página {{ paginaAdministradores + 1 }} de {{ totalPaginasAdministradores
-                }}</span>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaAdministradores()"
-                [disabled]="paginaAdministradores >= totalPaginasAdministradores - 1">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <!-- Fila de botones y paginación debajo de la tabla -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+              <div class="action-buttons d-flex gap-2 mb-0">
+                <button class="btn btn-create-admin" (click)="abrirModal('admin')">
+                  <i class="fas fa-plus"></i> Crear Administrador
+                </button>
+                <button class="btn btn-warning" (click)="abrirModal('admin', administradorSeleccionado)">
+                  <i class="fas fa-edit"></i> Modificar Administrador
+                </button>
+                <button class="btn btn-danger" (click)="eliminarAdmin(administradorSeleccionado)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 mb-0 ms-auto">
+                <button class="btn btn-outline-secondary" (click)="anteriorPaginaAdministradores()"
+                  [disabled]="paginaAdministradores === 0">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaAdministradores + 1 }} de {{ totalPaginasAdministradores }}</span>
+                <button class="btn btn-outline-secondary" (click)="siguientePaginaAdministradores()"
+                  [disabled]="paginaAdministradores >= totalPaginasAdministradores - 1">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -381,7 +367,6 @@
 
       <!-- PEDIDOS -->
       <section *ngIf="seccionActiva === 'pedidos'" class="container mt-4">
-        <!-- Pedidos -->
         <div class="card">
           <div class="card-header pedidos-header">
             <h2 class="card-title">
@@ -391,11 +376,6 @@
           </div>
 
           <div class="card-content">
-            <!-- Búsqueda -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar pedidos..." />
-            </div>
 
             <!-- Tabla -->
             <div class="table-responsive">
@@ -430,32 +410,28 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create" (click)="abrirModal('pedido')">
-                <i class="fas fa-plus"></i> Crear Pedido
-              </button>
-              <button class="btn btn-warning" [disabled]="!pedidoSeleccionado"
-                (click)="abrirModal('pedido', pedidoSeleccionado)">
-                <i class="fas fa-edit"></i> Modificar Pedido
-              </button>
-              <button class="btn btn-danger" [disabled]="!pedidoSeleccionado" (click)="eliminarPedido()">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación de Pedidos -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaPedidos()"
-                [disabled]="paginaPedidos === 0">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <span class="align-self-center">Página {{ paginaPedidos + 1 }} de {{ totalPaginasPedidos }}</span>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaPedidos()"
-                [disabled]="paginaPedidos >= totalPaginasPedidos - 1">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+              
+              <div class="action-buttons d-flex gap-2 mb-0">
+                <button class="btn btn-create" (click)="abrirModal('pedido')">
+                  <i class="fas fa-plus"></i> Crear Pedido
+                </button>
+                <button class="btn btn-warning" [disabled]="!pedidoSeleccionado" (click)="abrirModal('pedido', pedidoSeleccionado)">
+                  <i class="fas fa-edit"></i> Modificar Pedido
+                </button>
+                <button class="btn btn-danger" [disabled]="!pedidoSeleccionado" (click)="eliminarPedido()">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 mb-0">
+                <button class="btn btn-outline-secondary" (click)="anteriorPaginaPedidos()" [disabled]="paginaPedidos === 0">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaPedidos + 1 }} de {{ totalPaginasPedidos }}</span>
+                <button class="btn btn-outline-secondary" (click)="siguientePaginaPedidos()" [disabled]="paginaPedidos >= totalPaginasPedidos - 1">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -562,28 +538,33 @@
                   </div>
                 </div>
 
-                <!-- Periodicidad -->
+                <!-- Periodicidad como select -->
                 <div class="form-group">
                   <label class="form-label">
                     <span class="label-text">Periodicidad</span>
                   </label>
                   <div class="input-wrapper">
-                    <input type="text" class="form-input" placeholder="Ingrese la periodicidad"
-                      [(ngModel)]="pedidoForm.periodicidad" name="periodicidad" />
+                    <select class="form-select" [(ngModel)]="pedidoForm.periodicidad" name="periodicidad">
+                      <option value="" selected>Única</option>
+                      <option value="DIARIAMENTE">Diariamente</option>
+                      <option value="SEMANALMENTE">Semanalmente</option>
+                      <option value="MENSUALMENTE">Mensualmente</option>
+                    </select>
                   </div>
                 </div>
 
-                <!-- Dirección -->
-                <div class="form-group">
+                <!-- Dirección solo si entrega -->
+                <div class="form-group" *ngIf="pedidoForm.entrega">
                   <label for="direccion_pedido" class="form-label">
                     <span class="label-text">Dirección de Entrega</span>
                     <span class="required">*</span>
                   </label>
-                  <div class="input-wrapper">
-                    <input id="direccion_pedido" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa"
-                      [(ngModel)]="pedidoForm.direccion" name="direccion" readonly required />
+                  <div class="input-wrapper d-flex gap-2 align-items-center">
+                    <input id="direccion_pedido" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa" [(ngModel)]="pedidoForm.direccion" name="direccion" readonly required />
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="abrirMapaDireccion()">Seleccionar en mapa</button>
                   </div>
-                  <div #mapPedido style="height: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;"></div>
+                  <div *ngIf="direccionError" class="text-danger small">Debe seleccionar una dirección válida.</div>
+                  <app-mapa-direccion *ngIf="mostrarMapaDireccion" (dirSeleccionada)="onDireccionSeleccionada($event)" (modalClosed)="cerrarMapaDireccion()"></app-mapa-direccion>
                 </div>
 
                 <!-- Motivo Beneficio -->
@@ -687,13 +668,6 @@
           </div>
 
           <div class="card-content">
-
-            <!-- Búsqueda -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar fiestas..." />
-            </div>
-
             <!-- Tabla -->
             <div class="table-responsive">
               <table class="table table-hover table-bordered">
@@ -722,31 +696,30 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create" (click)="abrirModal('fiesta')">
-                <i class="fas fa-plus"></i> Crear Fiesta
-              </button>
-              <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">
-                <i class="fas fa-edit"></i> Modificar Fiesta
-              </button>
-              <button class="btn btn-danger" (click)="eliminarFiesta(fiestaSeleccionada)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación de Fiestas -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaFiestas()"
-                [disabled]="paginaFiestas === 0">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <span class="align-self-center">Página {{ paginaFiestas + 1 }} de {{ totalPaginasFiestas }}</span>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaFiestas()"
-                [disabled]="paginaFiestas >= totalPaginasFiestas - 1">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <!-- Fila de botones y paginación debajo de la tabla -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+              <div class="action-buttons d-flex gap-2 mb-0">
+                <button class="btn btn-create" (click)="abrirModal('fiesta')">
+                  <i class="fas fa-plus"></i> Crear Fiesta
+                </button>
+                <button class="btn btn-warning" (click)="abrirModal('fiesta', fiestaSeleccionada)">
+                  <i class="fas fa-edit"></i> Modificar Fiesta
+                </button>
+                <button class="btn btn-danger" (click)="eliminarFiesta(fiestaSeleccionada)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 mb-0">
+                <button class="btn btn-outline-secondary" (click)="anteriorPaginaFiestas()"
+                  [disabled]="paginaFiestas === 0">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaFiestas + 1 }} de {{ totalPaginasFiestas }}</span>
+                <button class="btn btn-outline-secondary" (click)="siguientePaginaFiestas()"
+                  [disabled]="paginaFiestas >= totalPaginasFiestas - 1">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -866,11 +839,12 @@
                     <span class="label-text">Dirección del Evento</span>
                     <span class="required">*</span>
                   </label>
-                  <div class="input-wrapper">
-                    <input id="direccion_fiesta" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa"
-                      [(ngModel)]="fiestasForm.direccion" name="direccion" readonly required />
+                  <div class="input-wrapper d-flex gap-2 align-items-center">
+                    <input id="direccion_fiesta" type="text" class="form-input" placeholder="Seleccione una ubicación en el mapa" [(ngModel)]="fiestasForm.direccion" name="direccion" readonly required />
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="abrirMapaDireccionFiesta()">Seleccionar en mapa</button>
                   </div>
-                  <div #mapFiesta style="height: 200px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;"></div>
+                  <div *ngIf="direccionFiestaError" class="text-danger small">Debe seleccionar una dirección válida.</div>
+                  <app-mapa-direccion *ngIf="mostrarMapaDireccionFiesta" (dirSeleccionada)="onDireccionFiestaSeleccionada($event)" (modalClosed)="cerrarMapaDireccionFiesta()"></app-mapa-direccion>
                 </div>
 
                 <div class="form-group">
@@ -952,13 +926,6 @@
           </div>
 
           <div class="card-content">
-
-            <!-- Búsqueda -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar pizzas..." />
-            </div>
-
             <!-- Tabla -->
             <div class="table-responsive">
               <table class="table table-hover table-bordered">
@@ -972,7 +939,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let pizza of getPizzasPaginadas()" (click)="seleccionarFila(pizza, 'pizza')"
+                  <tr *ngFor="let pizza of getPizzasPaginadas" (click)="seleccionarFila(pizza, 'pizza')"
                     [class.table-primary]="pizzaSeleccionada === pizza">
                     <td>{{ pizza.nombre }}</td>
                     <td>{{ pizza.precio | currency }}</td>
@@ -987,28 +954,28 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create" (click)="abrirModal('pizza')">
-                <i class="fas fa-plus"></i> Crear Pizza
-              </button>
-              <button class="btn btn-warning" (click)="abrirModal('pizza', pizzaSeleccionada)">
-                <i class="fas fa-edit"></i> Modificar Pizza
-              </button>
-              <button class="btn btn-danger" (click)="eliminarPizza(pizzaSeleccionada)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaPizzas()">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaPizzas()">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <!-- Fila de botones y paginación debajo de la tabla -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+              <div class="action-buttons d-flex gap-2 mb-0">
+                <button class="btn btn-create" (click)="abrirModal('pizza')">
+                  <i class="fas fa-plus"></i> Crear Pizza
+                </button>
+                <button class="btn btn-warning" (click)="abrirModal('pizza', pizzaSeleccionada)">
+                  <i class="fas fa-edit"></i> Modificar Pizza
+                </button>
+                <button class="btn btn-danger" (click)="eliminarPizza(pizzaSeleccionada)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 mb-0 ms-auto">
+                <button class="btn btn-outline-secondary" (click)="paginaPizzas > 1 ? paginaPizzas = paginaPizzas - 1 : null" [disabled]="paginaPizzas <= 1">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaPizzas }} de {{ totalPaginasPizzas }}</span>
+                <button class="btn btn-outline-secondary" (click)="paginaPizzas < totalPaginasPizzas ? paginaPizzas = paginaPizzas + 1 : null" [disabled]="paginaPizzas >= totalPaginasPizzas">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1192,13 +1159,6 @@
           </div>
 
           <div class="card-content">
-
-            <!-- Buscador -->
-            <div class="search-container mb-3">
-              <i class="fas fa-search search-icon"></i>
-              <input type="text" class="form-control search-input" placeholder="Buscar ingredientes..." />
-            </div>
-
             <!-- Tabla -->
             <div class="table-responsive">
               <table class="table table-hover table-bordered">
@@ -1210,7 +1170,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let ingrediente of getIngredientesPaginados()"
+                  <tr *ngFor="let ingrediente of getIngredientesPaginados"
                     (click)="seleccionarFila(ingrediente, 'ingrediente')"
                     [class.table-primary]="ingredienteSeleccionado === ingrediente">
                     <td>{{ ingrediente.nombre }}</td>
@@ -1220,28 +1180,28 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Botones -->
-            <div class="action-buttons d-flex gap-2 mb-3">
-              <button class="btn btn-create" (click)="abrirModal('ingrediente')">
-                <i class="fas fa-plus"></i> Crear Ingrediente
-              </button>
-              <button class="btn btn-warning" (click)="abrirModal('ingrediente', ingredienteSeleccionado)">
-                <i class="fas fa-edit"></i> Modificar Ingrediente
-              </button>
-              <button class="btn btn-danger" (click)="eliminarIngrediente(ingredienteSeleccionado)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination d-flex gap-2 mb-5">
-              <button class="btn btn-outline-secondary" (click)="anteriorPaginaIngredientes()">
-                <i class="fas fa-chevron-left"></i> Anterior
-              </button>
-              <button class="btn btn-outline-secondary" (click)="siguientePaginaIngredientes()">
-                Siguiente <i class="fas fa-chevron-right"></i>
-              </button>
+            <!-- Fila de botones y paginación debajo de la tabla -->
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+              <div class="action-buttons d-flex gap-2 mb-0">
+                <button class="btn btn-create" (click)="abrirModal('ingrediente')">
+                  <i class="fas fa-plus"></i> Crear Ingrediente
+                </button>
+                <button class="btn btn-warning" (click)="abrirModal('ingrediente', ingredienteSeleccionado)">
+                  <i class="fas fa-edit"></i> Modificar Ingrediente
+                </button>
+                <button class="btn btn-danger" (click)="eliminarIngrediente(ingredienteSeleccionado)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </div>
+              <div class="pagination d-flex gap-2 mb-0 ms-auto">
+                <button class="btn btn-outline-secondary" (click)="paginaIngredientes > 1 ? paginaIngredientes = paginaIngredientes - 1 : null" [disabled]="paginaIngredientes <= 1">
+                  <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <span class="align-self-center">Página {{ paginaIngredientes }} de {{ totalPaginasIngredientes }}</span>
+                <button class="btn btn-outline-secondary" (click)="paginaIngredientes < totalPaginasIngredientes ? paginaIngredientes = paginaIngredientes + 1 : null" [disabled]="paginaIngredientes >= totalPaginasIngredientes">
+                  Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>

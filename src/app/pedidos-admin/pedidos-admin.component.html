@@ -10,6 +10,7 @@
         <option value="ACEPTADO">Pedidos Aceptados</option>
         <option value="CANCELADO">Pedidos Cancelados</option>
         <option value="PENDIENTE">Pedidos Pendientes</option>
+        <option value="FINALIZADO">Pedidos Finalizados</option>
       </select>
     </div>
 
@@ -25,7 +26,8 @@
              [ngClass]="{
                'status-border-aceptado': pedido.estado === 'ACEPTADO',
                'status-border-cancelado': pedido.estado === 'CANCELADO',
-               'status-border-pendiente': pedido.estado === 'PENDIENTE'
+               'status-border-pendiente': pedido.estado === 'PENDIENTE',
+               'status-border-finalizada': pedido.estado === 'FINALIZADO'
              }">
           <div class="card-header bg-fiesta text-white fw-bold">
             <i class="fas fa-box me-2"></i>Pedido #{{ pedido.id }}
@@ -46,7 +48,8 @@
                       [ngClass]="{
                         'bg-success': pedido.estado === 'ACEPTADO',
                         'bg-danger': pedido.estado === 'CANCELADO',
-                        'bg-warning text-dark': pedido.estado === 'PENDIENTE'
+                        'bg-warning text-dark': pedido.estado === 'PENDIENTE',
+                        'bg-finalizada': pedido.estado === 'FINALIZADO'
                       }">
                   {{ pedido.estado }}
                 </span>
@@ -77,6 +80,10 @@
               <button class="btn btn-outline-danger w-45"
                       (click)="cancelarPedido(pedido.id)"
                       *ngIf="pedido.estado === 'PENDIENTE'"><i class="fas fa-times me-1"></i>Cancelar</button>
+
+              <button class="btn btn-outline-warning w-100 mt-2"
+                      (click)="finalizarPedido(pedido.id)"
+                      *ngIf="pedido.estado === 'ACEPTADO'"><i class="fas fa-flag-checkered me-1"></i>Finalizar</button>
             </div>
           </div>
         </div>

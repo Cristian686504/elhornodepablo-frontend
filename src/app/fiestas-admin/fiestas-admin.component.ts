@@ -52,7 +52,7 @@ export class FiestasAdminComponent implements OnInit {
   totalPaginas: number = 0;
   paginaActual: number = 0;
   tamañoPagina: number = 0;
-  estadoFiltro: string = '';
+  estadoFiltro: string = 'ACEPTADO';
   fiestasFiltradas: any[] = [];
   fiestasPaginadas: any[] = [];
   cargando: boolean = false;
@@ -71,6 +71,10 @@ export class FiestasAdminComponent implements OnInit {
   filtrarFiestas() {
     if (!this.estadoFiltro) {
       this.fiestasFiltradas = this.listaFiestas;
+    } else if (this.estadoFiltro === 'FINALIZADA') {
+      this.fiestasFiltradas = this.listaFiestas.filter(
+        fiesta => fiesta.estado === 'FINALIZADA' || fiesta.estado === 'FINALIZADO'
+      );
     } else {
       this.fiestasFiltradas = this.listaFiestas.filter(
         fiesta => fiesta.estado === this.estadoFiltro
@@ -258,6 +262,31 @@ cancelarFiesta(fiesta: any) {
         text: 'No se pudo cancelar la fiesta.',
         timer: 3000,
         showConfirmButton: false
+      });
+    }
+  });
+}
+
+finalizarFiesta(fiesta: any) {
+  Swal.fire({
+    title: '¿Finalizar fiesta?',
+    text: '¿Estás seguro de que deseas marcar esta fiesta como finalizada?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ffa500',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, finalizar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.administradorService.finalizarFiesta(fiesta.id).subscribe({
+        next: () => {
+          Swal.fire('Finalizada', 'La fiesta ha sido finalizada.', 'success');
+          this.getFiestas(this.paginaActual, this.tamañoPagina);
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo finalizar la fiesta.', 'error');
+        }
       });
     }
   });

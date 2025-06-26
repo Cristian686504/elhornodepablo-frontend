@@ -6,11 +6,12 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MapAddressModalComponent } from '../mapa-direccion/mapa-direccion.component';
 
 @Component({
   selector: 'app-gestion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MapAddressModalComponent],
   templateUrl: './gestion.component.html',
   styleUrls: ['./gestion.component.css']
 })
@@ -69,6 +70,17 @@ export class GestionComponent implements OnInit, AfterViewInit {
   usuariosPorPagina: number = 10;
   totalPaginasUsuarios: number = 0;
 
+  // Propiedades para validaciones y mapa en pedidos
+  hoy: string = new Date().toISOString().split('T')[0];
+  direccionError: boolean = false;
+  pedidoFormIntentado: boolean = false;
+
+  private _guardarPedidoOriginal: any;
+
+  mostrarMapaDireccion: boolean = false;
+  mostrarMapaDireccionFiesta: boolean = false;
+  direccionFiestaError: boolean = false;
+
   ngOnInit() {
     console.log('ngOnInit called');
     this.getAdministradores();
@@ -84,6 +96,10 @@ export class GestionComponent implements OnInit, AfterViewInit {
     this.totalPaginasPedidos = 0;
     this.getFiestas();
     this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
+    // Guardar referencia al método original solo una vez
+    if (!this._guardarPedidoOriginal) {
+      this._guardarPedidoOriginal = Object.getPrototypeOf(this).guardarPedido;
+    }
   }
 
   ngAfterViewInit() {
@@ -225,6 +241,7 @@ export class GestionComponent implements OnInit, AfterViewInit {
       next: (response) => {
         this.listaAdministradores = response.content;
         this.totalPaginasAdministradores = response.totalPages;
+        this.paginaAdministradores = response.number;
       },
       error: (error) => {
         console.error('Error al obtener administradores:', error);
@@ -797,63 +814,86 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
   
 
   guardarIngrediente() {
-  const ingrediente = {
-    id: +this.ingredientesForm.id,
-    nombre: this.ingredientesForm.nombre,
-    cantidad: this.ingredientesForm.cantidad,
-    unidad_medida: this.ingredientesForm.unidad_medida
-  };
+    let errores: string[] = [];
+    // Validar nombre
+    if (!this.ingredientesForm.nombre || this.ingredientesForm.nombre.trim() === '') {
+      errores.push('El nombre del ingrediente es obligatorio.');
+    }
+    // Validar cantidad
+    if (!this.ingredientesForm.cantidad || Number(this.ingredientesForm.cantidad) <= 0) {
+      errores.push('La cantidad debe ser mayor a 0.');
+    }
+    // Validar unidad de medida
+    if (!this.ingredientesForm.unidad_medida) {
+      errores.push('Debe seleccionar una unidad de medida.');
+    }
+    if (errores.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Errores en el formulario',
+        html: '<ul style="text-align:left;">' + errores.map(e => `<li>${e}</li>`).join('') + '</ul>',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+    // Lógica original de guardar ingrediente
+    const ingrediente = {
+      id: +this.ingredientesForm.id,
+      nombre: this.ingredientesForm.nombre,
+      cantidad: this.ingredientesForm.cantidad,
+      unidad_medida: this.ingredientesForm.unidad_medida
+    };
 
-  console.log("Ingrediente a guardar:", ingrediente);
+    console.log("Ingrediente a guardar:", ingrediente);
 
-  if (this.modoEdicion) {
-    this.administradorService.actualizarIngrediente(ingrediente.id, ingrediente).subscribe({
-      next: () => {
-        console.log('Ingrediente actualizado');
-        this.getIngredientes();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Actualizado',
-          text: 'Ingrediente actualizado con éxito.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (err) => {
-        console.error('Error al actualizar ingrediente:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al modificar el ingrediente.'
-        });
-      }
-    });
-  } else {
-    this.administradorService.crearIngrediente(ingrediente).subscribe({
-      next: () => {
-        console.log('Ingrediente creado');
-        this.getIngredientes();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Creado',
-          text: 'Ingrediente creado con éxito.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (err) => {
-        console.error('Error al crear ingrediente:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al crear el ingrediente.'
-        });
-      }
-    });
+    if (this.modoEdicion) {
+      this.administradorService.actualizarIngrediente(ingrediente.id, ingrediente).subscribe({
+        next: () => {
+          console.log('Ingrediente actualizado');
+          this.getIngredientes();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Actualizado',
+            text: 'Ingrediente actualizado con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al actualizar ingrediente:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al modificar el ingrediente.'
+          });
+        }
+      });
+    } else {
+      this.administradorService.crearIngrediente(ingrediente).subscribe({
+        next: () => {
+          console.log('Ingrediente creado');
+          this.getIngredientes();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Creado',
+            text: 'Ingrediente creado con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al crear ingrediente:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al crear el ingrediente.'
+          });
+        }
+      });
+    }
   }
-}
 
 
   agregarIngrediente() {
@@ -874,80 +914,169 @@ abrirModal(tipo: 'cliente' | 'admin' | 'ingrediente' | 'pizza' | 'fiesta' | 'ped
   }
 
   guardarPizza() {
-  if (this.pizzasForm.imagen) {
-    this.pizzasForm.imagen = this.pizzasForm.imagen.split(',')[1]; 
+    let errores: string[] = [];
+    // Validar nombre
+    if (!this.pizzasForm.nombre || this.pizzasForm.nombre.trim() === '') {
+      errores.push('El nombre de la pizza es obligatorio.');
+    }
+    // Validar precio
+    if (!this.pizzasForm.precio || Number(this.pizzasForm.precio) <= 0) {
+      errores.push('El precio debe ser mayor a 0.');
+    }
+    // Validar descripción
+    if (!this.pizzasForm.descripcion || this.pizzasForm.descripcion.trim() === '') {
+      errores.push('La descripción es obligatoria.');
+    }
+    // Validar tipo
+    if (!this.pizzasForm.tipo) {
+      errores.push('Debe seleccionar un tipo de pizza.');
+    }
+    // Validar ingredientes
+    if (!this.pizzasForm.ingredientes || this.pizzasForm.ingredientes.length === 0) {
+      errores.push('Debe agregar al menos un ingrediente.');
+    } else {
+      for (let i = 0; i < this.pizzasForm.ingredientes.length; i++) {
+        const ing = this.pizzasForm.ingredientes[i];
+        if (!ing.ingredienteId && (!ing.ingrediente || !ing.ingrediente.id)) {
+          errores.push(`Debe seleccionar un ingrediente en la fila ${i + 1}.`);
+        }
+        if (!ing.cantidad || Number(ing.cantidad) <= 0) {
+          errores.push(`La cantidad del ingrediente en la fila ${i + 1} debe ser mayor a 0.`);
+        }
+      }
+    }
+    if (errores.length > 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Errores en el formulario',
+        html: '<ul style="text-align:left;">' + errores.map(e => `<li>${e}</li>`).join('') + '</ul>',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+    // Lógica original de guardar pizza
+    if (this.pizzasForm.imagen) {
+      this.pizzasForm.imagen = this.pizzasForm.imagen.split(',')[1]; 
+    }
+
+    const pizza = {
+      id: +this.pizzasForm.id,
+      nombre: this.pizzasForm.nombre,
+      tipo: this.pizzasForm.tipo,
+      precio: this.pizzasForm.precio,
+      descripcion: this.pizzasForm.descripcion,
+      imagen: this.pizzasForm.imagen,
+      ingredientes: this.pizzasForm.ingredientes.map(i => ({
+        cantidad: i.cantidad,
+        ingrediente: {
+          id: i.ingredienteId || (i.ingrediente && i.ingrediente.id)
+        }
+      }))
+    };
+
+    console.log("Imagen codificada:", this.pizzasForm.imagen);
+    console.log("JSON que se va a enviar:", JSON.stringify(pizza));
+    console.log("Pizza a guardar:", pizza);
+
+    if (this.modoEdicion) {
+      this.administradorService.actualizarPizza(pizza.id, pizza).subscribe({
+        next: () => {
+          console.log('Pizza actualizada');
+          this.getPizzas();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Actualización exitosa',
+            text: 'Pizza actualizada con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al actualizar pizza:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al modificar la pizza. Verificá los datos.'
+          });
+        }
+      });
+    } else {
+      this.administradorService.crearPizza(pizza).subscribe({
+        next: () => {
+          console.log('Pizza creada');
+          this.getPizzas();
+          this.cerrarModal();
+          Swal.fire({
+            icon: 'success',
+            title: 'Creación exitosa',
+            text: 'Pizza creada con éxito.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error al crear pizza:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al crear la pizza. Verificá los datos.'
+          });
+        }
+      });
+    }
   }
-
-  const pizza = {
-    id: +this.pizzasForm.id,
-    nombre: this.pizzasForm.nombre,
-    tipo: this.pizzasForm.tipo,
-    precio: this.pizzasForm.precio,
-    descripcion: this.pizzasForm.descripcion,
-    imagen: this.pizzasForm.imagen,
-    ingredientes: this.pizzasForm.ingredientes.map(i => ({
-      cantidad: i.cantidad,
-      ingrediente: {
-        id: i.ingredienteId || (i.ingrediente && i.ingrediente.id)
-      }
-    }))
-  };
-
-  console.log("Imagen codificada:", this.pizzasForm.imagen);
-  console.log("JSON que se va a enviar:", JSON.stringify(pizza));
-  console.log("Pizza a guardar:", pizza);
-
-  if (this.modoEdicion) {
-    this.administradorService.actualizarPizza(pizza.id, pizza).subscribe({
-      next: () => {
-        console.log('Pizza actualizada');
-        this.getPizzas();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Actualización exitosa',
-          text: 'Pizza actualizada con éxito.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (err) => {
-        console.error('Error al actualizar pizza:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al modificar la pizza. Verificá los datos.'
-        });
-      }
-    });
-  } else {
-    this.administradorService.crearPizza(pizza).subscribe({
-      next: () => {
-        console.log('Pizza creada');
-        this.getPizzas();
-        this.cerrarModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Creación exitosa',
-          text: 'Pizza creada con éxito.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-      },
-      error: (err) => {
-        console.error('Error al crear pizza:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al crear la pizza. Verificá los datos.'
-        });
-      }
-    });
-  }
-}
 
 
 guardarFiesta() {
+  let errores: string[] = [];
+  // Validar fecha
+  if (!this.fiestasForm.fechaFiesta || this.fiestasForm.fechaFiesta < this.hoy) {
+    errores.push('La fecha de la fiesta no puede ser anterior a hoy.');
+  }
+  // Validar hora
+  if (!this.fiestasForm.horaServir) {
+    errores.push('Debe ingresar la hora de servicio.');
+  }
+  // Validar cantidad de personas
+  if (!this.fiestasForm.cantidadPersonas || Number(this.fiestasForm.cantidadPersonas) <= 0) {
+    errores.push('Debe ingresar una cantidad de personas válida.');
+  }
+  // Validar precio
+  if (!this.fiestasForm.precio || Number(this.fiestasForm.precio) <= 0) {
+    errores.push('El precio debe ser mayor a 0.');
+  }
+  // Validar pago
+  if (!this.fiestasForm.pago) {
+    errores.push('Debe seleccionar un método de pago.');
+  }
+  // Validar estado
+  if (!this.fiestasForm.estado) {
+    errores.push('Debe seleccionar un estado.');
+  }
+  // Validar cliente
+  if (!this.fiestasForm.cliente.id) {
+    errores.push('Debe seleccionar un cliente.');
+  }
+  // Validar dirección
+  if (!this.fiestasForm.direccion) {
+    this.direccionFiestaError = true;
+    errores.push('Debe seleccionar una dirección válida.');
+  }
+  // Validar al menos una pizza
+  if (!this.fiestasForm.pizzas || this.fiestasForm.pizzas.length === 0) {
+    errores.push('Debe agregar al menos una pizza a la fiesta.');
+  }
+  if (errores.length > 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Errores en el formulario',
+      html: '<ul style=\"text-align:left;\">' + errores.map(e => `<li>${e}</li>`).join('') + '</ul>',
+      confirmButtonText: 'Aceptar'
+    });
+    return;
+  }
+  // Lógica original de guardar fiesta
   const fiesta = {
     id: +this.fiestasForm.id,
     cantidadPersonas: this.fiestasForm.cantidadPersonas,
@@ -967,8 +1096,6 @@ guardarFiesta() {
       pizza: { id: +p.pizza.id }
     }))
   };
-
-  console.log("JSON que se va a enviar:", JSON.stringify(fiesta, null, 2));
 
   if (this.modoEdicion) {
     this.administradorService.actualizarFiesta(fiesta.id, fiesta).subscribe({
@@ -1032,20 +1159,18 @@ guardarFiesta() {
 
   seleccionarFila(item: any, tipo: 'cliente' | 'admin' | 'ingrediente'| 'pizza' | 'fiesta' | 'pedido') {
     if (tipo === 'cliente') {
-      this.usuarioSeleccionado = item;
+      this.usuarioSeleccionado = (this.usuarioSeleccionado === item) ? null : item;
     } else if (tipo === 'admin') {
-      this.administradorSeleccionado = item;
-    }else if (tipo === 'ingrediente'){
-      this.ingredienteSeleccionado = item;
+      this.administradorSeleccionado = (this.administradorSeleccionado === item) ? null : item;
+    } else if (tipo === 'ingrediente') {
+      this.ingredienteSeleccionado = (this.ingredienteSeleccionado === item) ? null : item;
     } else if (tipo === 'pizza') {
-      this.pizzaSeleccionada = item;
+      this.pizzaSeleccionada = (this.pizzaSeleccionada === item) ? null : item;
     } else if (tipo === 'fiesta') {
-      this.fiestaSeleccionada = item;
-    }else if (tipo === 'pedido') {
-      this.pedidoSeleccionado = item;
+      this.fiestaSeleccionada = (this.fiestaSeleccionada === item) ? null : item;
+    } else if (tipo === 'pedido') {
+      this.pedidoSeleccionado = (this.pedidoSeleccionado === item) ? null : item;
     }
-  
-    
   }
 
   paginaIngredientes: number = 1;
@@ -1058,10 +1183,6 @@ guardarFiesta() {
   getUsuariosPaginados() {
     const startIndex = (this.paginaUsuarios - 1) * this.usuariosPorPagina;
     return this.listaUsuarios.slice(startIndex, startIndex + this.usuariosPorPagina);
-  }
-
-  getAdministradoresPaginados() {
-    return this.listaAdministradores;
   }
 
   siguientePaginaUsuarios() {
@@ -1077,65 +1198,6 @@ guardarFiesta() {
       this.getUsuarios();
     }
   }
-
-  siguientePaginaAdministradores() {
-    if (this.paginaAdministradores < this.totalPaginasAdministradores - 1) {
-      this.paginaAdministradores++;
-      this.getAdministradores();
-    }
-  }
-
-  anteriorPaginaAdministradores() {
-    if (this.paginaAdministradores > 0) {
-      this.paginaAdministradores--;
-      this.getAdministradores();
-    }
-  }
-
-
-  // Métodos para paginar ingrdientes
-  getIngredientesPaginados() {
-    console.log("Lista completa de ingredientes:", this.listaIngredientes);
-    const startIndex = (this.paginaIngredientes - 1) * this.ingredientesPorPagina;
-    const endIndex = startIndex + this.ingredientesPorPagina; 
-    return this.listaIngredientes.slice(startIndex, endIndex);
-  }
-  
-
-  siguientePaginaIngredientes() {
-    if (this.paginaIngredientes * this.ingredientesPorPagina < this.listaIngredientes.length) {
-      this.paginaIngredientes++;
-    }
-  }
-  
-  anteriorPaginaIngredientes() {
-    if (this.paginaIngredientes > 1) {
-      this.paginaIngredientes--;
-    }
-  }
-  
-  // Métodos para paginar pizzas
-  getPizzasPaginadas() {
-    const startIndex = (this.paginaPizzas - 1) * this.pizzasPorPagina;
-    return this.listaPizzas.slice(startIndex, startIndex + this.pizzasPorPagina);
-  }
-  
-  siguientePaginaPizzas() {
-    if (this.paginaPizzas * this.pizzasPorPagina < this.listaPizzas.length) {
-      this.paginaPizzas++;
-    }
-  }
-  
-  anteriorPaginaPizzas() {
-    if (this.paginaPizzas > 1) {
-      this.paginaPizzas--;
-    }
-  }
-
-
-
-
-
 
 
   // Métodos para paginar fiestas
@@ -1459,6 +1521,60 @@ onPizzaSeleccionada(event: Event, index: number) {
 
 
 guardarPedido() {
+  this.pedidoFormIntentado = true;
+  this.direccionError = false;
+  let errores: string[] = [];
+
+  // Validar fecha de pedido
+  if (this.pedidoForm.fechaPedido && this.pedidoForm.fechaPedido < this.hoy) {
+    errores.push('La fecha de pedido no puede ser anterior a hoy.');
+  }
+  // Validar fecha de entrega
+  if (this.pedidoForm.fechaEntrega) {
+    if (this.pedidoForm.fechaEntrega < this.hoy) {
+      errores.push('La fecha de entrega no puede ser anterior a hoy.');
+    }
+    if (this.pedidoForm.fechaPedido && this.pedidoForm.fechaEntrega < this.pedidoForm.fechaPedido) {
+      errores.push('La fecha de entrega no puede ser anterior a la fecha de pedido.');
+    }
+  }
+  // Validar precio
+  if (!this.pedidoForm.precio || Number(this.pedidoForm.precio) <= 0) {
+    errores.push('El precio debe ser mayor a 0.');
+  }
+  // Validar dirección si entrega
+  if (this.pedidoForm.entrega && !this.pedidoForm.direccion) {
+    this.direccionError = true;
+    errores.push('Debe seleccionar una dirección válida.');
+  }
+  // Validar método de pago
+  if (!this.pedidoForm.metodoPago) {
+    errores.push('Debe seleccionar un método de pago.');
+  }
+  // Validar estado
+  if (!this.pedidoForm.estado) {
+    errores.push('Debe seleccionar un estado.');
+  }
+  // Validar cliente
+  if (!this.pedidoForm.cliente.id) {
+    errores.push('Debe seleccionar un cliente.');
+  }
+  // Validar al menos una pizza
+  if (!this.pedidoForm.pizzas || this.pedidoForm.pizzas.length === 0) {
+    errores.push('Debe agregar al menos una pizza al pedido.');
+  }
+  // Si hay errores, mostrar SweetAlert y no continuar
+  if (errores.length > 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Errores en el formulario',
+      html: '<ul style=\"text-align:left;\">' + errores.map(e => `<li>${e}</li>`).join('') + '</ul>',
+      confirmButtonText: 'Aceptar'
+    });
+    return;
+  }
+
+  // Lógica original de guardado:
   const pedido = {
     id: +this.pedidoForm.id,
     fechaEntrega: this.pedidoForm.fechaEntrega,
@@ -1479,14 +1595,10 @@ guardarPedido() {
       pizza: { id: +p.pizza.id }
     }))
   };
-console.log('ID actual del pedidoForm:', this.pedidoForm.id);
-
-  console.log("JSON que se va a enviar:", JSON.stringify(pedido, null, 2));
 
   if (this.modoEdicion) {
     this.administradorService.modificarPedido(pedido.id, pedido).subscribe({
       next: () => {
-        console.log('Pedido actualizado');
         this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
         this.cerrarModal();
         Swal.fire({
@@ -1498,7 +1610,6 @@ console.log('ID actual del pedidoForm:', this.pedidoForm.id);
         });
       },
       error: (err) => {
-        console.error('Error al actualizar pedido:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -1509,7 +1620,6 @@ console.log('ID actual del pedidoForm:', this.pedidoForm.id);
   } else {
     this.administradorService.crearPedidoAdmin(pedido).subscribe({
       next: () => {
-        console.log('Pedido creado');
         this.getPedidos(this.paginaPedidos, this.pedidosPorPagina);
         this.cerrarModal();
         Swal.fire({
@@ -1521,7 +1631,6 @@ console.log('ID actual del pedidoForm:', this.pedidoForm.id);
         });
       },
       error: (err) => {
-        console.error('Error al crear pedido:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -1567,6 +1676,66 @@ eliminarPedido() {
         });
       }
     });
+  }
+}
+
+abrirMapaDireccion() {
+  this.mostrarMapaDireccion = true;
+}
+
+cerrarMapaDireccion() {
+  this.mostrarMapaDireccion = false;
+}
+
+onDireccionSeleccionada(event: {dir: string, ubi: any}) {
+  this.pedidoForm.direccion = event.dir;
+  this.direccionError = false;
+  this.mostrarMapaDireccion = false;
+}
+
+abrirMapaDireccionFiesta() {
+  this.mostrarMapaDireccionFiesta = true;
+}
+
+cerrarMapaDireccionFiesta() {
+  this.mostrarMapaDireccionFiesta = false;
+}
+
+onDireccionFiestaSeleccionada(event: {dir: string, ubi: any}) {
+  this.fiestasForm.direccion = event.dir;
+  this.direccionFiestaError = false;
+  this.mostrarMapaDireccionFiesta = false;
+}
+
+get getPizzasPaginadas() {
+  const start = (this.paginaPizzas - 1) * this.pizzasPorPagina;
+  return this.listaPizzas.slice(start, start + this.pizzasPorPagina);
+}
+
+get totalPaginasPizzas() {
+  return Math.max(1, Math.ceil(this.listaPizzas.length / this.pizzasPorPagina));
+}
+
+get getIngredientesPaginados() {
+  const start = (this.paginaIngredientes - 1) * this.ingredientesPorPagina;
+  return this.listaIngredientes.slice(start, start + this.ingredientesPorPagina);
+}
+
+get totalPaginasIngredientes() {
+  return Math.max(1, Math.ceil(this.listaIngredientes.length / this.ingredientesPorPagina));
+}
+
+siguientePaginaAdministradores() {
+  if (this.paginaAdministradores < this.totalPaginasAdministradores - 1) {
+    this.paginaAdministradores++;
+    this.getAdministradores();
+  }
+}
+
+anteriorPaginaAdministradores() {
+  if (this.paginaAdministradores > 0) {
+    this.paginaAdministradores--;
+    this.getAdministradores();
   }
 }
 

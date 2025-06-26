@@ -268,7 +268,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 0 !important;
+  align-items: center;
 }
 
 .btn {
@@ -334,6 +335,8 @@ body {
 .pagination {
   display: flex;
   gap: 8px;
+  margin-bottom: 0 !important;
+  align-items: center;
 }
 
 .btn-pagination {
@@ -809,7 +812,7 @@ body {
 
 /* Estilos específicos para el modal de pizza */
 .modal-pizza-overlay {
-  z-index: 9999;
+  z-index: 1;
   background: rgba(0, 0, 0, 0.6);
   position: fixed;
   inset: 0;
@@ -937,6 +940,17 @@ body {
   border-radius: 8px;
   border: 1px solid #ddd;
   z-index: 1;
+}
+
+.swal2-container {
+  z-index: 99999 !important;
+}
+.swal2-popup {
+  z-index: 100000 !important;
+}
+
+.d-flex.justify-content-between.align-items-center.mb-3 {
+  gap: 1rem;
 }
 
 

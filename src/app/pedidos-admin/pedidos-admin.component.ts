@@ -54,7 +54,7 @@ secciones = [
   totalPaginas: number = 0;
   paginaActual: number = 0;
   tamañoPagina: number = 0;
-  estadoFiltro: string = '';
+  estadoFiltro: string = 'ACEPTADO';
   pedidosFiltrados: any[] = [];
   pedidosFiltradosPaginados: any[] = [];
   totalPaginasFiltradas: number = 0;
@@ -358,6 +358,31 @@ cancelarPedido(id: number) {
             'Hubo un error al cancelar el pedido.',
             'error'
           );
+        }
+      });
+    }
+  });
+}
+
+finalizarPedido(id: number) {
+  Swal.fire({
+    title: '¿Finalizar pedido?',
+    text: '¿Estás seguro de que deseas marcar este pedido como finalizado?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ffa500',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, finalizar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.administradorService.finalizarPedido(id).subscribe({
+        next: () => {
+          Swal.fire('Finalizado', 'El pedido ha sido finalizado.', 'success');
+          this.getPedidos(this.paginaActual, this.tamañoPagina);
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo finalizar el pedido.', 'error');
         }
       });
     }

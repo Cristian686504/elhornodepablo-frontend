@@ -46,8 +46,17 @@
   border-left-color: #dc3545; /* Rojo */
 }
 
+.status-border-finalizada {
+  border-left: 5px solid orange !important;
+}
+
 .text-fiesta {
   color: rgb(238, 116, 59) !important;
+}
+
+.badge.bg-finalizada {
+  background-color: orange !important;
+  color: #333 !important;
 }
 
 /* Estilos para el título de la sección */
@@ -245,4 +254,10 @@
     font-size: 0.85rem;
     padding: 0 0.8rem;
   }
+}
+
+/* Si hay un modal para finalizadas, darle fondo naranja */
+.modal-finalizada {
+  background: orange !important;
+  color: white !important;
 }
