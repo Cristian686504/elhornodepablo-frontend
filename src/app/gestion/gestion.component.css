@@ -889,13 +889,13 @@ body {
   box-sizing: border-box;
 }
 
-/* Fondo azul cuando está chequeado */
+
 .custom-checkbox-container input:checked ~ .custom-checkmark {
   background-color: #ec991c;
   border-color: #ec991c;
 }
 
-/* Marca de check (invisible cuando no está chequeado) */
+
 .custom-checkmark::after {
   content: "";
   position: absolute;
@@ -910,12 +910,12 @@ body {
   border-radius: 0;
 }
 
-/* Mostrar el check cuando está marcado */
+
 .custom-checkbox-container input:checked ~ .custom-checkmark::after {
   display: block;
 }
 
-/* Texto al lado del checkbox */
+
 .custom-label-text {
   user-select: none;
 }
@@ -938,4 +938,5 @@ body {
   border: 1px solid #ddd;
   z-index: 1;
 }
+
 

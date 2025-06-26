@@ -13,6 +13,12 @@
       </select>
     </div>
 
+    <!-- Mensaje informativo cuando hay filtro activo -->
+    <div class="alert alert-info text-center mb-4" *ngIf="estadoFiltro && !cargando">
+      <i class="fas fa-info-circle me-2"></i>
+      Mostrando fiestas con estado "{{ estadoFiltro }}" ({{ fiestasFiltradas.length }} resultados totales, {{ fiestasPaginadas.length }} en esta página)
+    </div>
+
     <div class="row" [@listAnimation]="fiestasPaginadas.length">
       <div *ngFor="let fiesta of fiestasPaginadas" class="col-md-6 col-lg-4 mb-4">
         <div class="card card-pedido shadow-sm h-100" 

@@ -5,7 +5,7 @@
      <!-- Filtro de Estado -->
     <div class="filtro-container mb-4 text-center">
       <label for="estadoFiltro" class="filtro-label">Filtrar por estado:</label>
-      <select id="estadoFiltro" class="filtro-select" [(ngModel)]="estadoFiltro" (change)="filtrarPedidos()">
+      <select id="estadoFiltro" class="filtro-select" [(ngModel)]="estadoFiltro" (change)="cargarTodosLosPedidos()">
         <option value="">Todos los pedidos</option>
         <option value="ACEPTADO">Pedidos Aceptados</option>
         <option value="CANCELADO">Pedidos Cancelados</option>
@@ -13,8 +13,14 @@
       </select>
     </div>
 
-    <div class="row" [@listAnimation]="pedidosFiltrados.length">
-      <div *ngFor="let pedido of pedidosFiltrados" class="col-md-6 col-lg-4 mb-4">
+    <!-- Mensaje informativo cuando hay filtro activo -->
+    <div class="alert alert-info text-center mb-4" *ngIf="estadoFiltro && !cargando">
+      <i class="fas fa-info-circle me-2"></i>
+      Mostrando pedidos con estado "{{ estadoFiltro }}" ({{ pedidosFiltrados.length }} resultados totales, {{ pedidosFiltradosPaginados.length }} en esta página)
+    </div>
+
+    <div class="row" [@listAnimation]="pedidosFiltradosPaginados.length">
+      <div *ngFor="let pedido of pedidosFiltradosPaginados" class="col-md-6 col-lg-4 mb-4">
         <div class="card card-pedido shadow-sm h-100" 
              [ngClass]="{
                'status-border-aceptado': pedido.estado === 'ACEPTADO',
@@ -86,10 +92,10 @@
     </div>
 
     <!-- Paginación -->
-    <nav aria-label="Page navigation" *ngIf="totalPaginas > 1 && !cargando">
+    <nav aria-label="Page navigation" *ngIf="((totalPaginas > 1 && !estadoFiltro) || (totalPaginasFiltradas > 1 && estadoFiltro)) && !cargando">
       <div class="pagination-wrapper">
         <ul class="pagination pagination-clean">
-          <li class="page-item" [class.disabled]="paginaActual === 0 || cargando">
+          <li class="page-item" [class.disabled]="(estadoFiltro ? paginaActualFiltrada === 0 : paginaActual === 0) || cargando">
             <a class="page-link" href="#" (click)="anteriorPaginaPedidos(); $event.preventDefault()">
               <i class="fas fa-arrow-left"></i>
             </a>
@@ -97,11 +103,11 @@
           
           <li class="page-item page-info-item">
             <span class="page-info-text">
-              {{ paginaActual + 1 }} / {{ totalPaginas }}
+              {{ (estadoFiltro ? paginaActualFiltrada : paginaActual) + 1 }} / {{ estadoFiltro ? totalPaginasFiltradas : totalPaginas }}
             </span>
           </li>
           
-          <li class="page-item" [class.disabled]="paginaActual >= totalPaginas - 1 || cargando">
+          <li class="page-item" [class.disabled]="(estadoFiltro ? paginaActualFiltrada >= totalPaginasFiltradas - 1 : paginaActual >= totalPaginas - 1) || cargando">
             <a class="page-link" href="#" (click)="siguientePaginaPedidos(); $event.preventDefault()">
               <i class="fas fa-arrow-right"></i>
             </a>

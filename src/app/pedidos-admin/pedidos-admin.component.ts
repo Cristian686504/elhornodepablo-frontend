@@ -49,12 +49,16 @@ secciones = [
   listaPizzas: any[] = [];
   listaFiestas: any[] = [];
   listaPedidos: any[] = [];
+  todosLosPedidos: any[] = [];
   seccionActiva: string = 'usuarios';
   totalPaginas: number = 0;
   paginaActual: number = 0;
   tamañoPagina: number = 0;
   estadoFiltro: string = '';
   pedidosFiltrados: any[] = [];
+  pedidosFiltradosPaginados: any[] = [];
+  totalPaginasFiltradas: number = 0;
+  paginaActualFiltrada: number = 0;
   cargando: boolean = false;
 
   ngOnInit() {
@@ -71,11 +75,55 @@ secciones = [
   filtrarPedidos() {
     if (!this.estadoFiltro) {
       this.pedidosFiltrados = this.listaPedidos;
+      this.pedidosFiltradosPaginados = this.pedidosFiltrados;
+      this.totalPaginasFiltradas = 0;
+      this.paginaActualFiltrada = 0;
     } else {
-      this.pedidosFiltrados = this.listaPedidos.filter(
+      this.pedidosFiltrados = this.todosLosPedidos.filter(
         pedido => pedido.estado === this.estadoFiltro
       );
+      
+      this.totalPaginasFiltradas = Math.ceil(this.pedidosFiltrados.length / this.tamañoPagina);
+      this.paginaActualFiltrada = 0;
+      this.calcularPedidosFiltradosPaginados();
     }
+  }
+
+  calcularPedidosFiltradosPaginados() {
+    const startIndex = this.paginaActualFiltrada * this.tamañoPagina;
+    const endIndex = startIndex + this.tamañoPagina;
+    this.pedidosFiltradosPaginados = this.pedidosFiltrados.slice(startIndex, endIndex);
+  }
+
+  cargarTodosLosPedidos() {
+    if (!this.estadoFiltro) {
+      this.getPedidos(this.paginaActual, this.tamañoPagina);
+      return;
+    }
+
+    this.cargando = true;
+    this.todosLosPedidos = [];
+    
+    const cargarPagina = (pagina: number) => {
+      this.administradorService.getPedidos(pagina, this.tamañoPagina).subscribe(res => {
+        if (Array.isArray(res.content)) {
+          this.todosLosPedidos = [...this.todosLosPedidos, ...res.content];
+          
+          if (pagina < res.totalPages - 1) {
+            cargarPagina(pagina + 1);
+          } else {
+            this.filtrarPedidos();
+            this.cargando = false;
+          }
+        } else {
+          this.todosLosPedidos = [];
+          this.pedidosFiltrados = [];
+          this.cargando = false;
+        }
+      });
+    };
+    
+    cargarPagina(0);
   }
 
   getPedidos(page: number, size: number) { 
@@ -87,11 +135,20 @@ secciones = [
         this.listaPedidos = res.content;
         this.totalPaginas = res.totalPages;
         this.paginaActual = res.number;
-        this.filtrarPedidos();
+        
+        if (!this.estadoFiltro) {
+          this.pedidosFiltrados = this.listaPedidos;
+          this.pedidosFiltradosPaginados = this.pedidosFiltrados;
+        } else {
+          this.cargarTodosLosPedidos();
+          return;
+        }
+        
         this.cargando = false;
       } else {
         this.listaPedidos = [];
         this.pedidosFiltrados = [];
+        this.pedidosFiltradosPaginados = [];
         this.cargando = false;
         console.warn('La respuesta no tiene content como array:', res);
       }
@@ -99,22 +156,56 @@ secciones = [
   }
 
   anteriorPaginaPedidos() {
-    if (this.paginaActual > 0 && !this.cargando) {
-      this.cargando = true;
-      this.pedidosFiltrados = []; // Vaciar para disparar animación de salida
-      setTimeout(() => {
-        this.getPedidos(this.paginaActual - 1, this.tamañoPagina);
-      }, 400); // Delay igual a la duración de la animación de salida
+    if (this.cargando) return;
+    
+    if (this.estadoFiltro) {
+      // Navegación para resultados filtrados
+      if (this.paginaActualFiltrada > 0) {
+        this.cargando = true;
+        this.pedidosFiltradosPaginados = [];
+        setTimeout(() => {
+          this.paginaActualFiltrada--;
+          this.calcularPedidosFiltradosPaginados();
+          this.cargando = false;
+        }, 400);
+      }
+    } else {
+      // Navegación normal
+      if (this.paginaActual > 0) {
+        this.cargando = true;
+        this.pedidosFiltrados = [];
+        this.pedidosFiltradosPaginados = [];
+        setTimeout(() => {
+          this.getPedidos(this.paginaActual - 1, this.tamañoPagina);
+        }, 400);
+      }
     }
   }
 
   siguientePaginaPedidos() {
-    if (this.paginaActual < this.totalPaginas - 1 && !this.cargando) {
-      this.cargando = true;
-      this.pedidosFiltrados = []; // Vaciar para disparar animación de salida
-      setTimeout(() => {
-        this.getPedidos(this.paginaActual + 1, this.tamañoPagina);
-      }, 400); // Delay igual a la duración de la animación de salida
+    if (this.cargando) return;
+    
+    if (this.estadoFiltro) {
+      // Navegación para resultados filtrados
+      if (this.paginaActualFiltrada < this.totalPaginasFiltradas - 1) {
+        this.cargando = true;
+        this.pedidosFiltradosPaginados = [];
+        setTimeout(() => {
+          this.paginaActualFiltrada++;
+          this.calcularPedidosFiltradosPaginados();
+          this.cargando = false;
+        }, 400);
+      }
+    } else {
+      // Navegación normal
+      if (this.paginaActual < this.totalPaginas - 1) {
+        this.cargando = true;
+        this.pedidosFiltrados = [];
+        this.pedidosFiltradosPaginados = [];
+        setTimeout(() => {
+          this.getPedidos(this.paginaActual + 1, this.tamañoPagina);
+        }, 400);
+      }
     }
   }
 
